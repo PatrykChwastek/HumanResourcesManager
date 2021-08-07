@@ -161,3 +161,6 @@ C:\Users\Komputer\source\repos\HumanResourcesManager\obj\Debug\netcoreapp3.1\sco
 C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\System.Linq.Dynamic.Core.dll
 C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\AutoMapper.dll
 C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\human-resources-manager-client\package-lock.json
+C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\human-resources-manager-client\package.json
+C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\human-resources-manager-client\public\manifest.json

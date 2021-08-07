@@ -41,7 +41,7 @@ namespace HumanResourcesManager.Controllers
                 var totalEmployees = await _employeeRepository.EmployeesCount();
 
                 var pageOfEmployees = new Pagination(page, size, totalEmployees);
-                return Ok(await pageOfEmployees.InitPagination(employees));
+                return Ok(await pageOfEmployees.InitPagination(mappedEmployees.AsQueryable()));
             }
             catch (Exception)
             {
