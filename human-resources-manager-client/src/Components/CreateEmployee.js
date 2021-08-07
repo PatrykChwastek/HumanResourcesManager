@@ -146,8 +146,8 @@ const CreateEmploy = () => {
                 id: 0,
                 name: e.target.name === "employeeName" ? e.target.value : employee.person.name,
                 surname: e.target.name === "employeeSurname" ? e.target.value : employee.person.surname,
-                phoneNumber: "12345678",
-                email: "t@gt.comm",
+                phoneNumber: e.target.name === "employeePhone" ? e.target.value : employee.person.phoneNumber,
+                email: e.target.name === "employeeEmail" ? e.target.value : employee.person.email,
                 employeeAddress: {
                     id: 0,
                     city: e.target.name === "employeeCity" ? e.target.value : employee.person.employeeAddress.city,
