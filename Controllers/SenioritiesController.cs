@@ -30,88 +30,48 @@ namespace HumanResourcesManager.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SeniorityDTO>>> GetSeniority()
         {
-            var departments = await _departmentRepo.GetDepartments().ToListAsync();
-            var mappedDepartments = _mapper.Map<List<DepartmentDTO>>(departments);
-            return Ok(mappedDepartments);
+            var seniorityLvls = await  _seniorityRepository.GetSenioritis().ToListAsync();
+            var mappedSeniorityLvls = _mapper.Map<List<SeniorityDTO>>(seniorityLvls);
+            return Ok(mappedSeniorityLvls);
         }
 
         // GET: api/Seniorities/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Seniority>> GetSeniority(long id)
+        public async Task<ActionResult<SeniorityDTO>> GetSeniority(long id)
         {
-            var seniority = await _context.Seniority.FindAsync(id);
+            var seniorityLvl = await _seniorityRepository.GetSeniority(id);
 
-            if (seniority == null)
+            if (seniorityLvl == null)
             {
                 return NotFound();
             }
-
-            return seniority;
-        }
-
-        // PUT: api/Seniorities/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSeniority(long id, Seniority seniority)
-        {
-            if (id != seniority.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(seniority).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SeniorityExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return _mapper.Map<SeniorityDTO>(seniorityLvl);
         }
 
         // POST: api/Seniorities
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Seniority>> PostSeniority(Seniority seniority)
+        public async Task<ActionResult<SeniorityDTO>> PostSeniority(SeniorityDTO seniority)
         {
-            _context.Seniority.Add(seniority);
-            await _context.SaveChangesAsync();
+            var mappedSeniorityLvl = _mapper.Map<Seniority>(seniority);
+            var seniorityLvl = await _seniorityRepository.CreateSeniority(mappedSeniorityLvl);
+            var seniorityLvlDTO = _mapper.Map<SeniorityDTO>(seniorityLvl);
 
-            return CreatedAtAction("GetSeniority", new { id = seniority.Id }, seniority);
+            return Created("get", seniorityLvlDTO);
         }
 
         // DELETE: api/Seniorities/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Seniority>> DeleteSeniority(long id)
         {
-            var seniority = await _context.Seniority.FindAsync(id);
-            if (seniority == null)
             {
-                return NotFound();
+                if (await _seniorityRepository.DeleteSeniority(id))
+                {
+                    await _seniorityRepository.Save();
+                    return NoContent();
+                }
+
+                return StatusCode(500, "Server Error: seniority not exist");
             }
-
-            _context.Seniority.Remove(seniority);
-            await _context.SaveChangesAsync();
-
-            return seniority;
-        }
-
-        private bool SeniorityExists(long id)
-        {
-            return _context.Seniority.Any(e => e.Id == id);
         }
     }
 }
