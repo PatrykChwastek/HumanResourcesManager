@@ -14,7 +14,7 @@ namespace HumanResourcesManager.MapperConf.Profiles
                 foreach (var item in emp.EmployeePermissions)
                 {
                     DTO.Permissions.Add(new PermissionDTO
-                    {
+                    {   
                         Id = item.Permission.Id,
                         Name = item.Permission.Name,
                     });

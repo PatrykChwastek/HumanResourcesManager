@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace HumanResourcesManager.Models
+﻿namespace HumanResourcesManager.Models
 {
     public class EmployeePermissions
     {

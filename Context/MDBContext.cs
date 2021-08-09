@@ -1,5 +1,6 @@
 ﻿using System;
 using HumanResourcesManager.Models;
+using HumanResourcesManager.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HumanResourcesManager.Context
@@ -13,7 +14,11 @@ namespace HumanResourcesManager.Context
         public DbSet<Position> Position { get; set; }
         public DbSet<Department> Department { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<Seniority> Seniority { get; set; }
         public DbSet<EmployeePermissions> EmployeePermissions { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamEmployees> TeamEmploees { get; set; }
+
         public MDBContext(DbContextOptions<MDBContext> options) : base (options){}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +52,12 @@ namespace HumanResourcesManager.Context
                 .HasForeignKey(e => e.DepartmentId)
                 .IsRequired();
 
+            modelBuilder.Entity<Seniority>()
+                .HasMany(s => s.Employees)
+                .WithOne(e => e.Seniority)
+                .HasForeignKey(e => e.SeniorityId)
+                .IsRequired();
+
             modelBuilder.Entity<EmployeePermissions>()
                 .HasKey(ep => new {ep.EmployeeId, ep.PermissionId});
 
@@ -59,6 +70,25 @@ namespace HumanResourcesManager.Context
                 .HasOne(ep => ep.Permission)
                 .WithMany(p => p.EmployeePermissions)
                 .HasForeignKey(pe => pe.PermissionId);
+
+            modelBuilder.Entity<Employee>()
+                .HasOne<Team>(t => t.Team)
+                .WithOne(e => e.TeamLeader)
+                .IsRequired()
+                .HasForeignKey<Team>(t => t.TeamLeaderId);
+
+            modelBuilder.Entity<TeamEmployees>()
+                .HasKey(te => new { te.EmployeeId, te.TeamId });
+
+            modelBuilder.Entity<TeamEmployees>()
+                .HasOne(te => te.Team)
+                .WithMany(t => t.TeamEmployees)
+                .HasForeignKey(te => te.TeamId);
+
+            modelBuilder.Entity<TeamEmployees>()
+                .HasOne(te => te.Employee)
+                .WithMany(e => e.TeamEmployees)
+                .HasForeignKey(te => te.EmployeeId);
         }
     }
 }
