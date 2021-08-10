@@ -1,0 +1,20 @@
+﻿using HumanResourcesManager.Models.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace HumanResourcesManager.Services.TeamRepo
+{
+    public interface ITeamRepository
+    { 
+        Task<bool> Save();
+        Task<int> TeamsCount();
+        IQueryable<Team> GetTeams();
+        IQueryable<Team> GetTeams(int limit);
+        Task<Team> GetTeam(long id);
+        Task<Team> CreateTeam(Team teamEntity);
+        Task<Team> PutTeam(long id, Team teamEntity);
+        Task<bool> DeleteTeam(long id);
+    }
+}

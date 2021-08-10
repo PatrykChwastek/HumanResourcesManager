@@ -82,7 +82,7 @@ namespace HumanResourcesManager.Context
 
             modelBuilder.Entity<TeamEmployees>()
                 .HasOne(te => te.Team)
-                .WithMany(t => t.TeamEmployees)
+                .WithMany(t => t.Members)
                 .HasForeignKey(te => te.TeamId);
 
             modelBuilder.Entity<TeamEmployees>()

@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using HumanResourcesManager.Models;
+using HumanResourcesManager.Models.DTO;
+using HumanResourcesManager.Models.Entity;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HumanResourcesManager.MapperConf.Profiles
 {
@@ -20,10 +23,14 @@ namespace HumanResourcesManager.MapperConf.Profiles
                     });
                 }
             });
+            CreateMap<Team, TeamDTO>()
+                 .ForMember(dto => dto.Members, 
+                 opt => opt.MapFrom(x => x.Members.Select(y => y.Employee).ToList())); // need test
             CreateMap<Person, PersonDTO>();
             CreateMap<EmployeeAddress, EmployeeAddressDTO>();
             CreateMap<Position, PositionDTO>();
             CreateMap<Department, DepartmentDTO>();
+            CreateMap<Seniority, SeniorityDTO>();
             CreateMap<Permission, PermissionDTO>();
         }
     }

@@ -17,6 +17,8 @@ using AutoMapper;
 using HumanResourcesManager.Services.DepartmentRepo;
 using HumanResourcesManager.Services.PositionRepo;
 using HumanResourcesManager.Services.PermissionRepo;
+using HumanResourcesManager.Services.SeniorityRepo;
+using HumanResourcesManager.Services.TeamRepo;
 
 namespace HumanResourcesManager
 {
@@ -25,12 +27,6 @@ namespace HumanResourcesManager
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
-            var serviceProvider = new ServiceCollection().AddLogging(cfg => cfg.AddConsole()).Configure<LoggerFilterOptions>(cfg => cfg.MinLevel = LogLevel.Debug).BuildServiceProvider();
-            // get instance of logger
-            var logger = serviceProvider.GetService<ILogger<Program>>();
-            // use the logger
-            logger.LogDebug("Human Resources Manager started");
         }
 
         public IConfiguration Configuration { get; }
@@ -45,6 +41,8 @@ namespace HumanResourcesManager
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IPositionRepository, PositionRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<ISeniorityRepository, SeniorityRepository>();
+            services.AddScoped<ITeamRepository, TeamRepository>();
             services.AddAutoMapper(typeof(Startup));
             services.AddCors();
         }

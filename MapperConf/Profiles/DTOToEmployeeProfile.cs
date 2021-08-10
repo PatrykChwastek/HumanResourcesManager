@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using HumanResourcesManager.Models;
+using HumanResourcesManager.Models.DTO;
+using HumanResourcesManager.Models.Entity;
 using System.Collections.Generic;
 
 namespace HumanResourcesManager.MapperConf.Profiles
@@ -22,10 +24,24 @@ namespace HumanResourcesManager.MapperConf.Profiles
                     }) ;
                 }
             });
+            CreateMap<TeamDTO, Team>().AfterMap((DTO, team) =>
+            {
+                team.Members = new List<TeamEmployees>();
+                foreach (var item in DTO.Members)
+                {
+                    team.Members.Add(new TeamEmployees
+                    {
+                        TeamId = team.Id,
+                        Team = team,
+                        EmployeeId = item.Id,                      
+                    });
+                }
+            });
             CreateMap<PersonDTO, Person >();
             CreateMap<EmployeeAddressDTO, EmployeeAddress >();
             CreateMap<PositionDTO, Position >();
             CreateMap<DepartmentDTO, Department>();
+            CreateMap<SeniorityDTO, Seniority>();
             CreateMap<PermissionDTO, Permission>();
         }
     }
