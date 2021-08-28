@@ -11,6 +11,7 @@ namespace HumanResourcesManager.Models
         public PersonDTO Person { get; set; }
         public PositionDTO Position { get; set; }
         public DepartmentDTO Department { get; set; }
+        public string Seniority { get; set; }
         public ICollection<PermissionDTO> Permissions { get; set; }
     }
 }

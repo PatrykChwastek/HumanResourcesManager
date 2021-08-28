@@ -1,5 +1,4 @@
-﻿using System;
-using HumanResourcesManager.Models;
+﻿using HumanResourcesManager.Models;
 using HumanResourcesManager.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,10 +13,10 @@ namespace HumanResourcesManager.Context
         public DbSet<Position> Position { get; set; }
         public DbSet<Department> Department { get; set; }
         public DbSet<Permission> Permissions { get; set; }
-        public DbSet<Seniority> Seniority { get; set; }
         public DbSet<EmployeePermissions> EmployeePermissions { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamEmployees> TeamEmploees { get; set; }
+        public DbSet<EmployeeTask> EmployeeTask { get; set; }
 
         public MDBContext(DbContextOptions<MDBContext> options) : base (options){}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,12 +51,6 @@ namespace HumanResourcesManager.Context
                 .HasForeignKey(e => e.DepartmentId)
                 .IsRequired();
 
-            modelBuilder.Entity<Seniority>()
-                .HasMany(s => s.Employees)
-                .WithOne(e => e.Seniority)
-                .HasForeignKey(e => e.SeniorityId)
-                .IsRequired();
-
             modelBuilder.Entity<EmployeePermissions>()
                 .HasKey(ep => new {ep.EmployeeId, ep.PermissionId});
 
@@ -89,6 +82,36 @@ namespace HumanResourcesManager.Context
                 .HasOne(te => te.Employee)
                 .WithMany(e => e.TeamEmployees)
                 .HasForeignKey(te => te.EmployeeId);
+
+            modelBuilder.Entity<EmployeeTask>()
+                .HasOne(x => x.ParentTask)
+                    .WithMany(x => x.Subtasks)
+                    .HasForeignKey(x => x.ParentTaskId)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<EmployeeTask>()
+                .HasOne<Employee>(x => x.AssignedEmployee)
+                    .WithMany(x => x.Task)
+                    .HasForeignKey(et => et.AssignedEmployeeId);
+
+
+            //modelBuilder.Entity<EmployeeTask>(entity =>
+            //{
+            //    entity.HasKey(x => x.Id);
+            //    entity.Property(x => x.Name);
+            //    entity.Property(x => x.Description);
+            //    entity.Property(x => x.StartTime);
+            //    entity.Property(x => x.Deadline);
+            //    entity.HasOne(x => x.ParentTask)
+            //        .WithMany(x => x.Subtasks)
+            //        .HasForeignKey(x => x.ParentTaskId)
+            //        .IsRequired(false)
+            //        .OnDelete(DeleteBehavior.Restrict);
+            //    entity.HasOne(x => x.AssignedEmployee)
+            //        .WithOne(x => x.Task)
+            //        .HasForeignKey("AssignedEmployeeId");
+
+            //});
         }
     }
 }

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HumanResourcesManager.Migrations
 {
     [DbContext(typeof(MDBContext))]
-    [Migration("20210511092337_init")]
+    [Migration("20210816092248_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,7 +18,7 @@ namespace HumanResourcesManager.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.11")
+                .HasAnnotation("ProductVersion", "3.1.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("HumanResourcesManager.Models.Department", b =>
@@ -57,6 +57,12 @@ namespace HumanResourcesManager.Migrations
 
                     b.Property<bool>("RemoteWork")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Seniority")
+                        .HasColumnType("text");
+
+                    b.Property<long>("SeniorityId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -104,6 +110,77 @@ namespace HumanResourcesManager.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("EmployeePermissions");
+                });
+
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.EmployeeTask", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("AssignedEmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("Deadline")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("ParentTaskId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignedEmployeeId")
+                        .IsUnique();
+
+                    b.HasIndex("ParentTaskId");
+
+                    b.ToTable("EmployeeTask");
+                });
+
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.Team", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<long>("TeamLeaderId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeamLeaderId")
+                        .IsUnique();
+
+                    b.ToTable("Teams");
+                });
+
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.TeamEmployees", b =>
+                {
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TeamId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("EmployeeId", "TeamId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("TeamEmploees");
                 });
 
             modelBuilder.Entity("HumanResourcesManager.Models.JobApplication", b =>
@@ -229,6 +306,44 @@ namespace HumanResourcesManager.Migrations
                     b.HasOne("HumanResourcesManager.Models.Permission", "Permission")
                         .WithMany("EmployeePermissions")
                         .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.EmployeeTask", b =>
+                {
+                    b.HasOne("HumanResourcesManager.Models.Employee", "AssignedEmployee")
+                        .WithOne("Task")
+                        .HasForeignKey("HumanResourcesManager.Models.Entity.EmployeeTask", "AssignedEmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HumanResourcesManager.Models.Entity.EmployeeTask", "ParentTask")
+                        .WithMany("Subtasks")
+                        .HasForeignKey("ParentTaskId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.Team", b =>
+                {
+                    b.HasOne("HumanResourcesManager.Models.Employee", "TeamLeader")
+                        .WithOne("Team")
+                        .HasForeignKey("HumanResourcesManager.Models.Entity.Team", "TeamLeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.TeamEmployees", b =>
+                {
+                    b.HasOne("HumanResourcesManager.Models.Employee", "Employee")
+                        .WithMany("TeamEmployees")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HumanResourcesManager.Models.Entity.Team", "Team")
+                        .WithMany("Members")
+                        .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

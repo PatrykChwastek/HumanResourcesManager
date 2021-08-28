@@ -95,6 +95,8 @@ namespace HumanResourcesManager.Migrations
                     PositionId = table.Column<long>(nullable: false),
                     DepartmentId = table.Column<long>(nullable: false),
                     EmploymentDate = table.Column<DateTime>(nullable: false),
+                    SeniorityId = table.Column<long>(nullable: false),
+                    Seniority = table.Column<string>(nullable: true),
                     RemoteWork = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -173,6 +175,80 @@ namespace HumanResourcesManager.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "EmployeeTask",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    StartTime = table.Column<DateTime>(nullable: false),
+                    Deadline = table.Column<DateTime>(nullable: false),
+                    ParentTaskId = table.Column<long>(nullable: true),
+                    AssignedEmployeeId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployeeTask", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmployeeTask_Employee_AssignedEmployeeId",
+                        column: x => x.AssignedEmployeeId,
+                        principalTable: "Employee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EmployeeTask_EmployeeTask_ParentTaskId",
+                        column: x => x.ParentTaskId,
+                        principalTable: "EmployeeTask",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teams",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(nullable: true),
+                    TeamLeaderId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Teams_Employee_TeamLeaderId",
+                        column: x => x.TeamLeaderId,
+                        principalTable: "Employee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TeamEmploees",
+                columns: table => new
+                {
+                    TeamId = table.Column<long>(nullable: false),
+                    EmployeeId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeamEmploees", x => new { x.EmployeeId, x.TeamId });
+                    table.ForeignKey(
+                        name: "FK_TeamEmploees_Employee_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Employee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TeamEmploees_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Employee_DepartmentId",
                 table: "Employee",
@@ -195,6 +271,17 @@ namespace HumanResourcesManager.Migrations
                 column: "PermissionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmployeeTask_AssignedEmployeeId",
+                table: "EmployeeTask",
+                column: "AssignedEmployeeId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmployeeTask_ParentTaskId",
+                table: "EmployeeTask",
+                column: "ParentTaskId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_JobApplications_PersonId",
                 table: "JobApplications",
                 column: "PersonId");
@@ -209,6 +296,17 @@ namespace HumanResourcesManager.Migrations
                 table: "Person",
                 column: "EmployeeAddressId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TeamEmploees_TeamId",
+                table: "TeamEmploees",
+                column: "TeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teams_TeamLeaderId",
+                table: "Teams",
+                column: "TeamLeaderId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -217,13 +315,22 @@ namespace HumanResourcesManager.Migrations
                 name: "EmployeePermissions");
 
             migrationBuilder.DropTable(
+                name: "EmployeeTask");
+
+            migrationBuilder.DropTable(
                 name: "JobApplications");
 
             migrationBuilder.DropTable(
-                name: "Employee");
+                name: "TeamEmploees");
 
             migrationBuilder.DropTable(
                 name: "Permissions");
+
+            migrationBuilder.DropTable(
+                name: "Teams");
+
+            migrationBuilder.DropTable(
+                name: "Employee");
 
             migrationBuilder.DropTable(
                 name: "Department");

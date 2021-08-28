@@ -17,14 +17,12 @@ namespace HumanResourcesManager.Models
         public long DepartmentId { get; set; }
         public Department Department { get; set; }
         public DateTime EmploymentDate { get; set; }
-        public long SeniorityId { get; set; }
-        public Seniority Seniority { get; set; }
+        public string Seniority { get; set; }
         public bool RemoteWork { get; set; }
         public ICollection<EmployeePermissions> EmployeePermissions { get; set; }
 
-        [JsonIgnore]
+        public ICollection<EmployeeTask> Task { get; set; }
         public Team Team { get; set; }
-        [JsonIgnore]
         public ICollection<TeamEmployees> TeamEmployees { get; set; }
 
     }

@@ -20,8 +20,10 @@ namespace HumanResourcesManager.Services.TeamRepo
 
         public async Task<Team> CreateTeam(Team teamEntity)
         {
+            if (teamEntity.TeamLeader == null && teamEntity.Members.Count == 0)
+                return null;
             _logger.LogInformation($"Creating new Team: {teamEntity.Name}");
-            _mDBContext.Add(teamEntity);
+            _mDBContext.Attach(teamEntity);
 
             await Save();
             await _mDBContext.Entry(teamEntity).GetDatabaseValuesAsync();
@@ -49,7 +51,7 @@ namespace HumanResourcesManager.Services.TeamRepo
 
         public IQueryable<Team> GetTeams()
         {
-            return _mDBContext.Teams;
+            return _mDBContext.Teams.Include(t => t.Members);
         }
 
         public IQueryable<Team> GetTeams(int limit)

@@ -10,6 +10,7 @@ using System.Linq.Dynamic.Core;
 using HumanResourcesManager.Services;
 using AutoMapper;
 using HumanResourcesManager.MapperConf;
+using HumanResourcesManager.Services.SIngletonProvider;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -18,11 +19,13 @@ namespace HumanResourcesManager.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly string[] _seniorityLevels;
         private readonly IMapper _mapper;
 
-        public EmployeesController(IEmployeeRepository employeeRepository)
+        public EmployeesController(IEmployeeRepository employeeRepository, ISingletonProvider singletonProvider)
         {
             _employeeRepository = employeeRepository;
+            _seniorityLevels = singletonProvider.SeniorityLevels;
             var config = new AutoMapperConfiguration().Configure();
 
             _mapper = config.CreateMapper();
@@ -99,6 +102,14 @@ namespace HumanResourcesManager.Controllers
             }
 
             return StatusCode(500, "Server Error: employee not exist");
+        }
+
+        // GET: employee/seniority-levels
+        [HttpGet]
+        [ActionName("seniority-levels")]
+        public ActionResult<string[]> GetSeniorityLevels()
+        {
+          return Ok(_seniorityLevels);
         }
     }
 }

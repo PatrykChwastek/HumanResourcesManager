@@ -26,11 +26,11 @@ namespace HumanResourcesManager.MapperConf.Profiles
             CreateMap<Team, TeamDTO>()
                  .ForMember(dto => dto.Members, 
                  opt => opt.MapFrom(x => x.Members.Select(y => y.Employee).ToList())); // need test
+            CreateMap<EmployeeTask, EmployeeTaskDTO>().PreserveReferences();
             CreateMap<Person, PersonDTO>();
             CreateMap<EmployeeAddress, EmployeeAddressDTO>();
             CreateMap<Position, PositionDTO>();
             CreateMap<Department, DepartmentDTO>();
-            CreateMap<Seniority, SeniorityDTO>();
             CreateMap<Permission, PermissionDTO>();
         }
     }

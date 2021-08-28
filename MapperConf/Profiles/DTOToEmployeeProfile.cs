@@ -3,6 +3,7 @@ using HumanResourcesManager.Models;
 using HumanResourcesManager.Models.DTO;
 using HumanResourcesManager.Models.Entity;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HumanResourcesManager.MapperConf.Profiles
 {
@@ -10,22 +11,27 @@ namespace HumanResourcesManager.MapperConf.Profiles
     {
         public DTOToEmployeeProfile()
         {
-            CreateMap<EmployeeDTO, Employee >().AfterMap((DTO, emp) =>
+            CreateMap<EmployeeDTO, Employee >()
+            .AfterMap((DTO, emp) =>
             {
-                emp.EmployeePermissions = new List<EmployeePermissions>();
-                foreach (var item in DTO.Permissions)
+                if (DTO.Permissions != null)
                 {
-                    emp.EmployeePermissions.Add(new EmployeePermissions
+                    emp.EmployeePermissions = new List<EmployeePermissions>();
+                    foreach (var item in DTO.Permissions)
                     {
-                        EmployeeId = 0,
-                        Employee = emp,
-                        PermissionId = item.Id,
-                        
-                    }) ;
+                        emp.EmployeePermissions.Add(new EmployeePermissions
+                        {
+                            EmployeeId = DTO.Id,
+                            PermissionId = item.Id,
+                        }) ;
+                    } 
                 }
             });
-            CreateMap<TeamDTO, Team>().AfterMap((DTO, team) =>
+            CreateMap<TeamDTO, Team>()
+            .ForMember(dest => dest.Members, opt => opt.Ignore())
+            .AfterMap((DTO, team) =>
             {
+                team.TeamLeaderId = DTO.TeamLeader.Id;
                 team.Members = new List<TeamEmployees>();
                 foreach (var item in DTO.Members)
                 {
@@ -33,15 +39,15 @@ namespace HumanResourcesManager.MapperConf.Profiles
                     {
                         TeamId = team.Id,
                         Team = team,
-                        EmployeeId = item.Id,                      
+                        EmployeeId = item.Id,
                     });
                 }
             });
+            CreateMap<EmployeeTaskDTO, EmployeeTask>().PreserveReferences();
             CreateMap<PersonDTO, Person >();
             CreateMap<EmployeeAddressDTO, EmployeeAddress >();
             CreateMap<PositionDTO, Position >();
             CreateMap<DepartmentDTO, Department>();
-            CreateMap<SeniorityDTO, Seniority>();
             CreateMap<PermissionDTO, Permission>();
         }
     }

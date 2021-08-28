@@ -1,24 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using HumanResourcesManager.Context;
 using HumanResourcesManager.Services;
 using HumanResourcesManager.Services.EmployeeRepo;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using AutoMapper;
 using HumanResourcesManager.Services.DepartmentRepo;
 using HumanResourcesManager.Services.PositionRepo;
 using HumanResourcesManager.Services.PermissionRepo;
-using HumanResourcesManager.Services.SeniorityRepo;
 using HumanResourcesManager.Services.TeamRepo;
+using HumanResourcesManager.Services.SIngletonProvider;
+using HumanResourcesManager.Services.EmployeeTaskRepo;
 
 namespace HumanResourcesManager
 {
@@ -41,8 +36,9 @@ namespace HumanResourcesManager
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IPositionRepository, PositionRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
-            services.AddScoped<ISeniorityRepository, SeniorityRepository>();
             services.AddScoped<ITeamRepository, TeamRepository>();
+            services.AddScoped<IEmployeeTaskRepository, EmployeeTaskRepository>();
+            services.AddSingleton<ISingletonProvider, SingletonProvider>();
             services.AddAutoMapper(typeof(Startup));
             services.AddCors();
         }
