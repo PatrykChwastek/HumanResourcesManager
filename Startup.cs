@@ -14,6 +14,7 @@ using HumanResourcesManager.Services.PermissionRepo;
 using HumanResourcesManager.Services.TeamRepo;
 using HumanResourcesManager.Services.SIngletonProvider;
 using HumanResourcesManager.Services.EmployeeTaskRepo;
+using HumanResourcesManager.Services.UserRepo;
 
 namespace HumanResourcesManager
 {
@@ -32,6 +33,7 @@ namespace HumanResourcesManager
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<MDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IPositionRepository, PositionRepository>();
@@ -52,6 +54,7 @@ namespace HumanResourcesManager
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
+                .AllowAnyOrigin()
                 .SetIsOriginAllowed(origin => true)
                 .AllowCredentials());
 

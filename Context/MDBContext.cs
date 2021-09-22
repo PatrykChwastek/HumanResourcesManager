@@ -7,6 +7,7 @@ namespace HumanResourcesManager.Context
     public class MDBContext : DbContext
     {
         public DbSet<JobApplication> JobApplications { get; set; }
+        public DbSet<User> User { get; set; }
         public DbSet<Employee> Employee { get; set; }
         public DbSet<Person> Person { get; set; }
         public DbSet<EmployeeAddress> EmployeeAddress{ get; set; }
@@ -70,6 +71,12 @@ namespace HumanResourcesManager.Context
                 .IsRequired()
                 .HasForeignKey<Team>(t => t.TeamLeaderId);
 
+            modelBuilder.Entity<Employee>()
+                .HasOne<User>(e => e.User)
+                .WithOne(u => u.Employee)
+                .IsRequired()
+                .HasForeignKey<User>(u => u.EmployeeId);
+
             modelBuilder.Entity<TeamEmployees>()
                 .HasKey(te => new { te.EmployeeId, te.TeamId });
 
@@ -94,24 +101,6 @@ namespace HumanResourcesManager.Context
                     .WithMany(x => x.Task)
                     .HasForeignKey(et => et.AssignedEmployeeId);
 
-
-            //modelBuilder.Entity<EmployeeTask>(entity =>
-            //{
-            //    entity.HasKey(x => x.Id);
-            //    entity.Property(x => x.Name);
-            //    entity.Property(x => x.Description);
-            //    entity.Property(x => x.StartTime);
-            //    entity.Property(x => x.Deadline);
-            //    entity.HasOne(x => x.ParentTask)
-            //        .WithMany(x => x.Subtasks)
-            //        .HasForeignKey(x => x.ParentTaskId)
-            //        .IsRequired(false)
-            //        .OnDelete(DeleteBehavior.Restrict);
-            //    entity.HasOne(x => x.AssignedEmployee)
-            //        .WithOne(x => x.Task)
-            //        .HasForeignKey("AssignedEmployeeId");
-
-            //});
         }
     }
 }

@@ -21,6 +21,7 @@ namespace HumanResourcesManager.Models
         public bool RemoteWork { get; set; }
         public ICollection<EmployeePermissions> EmployeePermissions { get; set; }
 
+        public User User { get; set; }
         public ICollection<EmployeeTask> Task { get; set; }
         public Team Team { get; set; }
         public ICollection<TeamEmployees> TeamEmployees { get; set; }

@@ -32,6 +32,8 @@ namespace HumanResourcesManager.MapperConf.Profiles
             CreateMap<Position, PositionDTO>();
             CreateMap<Department, DepartmentDTO>();
             CreateMap<Permission, PermissionDTO>();
+            CreateMap<User, UserDTO>();
+
         }
     }
 }
