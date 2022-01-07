@@ -1,5 +1,7 @@
 ﻿using HumanResourcesManager.Context;
+using HumanResourcesManager.Models;
 using HumanResourcesManager.Models.Entity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,9 +22,43 @@ namespace HumanResourcesManager.Services.UserRepo
             _logger = logger;
         }
 
+        public async Task<User> Authenticate(string username, string password)
+        {
+            var user = await _mDBContext.User.SingleOrDefaultAsync(x => x.Username == username);
+            if (user != null)
+            {
+                PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
+                if (ValidatePassword(user, password, passwordHasher))
+                {
+                    return await GetUser(user.Id);
+                }
+            }
+            return null;
+        }
+
+        private bool ValidatePassword(User user, string password, IPasswordHasher<User> passwordHasher)
+        {
+            var passwordHash = passwordHasher.HashPassword(user, password);
+            return passwordHasher.VerifyHashedPassword(user, passwordHash, password) != PasswordVerificationResult.Failed; 
+        }
+
+        private string HashUserPassword(User user)
+        {
+            PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
+            return passwordHasher.HashPassword(user, user.Password);
+        }
+
+        private string HashUserPassword(User user, string password)
+        {
+            PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
+            return passwordHasher.HashPassword(user, password);
+        }
+
+
         public async Task<User> CreateUser(User userEntity)
         {
             _logger.LogInformation($"Creating new User: {userEntity.Username}");
+            userEntity.Password = HashUserPassword(userEntity);
             _mDBContext.Attach(userEntity);
 
             await Save();
@@ -30,7 +66,26 @@ namespace HumanResourcesManager.Services.UserRepo
             return await GetUser(userEntity.Id);
         }
 
-        public async Task<bool> DeleteUser(long id)
+        // Create user with default credentials (surname + first letter of name)
+        public async Task<User> CreateUser(Employee employeeeEntity)
+        {
+            string dedefaultCred = 
+                employeeeEntity.Person.Surname + employeeeEntity.Person.Name.Substring(0, 1);
+            var user = new User();
+            user.Username = dedefaultCred;
+            user.Password = HashUserPassword(user, dedefaultCred);
+            user.Employee = employeeeEntity;
+
+            _mDBContext.Attach(user);
+
+            await Save();
+            await _mDBContext.Entry(user).GetDatabaseValuesAsync();
+
+            _logger.LogInformation($"Creating new User: {user.Username}");
+            return await GetUser(user.Id);
+        }
+
+            public async Task<bool> DeleteUser(long id)
         {
             var user = await _mDBContext.User.FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
@@ -46,12 +101,27 @@ namespace HumanResourcesManager.Services.UserRepo
 
         public async Task<User> GetUser(long id)
         {
-            return await _mDBContext.User.FirstOrDefaultAsync(u => u.Id == id);
+            return await FullUserQuery().FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public IQueryable<User> GetUsers()
         {
-            return _mDBContext.User;
+            return FullUserQuery();
+        }
+
+        private IQueryable<User> FullUserQuery()
+        {
+            return _mDBContext.User
+                .Include(u => u.Employee)
+                .ThenInclude(e => e.Person)
+                .ThenInclude(p => p.EmployeeAddress)
+                .Include(e => e.Employee)
+                .ThenInclude(e => e.Position)
+                .Include(e => e.Employee)
+                .ThenInclude(e => e.Department)
+                .Include(e => e.Employee)
+                .ThenInclude(e => e.EmployeePermissions)
+                .ThenInclude(ep => ep.Permission);
         }
 
         public async Task<User> PutUser(long id, User userEntity)

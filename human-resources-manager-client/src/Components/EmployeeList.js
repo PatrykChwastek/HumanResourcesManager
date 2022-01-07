@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { APIURL, DarkTextField, DarkSelect } from './GlobalComponents';
+import { DarkTextField, DarkSelect } from './GlobalComponents';
+import APIURL from '../Services/Globals'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 
@@ -270,7 +271,7 @@ const EmployList = () => {
                                             {employee.employmentDate.toString().split('T')[0]}
                                         </StyledTableCell>
                                         <StyledTableCell align="center">
-                                            <Link to={{ pathname: `/employee-details/${employee.id}` }}>
+                                            <Link to={{ pathname: `/main/employee-details/${employee.id}` }}>
                                                 <IconButton className={classes.button} size="small" aria-label="view">
                                                     <VisibilityIcon />
                                                 </IconButton>

@@ -69,9 +69,6 @@ const StyledSelectFC = withStyles({
     },
 })(FormControl);
 
-export const APIURL = 'http://localhost:5000/api/';
-export default APIURL;
-
 const useStyles = makeStyles((theme) => ({
     formControl: {
         minWidth: 138,
@@ -171,4 +168,10 @@ export const DarkChipList = ({ onChange, label, name, value, firstVal, firstLabe
             </ul>
         </div>
     );
+};
+
+export default {
+    DarkChipList,
+    DarkSelect,
+    DarkTextField
 };

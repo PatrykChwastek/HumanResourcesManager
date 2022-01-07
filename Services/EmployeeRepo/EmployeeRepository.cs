@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HumanResourcesManager.Context;
 using HumanResourcesManager.Models;
+using HumanResourcesManager.Services.UserRepo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,11 +16,13 @@ namespace HumanResourcesManager.Services.EmployeeRepo
     {
         private readonly MDBContext _mDBContext;
         private readonly ILogger<EmployeeRepository> _logger;
+        private readonly IUserRepository _userRepository;
 
-        public EmployeeRepository(MDBContext mDBContext, ILogger<EmployeeRepository> logger)
+        public EmployeeRepository(MDBContext mDBContext, ILogger<EmployeeRepository> logger, IUserRepository userRepository )
         {
             _logger = logger;
             _mDBContext = mDBContext;
+            _userRepository = userRepository;
         }
         public async Task<Employee> CreateEmployee(Employee employeeEntity)
         {
@@ -28,6 +31,7 @@ namespace HumanResourcesManager.Services.EmployeeRepo
         
             await Save();
             await _mDBContext.Entry(employeeEntity).GetDatabaseValuesAsync();
+            await _userRepository.CreateUser(employeeEntity);
             return await GetEmployee(employeeEntity.Id);
         }
 

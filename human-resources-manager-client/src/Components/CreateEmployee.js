@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { APIURL, DarkTextField, DarkSelect, DarkChipList } from './GlobalComponents';
+import { DarkTextField, DarkSelect, DarkChipList } from './GlobalComponents';
+import APIURL from '../Services/Globals'
 
 import Button from '@material-ui/core/Button';
 

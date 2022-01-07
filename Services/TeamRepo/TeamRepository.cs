@@ -1,8 +1,11 @@
 ﻿using HumanResourcesManager.Context;
+using HumanResourcesManager.Models;
 using HumanResourcesManager.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace HumanResourcesManager.Services.TeamRepo
@@ -46,17 +49,28 @@ namespace HumanResourcesManager.Services.TeamRepo
 
         public async Task<Team> GetTeam(long id)
         {
-           return await _mDBContext.Teams.FirstOrDefaultAsync(t => t.Id == id);
+            return await fullTeamQuery().FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public IQueryable<Team> GetTeams()
         {
-            return _mDBContext.Teams.Include(t => t.Members);
+            return fullTeamQuery();
         }
 
         public IQueryable<Team> GetTeams(int limit)
         {
-            return _mDBContext.Teams.Take(limit);
+            return fullTeamQuery().Take(limit);
+        }
+
+        public async Task<Team> GetTeamsByLeaderId(long leaderID)
+        {
+            return await fullTeamQuery().FirstOrDefaultAsync(t => t.TeamLeaderId == leaderID);
+        }
+
+        public async Task<Team> GetTeamsByMemberId(long memberID)
+        {
+            return await fullTeamQuery().Where(t => t.Members.Any(m => m.EmployeeId == memberID))
+                .FirstOrDefaultAsync(t => t.Id != 0);
         }
 
         public async Task<Team> PutTeam(long id, Team teamEntity)
@@ -82,11 +96,6 @@ namespace HumanResourcesManager.Services.TeamRepo
             return await GetTeam(id);
         }
 
-        private bool TeamExists(long id)
-        {
-            return _mDBContext.Permissions.Any(p => p.Id == id);
-        }
-
         public async Task<bool> Save()
         {
             _logger.LogInformation("Saving changes...");
@@ -96,6 +105,74 @@ namespace HumanResourcesManager.Services.TeamRepo
         public async Task<int> TeamsCount()
         {
             return await _mDBContext.Teams.CountAsync();
+        }
+
+        private bool TeamExists(long id)
+        {
+            return _mDBContext.Permissions.Any(p => p.Id == id);
+        }
+        // need test
+        private IQueryable<Team> FilterTeam(string search, long department, long position, bool? isremote)
+        {
+            StringBuilder whereQuery = new StringBuilder("t => t.Members.Select(e => e.Employee.Id != 0 &&");
+
+            if (department != 0)
+                whereQuery.Append("&& e.Department.Id == " + department + " ");
+
+            if (position != 0)
+                whereQuery.Append("&& e.Position.Id == " + position + " ");
+
+            if (isremote != null)
+                whereQuery.Append("&& e.RemoteWork == " + isremote + " ");
+
+            if (search != null)
+            {
+                search = search.ToLower().TrimEnd();
+                if (search.Contains(" "))
+                {
+                    string[] searchSplited = search.Split(" ");
+                    whereQuery.Append("&& e.Person.Name.ToLower().Contains(" +
+                        '"' + searchSplited[0] + '"' + ") && e.Person.Surname.ToLower().Contains(" +
+                         '"' + searchSplited[1] + '"' + ") ");
+                }
+                else
+                    whereQuery.Append("&& e.Person.Name.ToLower().Contains(" +
+                        '"' + search + '"' + ") || e.Person.Surname.ToLower().Contains(" +
+                         '"' + search + '"' + ") ");
+            }
+
+            var query = fullTeamQuery()
+            .Where(whereQuery.ToString());
+
+            return query;
+        }        
+
+        private IQueryable<Team> fullTeamQuery() {
+            return _mDBContext.Teams
+                .Include(t => t.TeamLeader)
+                .ThenInclude(e => e.Person)
+                .ThenInclude(e => e.EmployeeAddress)
+                .Include(t => t.TeamLeader)
+                .ThenInclude(e => e.Position)
+                .Include(t => t.TeamLeader)
+                .ThenInclude(e => e.Department)
+                .Include(t => t.TeamLeader)
+                .ThenInclude(e => e.EmployeePermissions)
+                .ThenInclude(ep => ep.Permission)
+                .Include(t => t.Members)
+                .ThenInclude(e => e.Employee)
+                .ThenInclude(e => e.Person)
+                .ThenInclude(e => e.EmployeeAddress)
+                .Include(t => t.Members)
+                .ThenInclude(e => e.Employee)
+                .ThenInclude(e => e.Position)
+                .Include(t => t.Members)
+                .ThenInclude(e => e.Employee)
+                .ThenInclude(e => e.Department)
+                .Include(t => t.Members)
+                .ThenInclude(e => e.Employee)
+                .ThenInclude(e => e.EmployeePermissions)
+                .ThenInclude(ep => ep.Permission);
         }
     }
 }

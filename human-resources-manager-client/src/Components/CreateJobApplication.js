@@ -1,4 +1,5 @@
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import APIURL from '../Services/Globals'
 
 const CreateJobApplication = () => {
     const [selectedFile, setSelectedFile] = useState();
@@ -20,7 +21,7 @@ const CreateJobApplication = () => {
                     { "id": 0, "city": "New York", "postCode": "11-111", "street": "str 11" }
             })
         };
-        fetch('http://localhost:5000/api/JobApplications', requestOptions)
+        fetch(APIURL + 'JobApplications', requestOptions)
             .then(response => response.json())
             .then(data => console.log(data));
     }
@@ -35,7 +36,7 @@ const CreateJobApplication = () => {
 
         formData.append('Id', 0);
         formData.append('Name', "Json");
-        formData.append('Surname', "xy");     
+        formData.append('Surname', "xy");
         formData.append('Email', "e3@gr");
         formData.append('Content', "bzdury");
         formData.append('PositionId', 1);
@@ -67,11 +68,11 @@ const CreateJobApplication = () => {
                     <p>Filename: {selectedFile.name}</p>
                     <p>Filetype: {selectedFile.type}</p>
                     <p>Size in bytes: {selectedFile.size}</p>
-                  
+
                 </div>
             ) : (
-                    <p>Select a file to show details</p>
-                )}
+                <p>Select a file to show details</p>
+            )}
             <div>
                 <button onClick={handleSubmission}>Submit</button>
             </div>

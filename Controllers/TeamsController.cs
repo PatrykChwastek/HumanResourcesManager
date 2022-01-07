@@ -8,6 +8,7 @@ using HumanResourcesManager.Services.TeamRepo;
 using AutoMapper;
 using HumanResourcesManager.Models.DTO;
 using HumanResourcesManager.Models;
+using HumanResourcesManager.MapperConf;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -18,30 +19,27 @@ namespace HumanResourcesManager.Controllers
         private readonly ITeamRepository _teamRepository;
         private readonly IMapper _mapper;
 
-        public TeamsController(ITeamRepository teamRepository, IMapper mapper)
+        public TeamsController(ITeamRepository teamRepository)
         {
             _teamRepository = teamRepository;
-            _mapper = mapper;
+            var config = new AutoMapperConfiguration().Configure();
+
+            _mapper = config.CreateMapper();
         }
 
         // GET: api/Teams
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TeamDTO>>> GetTeams(
+        public async Task<ActionResult<Pagination>> GetTeams(
             int page, int size)
         {
-            try
-            {
+
                 var teams = _teamRepository.GetTeams();
                 var mappedTeams = _mapper.Map<List<TeamDTO>>(teams);
                 var totalTeams = await _teamRepository.TeamsCount();
 
                 var pageOfTeams = new Pagination(page, size, totalTeams);
                 return Ok(await pageOfTeams.InitPagination(mappedTeams.AsQueryable()));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Server Error");
-            }
+
         }
 
         // GET: api/Teams/5
@@ -49,6 +47,32 @@ namespace HumanResourcesManager.Controllers
         public async Task<ActionResult<TeamDTO>> GetTeam(long id)
         {
             var team = await _teamRepository.GetTeam(id);
+            if (team == null)
+            {
+                return NotFound();
+            }
+            var mappedTeam = _mapper.Map<TeamDTO>(team);
+            return mappedTeam;
+        }
+
+        // GET: api/Teams/leader/1
+        [HttpGet("leader/{id}")]
+        public async Task<ActionResult<TeamDTO>> GetTeamByLeader(long id)
+        {
+            var team = await _teamRepository.GetTeamsByLeaderId(id);
+            if (team == null)
+            {
+                return NotFound();
+            }
+            var mappedTeam = _mapper.Map<TeamDTO>(team);
+            return mappedTeam;
+        }
+
+        // GET: api/Teams/member/1
+        [HttpGet("member/{id}")]
+        public async Task<ActionResult<TeamDTO>> GetTeamByMember(long id)
+        {
+            var team = await _teamRepository.GetTeamsByMemberId(id);
             if (team == null)
             {
                 return NotFound();
@@ -76,7 +100,7 @@ namespace HumanResourcesManager.Controllers
         {
             var mappedTeam = _mapper.Map<Team>(teamFromReqest);
             var team = await _teamRepository.CreateTeam(mappedTeam);
-            var teamDTO = _mapper.Map<EmployeeDTO>(team);
+            var teamDTO = _mapper.Map<TeamDTO>(team);
 
             return Created("get", teamDTO);
         }
@@ -91,7 +115,7 @@ namespace HumanResourcesManager.Controllers
                 return NoContent();
             }
 
-            return StatusCode(500, "Server Error: employee not exist");
+            return StatusCode(500, "Server Error: team not exist");
         }
     }
 }

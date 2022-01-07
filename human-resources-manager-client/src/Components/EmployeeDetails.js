@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { APIURL } from './GlobalComponents';
+import APIURL from '../Services/Globals'
 import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from "react-router-dom";
 import Chip from '@material-ui/core/Chip';

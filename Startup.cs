@@ -15,6 +15,11 @@ using HumanResourcesManager.Services.TeamRepo;
 using HumanResourcesManager.Services.SIngletonProvider;
 using HumanResourcesManager.Services.EmployeeTaskRepo;
 using HumanResourcesManager.Services.UserRepo;
+using HumanResourcesManager.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System;
 
 namespace HumanResourcesManager
 {
@@ -33,6 +38,26 @@ namespace HumanResourcesManager
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<MDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
+            var appConfig = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = "http://localhost:5000",
+                    ValidAudience = "http://localhost:5000",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfig.JWTSecret)),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
@@ -40,9 +65,16 @@ namespace HumanResourcesManager
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<ITeamRepository, TeamRepository>();
             services.AddScoped<IEmployeeTaskRepository, EmployeeTaskRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddSingleton<ISingletonProvider, SingletonProvider>();
             services.AddAutoMapper(typeof(Startup));
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -51,14 +83,11 @@ namespace HumanResourcesManager
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors(x => x
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowAnyOrigin()
-                .SetIsOriginAllowed(origin => true)
-                .AllowCredentials());
+            app.UseCors("CorsPolicy");
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

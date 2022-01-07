@@ -12,6 +12,8 @@ namespace HumanResourcesManager.Services.TeamRepo
         Task<int> TeamsCount();
         IQueryable<Team> GetTeams();
         IQueryable<Team> GetTeams(int limit);
+        Task<Team> GetTeamsByLeaderId(long leaderID);
+        Task<Team> GetTeamsByMemberId(long memberID);
         Task<Team> GetTeam(long id);
         Task<Team> CreateTeam(Team teamEntity);
         Task<Team> PutTeam(long id, Team teamEntity);

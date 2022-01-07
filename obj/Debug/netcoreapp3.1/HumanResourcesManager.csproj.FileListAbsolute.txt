@@ -164,3 +164,5 @@ C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\Aut
 C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\human-resources-manager-client\package-lock.json
 C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\human-resources-manager-client\package.json
 C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\human-resources-manager-client\public\manifest.json
+C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\Komputer\source\repos\HumanResourcesManager\bin\Debug\netcoreapp3.1\runtimes\linux-mips64\native\libe_sqlite3.so
