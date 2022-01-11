@@ -12,7 +12,6 @@ const login = (loginData) => {
                 return response.json();
             else
                 return Promise.reject();
-
         })
         .then(data => {
             localStorage.setItem("user", JSON.stringify(data))

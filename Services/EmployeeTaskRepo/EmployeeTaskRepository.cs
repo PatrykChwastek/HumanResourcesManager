@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace HumanResourcesManager.Services.EmployeeTaskRepo
@@ -45,12 +47,13 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
 
         public async Task<EmployeeTask> GetTask(long id)
         {
-            return await _mDBContext.EmployeeTask.FirstOrDefaultAsync(et => et.Id == id);
+            return await _mDBContext.EmployeeTask.Include(et => et.Subtasks).FirstOrDefaultAsync(et => et.Id == id);
         }
 
-        public IQueryable<EmployeeTask> GetTasks()
+        public IQueryable<EmployeeTask> GetTasks(
+            string taskName, long employeeId, string status, DateTime? bStartTime, DateTime? aStartTime, DateTime? bDeadline, DateTime? aDeadline)
         {
-            return _mDBContext.EmployeeTask.Include(et=>et.Subtasks);
+            return FilterTasks(taskName, employeeId, status, bStartTime, aStartTime, bDeadline, aDeadline);
         }
 
         public async Task<EmployeeTask> PutTask(long id, EmployeeTask taskEntity)
@@ -90,6 +93,76 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
         private bool EmployeeTaskExists(long id)
         {
             return _mDBContext.EmployeeTask.Any(t => t.Id == id);
+        }
+
+        private IQueryable<EmployeeTask> FilterTasks(
+            string taskName, long employeeId, string status, DateTime? bStartTime, DateTime? aStartTime, DateTime? bDeadline, DateTime? aDeadline)
+        {
+            StringBuilder whereQuery = new StringBuilder("et => et.Id != 0 ");
+
+            if (taskName != null || taskName == "")
+            {
+                taskName = taskName.ToLower().TrimEnd();
+                 whereQuery.Append("&& et.Name.ToLower().Contains(" +
+                        '"' + taskName + '"' + ") ");
+            }
+
+            if (employeeId != 0)
+                whereQuery.Append("&& et.AssignedEmployeeId == " + employeeId + " ");
+
+            if (status != null || status == "")
+                whereQuery.Append("&& et.Status.ToLower().Contains(" +
+                        '"' + status.ToLower() + '"' + ") ");
+
+            if (bStartTime != null || aStartTime != null)
+            {
+                whereQuery.Append(filderTasksBytDate(bStartTime, aStartTime, "StartDate"));
+            }
+
+            if (bDeadline !=null || aDeadline !=null)
+            {
+                whereQuery.Append(filderTasksBytDate(bDeadline, aDeadline, "Deadline"));
+            }
+
+            whereQuery.Append("&& et.ParentTaskId == null");
+            var query = _mDBContext.EmployeeTask.
+                Include(et => et.Subtasks).
+                Where(whereQuery.ToString());
+
+            return query;
+        }
+
+        private string filderTasksBytDate(DateTime? beforeDate, DateTime? afterDate, string taskDateType)
+        {
+            if (beforeDate.HasValue && afterDate.HasValue)
+            {
+                if (taskDateType == "StartDate")
+                {
+                    return "&& et.StartTime <= Convert.ToDateTime("+'"'+(DateTime)beforeDate + '"' +")" +
+                        " && et.StartTime >= Convert.ToDateTime(" + '"' + (DateTime)afterDate + '"' + ") ";
+                }
+                return "&& et.Deadline <= Convert.ToDateTime(" + '"' + (DateTime)beforeDate + '"' + ")" +
+                    " && et.Deadline >= Convert.ToDateTime(" + '"' + (DateTime)afterDate + '"' + ") ";
+            }
+
+            if (beforeDate.HasValue)
+            {
+                if (taskDateType == "StartDate")
+                {
+                  return "&& et.StartTime <= Convert.ToDateTime(" + '"' + (DateTime)beforeDate + '"' + ") ";
+                }
+                return "&& et.Deadline <=  Convert.ToDateTime(" + '"' + (DateTime)beforeDate + '"' + ") ";
+            }
+
+            if (afterDate.HasValue)
+            {
+                if (taskDateType == "StartDate")
+                {
+                    return " && et.StartTime >= Convert.ToDateTime(" + '"' + (DateTime)afterDate + '"' + ") ";
+                }
+                return "&& et.Deadline >= Convert.ToDateTime(" + '"' + (DateTime)afterDate + '"' + ") ";
+            }
+            return "";
         }
     }
 }

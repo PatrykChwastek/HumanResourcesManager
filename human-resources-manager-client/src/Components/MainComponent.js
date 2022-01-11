@@ -7,6 +7,7 @@ import CreateEmployee from './CreateEmployee';
 import { EmployeeDetails } from './EmployeeDetails';
 import LoginUser from './LoginUser';
 import TeamManager from './TeamManager';
+import UserTasks from './UserTasks';
 import { getUserAccess, logout } from '../Services/AuthService';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -87,11 +88,16 @@ const MainComponent = () => {
                         <List>
                             {userAccess.humanResources === false ? null :
                                 <Link className={classes.linkButtons} to="/main/dashboard">
-                                    <ListItem button to="/dashboard">
+                                    <ListItem button>
                                         <ListItemText primary="Dashboard" />
                                     </ListItem>
                                 </Link>
                             }
+                            <Link className={classes.linkButtons} to="/main/tasks">
+                                <ListItem button>
+                                    <ListItemText primary="My Tasks" />
+                                </ListItem>
+                            </Link>
                             {userAccess.humanResources === false ? null :
                                 <Link className={classes.linkButtons} to="/main/employees">
                                     <ListItem button>
@@ -132,6 +138,9 @@ const MainComponent = () => {
                     <Switch>
                         <Route path="/main/dashboard">
                             <Dashboard />
+                        </Route>
+                        <Route path="/main/tasks">
+                            <UserTasks />
                         </Route>
                         <Route path="/main/create-employee">
                             <CreateEmployee />

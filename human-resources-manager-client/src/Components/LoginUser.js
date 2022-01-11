@@ -49,7 +49,7 @@ const LoginUser = () => {
 
     const hendleLogin = () => {
         AuthService.login(loginData).then((data) => {
-            history.push("/main");
+            history.push("/main/tasks");
         }, e => { console.log("login error") });
     }
 

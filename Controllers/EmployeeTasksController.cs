@@ -28,10 +28,12 @@ namespace HumanResourcesManager.Controllers
         // GET: api/tasks
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeTaskDTO>>> GetEmployeeTasks(
-            int page, int size)
+            int page, int size, string name, long employeeid, string status, 
+            DateTime? b_start_time, DateTime? a_start_time, DateTime? b_deadline, DateTime? a_deadline)
         {
 
-                var employeeTasks= _employeeTaskRepository.GetTasks();
+                var employeeTasks= _employeeTaskRepository.
+                GetTasks(name, employeeid, status, b_start_time, a_start_time, b_deadline, a_deadline);
                 var mappedEmployeeTasks = _mapper.Map<List<EmployeeTaskDTO>>(employeeTasks);
                 var totalEmployeeTask = await _employeeTaskRepository.TasksCount();
 

@@ -11,8 +11,8 @@
                 "Senior"
             };
             WorkProgress= new string[] {
-                "Not Started",
-                "In Progress",
+                "Requested",
+                "In-Progress",
                 "Completed",
                 "Abandoned"
             };
