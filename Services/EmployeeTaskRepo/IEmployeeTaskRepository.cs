@@ -13,6 +13,7 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
         Task<EmployeeTask> GetTask(long id);
         Task<EmployeeTask> CreateTask(EmployeeTask taskEntity);
         Task<EmployeeTask> PutTask(long id, EmployeeTask taskEntity);
+        Task<EmployeeTask> changeTaskStatus(long id, string status);
         Task<int> TasksCount();
         Task<bool> DeleteTask(long id);
     }

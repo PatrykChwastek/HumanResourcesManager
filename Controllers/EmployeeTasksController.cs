@@ -66,6 +66,18 @@ namespace HumanResourcesManager.Controllers
             return NoContent();
         }
 
+        [HttpPut]
+        public async Task<ActionResult<EmployeeTaskDTO>> ChangeTaskStatus(long id, string status)
+        {
+            var employeeTask = await _employeeTaskRepository.changeTaskStatus(id,status);
+            if (employeeTask == null)
+            {
+                return NotFound();
+            }
+            var mappedEmployeeTask = _mapper.Map<EmployeeTaskDTO>(employeeTask);
+            return mappedEmployeeTask;
+        }
+
         [HttpPost]
         public async Task<ActionResult<EmployeeTaskDTO>> PostTask([FromBody]EmployeeTaskDTO employeeTaskFromReqest)
         {

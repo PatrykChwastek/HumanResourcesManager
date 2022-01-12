@@ -78,6 +78,21 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
             _logger.LogInformation($"EmployeeTask with ID: {id} edited");
             return await GetTask(id);
         }
+        public async Task<EmployeeTask> changeTaskStatus(long id, string status)
+        {
+            EmployeeTask task = await GetTask(id);
+            task.Status = status;
+
+            if (task.Subtasks.Count > 0)
+            {
+                foreach (var subTask in task.Subtasks)
+                {
+                    subTask.Status = status;
+                }
+            }
+
+            return await PutTask(id, task);
+        }
 
         public async Task<bool> Save()
         {
@@ -164,5 +179,6 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
             }
             return "";
         }
+
     }
 }
