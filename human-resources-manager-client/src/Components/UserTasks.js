@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '2px',
         backgroundColor: theme.palette.primary.main,
         boxShadow: theme.shadows[2],
-        width: '-webkit-fill-available',
+        width: '100%',
     },
     timeChip: {
         margin: "2px",
@@ -37,13 +37,10 @@ const useStyles = makeStyles((theme) => ({
 
 const UserTasks = () => {
     const classes = useStyles();
+    const [expandedTask, setExpandedTask] = useState('');
+    const [expandedSubTask, setExpandedSubTask] = useState('');
     const [columns, setColumns] = useState({
-        ['completed']: {
-            columnId: "completed",
-            name: "Completed",
-            statusName: "Completed",
-            items: []
-        },
+
         ['requested']: {
             columnId: "requested",
             name: "Requested",
@@ -54,6 +51,12 @@ const UserTasks = () => {
             columnId: "inprogress",
             name: "In Progress",
             statusName: "In-Progress",
+            items: []
+        },
+        ['completed']: {
+            columnId: "completed",
+            name: "Completed",
+            statusName: "Completed",
             items: []
         }
     });
@@ -168,6 +171,14 @@ const UserTasks = () => {
         }
     };
 
+    const handleTaskExpand = (taskId) => (event, newExpanded) => {
+        setExpandedTask(newExpanded ? taskId : false);
+    }
+    const handleSubTaskExpand = (taskId) => (event, newExpanded) => {
+        setExpandedSubTask(newExpanded ? taskId : false);
+
+    }
+
     return (
         <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
             <DragDropContext
@@ -206,7 +217,10 @@ const UserTasks = () => {
                                                     >
                                                         {(provided, snapshot) => {
                                                             return (
-                                                                <Accordion ref={provided.innerRef}
+                                                                <Accordion
+                                                                    expanded={expandedTask === item.id}
+                                                                    onChange={handleTaskExpand(item.id)}
+                                                                    ref={provided.innerRef}
                                                                     {...provided.draggableProps}
                                                                     {...provided.dragHandleProps}
                                                                     style={{
@@ -223,6 +237,7 @@ const UserTasks = () => {
                                                                         ...provided.draggableProps.style
                                                                     }}
                                                                 >
+
                                                                     <AccordionSummary
                                                                         expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
                                                                         style={{ padding: '8px' }}
@@ -275,6 +290,8 @@ const UserTasks = () => {
                                                                                 {item.subtasks.map((subtask) => {
                                                                                     return (
                                                                                         <Accordion
+                                                                                            expanded={expandedSubTask === subtask.id}
+                                                                                            onChange={handleSubTaskExpand(subtask.id)}
                                                                                             key={subtask.id}
                                                                                             style={{
                                                                                                 backgroundColor:
