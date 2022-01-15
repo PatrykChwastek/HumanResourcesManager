@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
-import { DarkTextField } from './GlobalComponents';
-import AuthService from '../Services/AuthService'
+import { DarkTextField } from '../GlobalComponents';
+import AuthService from '../../Services/AuthService'
 import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
@@ -49,13 +49,13 @@ const LoginUser = () => {
 
     const hendleLogin = () => {
         AuthService.login(loginData).then((data) => {
-            history.push("/main/tasks");
+            history.push("/main/tasks-columns");
         }, e => { console.log("login error") });
     }
 
     return (
         <div className={classes.mainConteiner}>
-            <div boxShadow={2} className={classes.title}>
+            <div boxshadow={2} className={classes.title}>
                 <h2 >Login</h2>
             </div>
             <form className={classes.root} noValidate autoComplete="off">

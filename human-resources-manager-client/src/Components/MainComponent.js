@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link, useHistory } from "react-router-dom";
-import EmployeeList from './EmployeeList';
-import Dashboard from './Dashboard';
-import CreateJobApplication from './CreateJobApplication';
-import CreateEmployee from './CreateEmployee';
-import { EmployeeDetails } from './EmployeeDetails';
-import LoginUser from './LoginUser';
-import TeamManager from './TeamManager';
-import UserTasks from './UserTasks';
+import EmployeeList from './Employees/EmployeeList';
+import HR_Dashboard from './Employees/HR_Dashboard';
+import CreateJobApplication from './JobApplication/CreateJobApplication';
+import CreateEmployee from './Employees/CreateEmployee';
+import { EmployeeDetails } from './Employees/EmployeeDetails';
+import LoginUser from './Users/LoginUser';
+import TeamManager from './Teams/TeamManager';
+import TasksColumns from './Tasks/TasksColumns';
 import { getUserAccess, logout } from '../Services/AuthService';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -93,7 +93,7 @@ const MainComponent = () => {
                                     </ListItem>
                                 </Link>
                             }
-                            <Link className={classes.linkButtons} to="/main/tasks">
+                            <Link className={classes.linkButtons} to="/main/tasks-columns">
                                 <ListItem button>
                                     <ListItemText primary="My Tasks" />
                                 </ListItem>
@@ -137,10 +137,10 @@ const MainComponent = () => {
                 <main className={classes.content}>
                     <Switch>
                         <Route path="/main/dashboard">
-                            <Dashboard />
+                            <HR_Dashboard />
                         </Route>
-                        <Route path="/main/tasks">
-                            <UserTasks />
+                        <Route path="/main/tasks-columns">
+                            <TasksColumns />
                         </Route>
                         <Route path="/main/create-employee">
                             <CreateEmployee />

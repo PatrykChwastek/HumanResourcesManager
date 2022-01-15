@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import APIURL from '../Services/Globals';
-import { getCurrentUser } from '../Services/AuthService';
+import APIURL from '../../Services/Globals';
+import { getCurrentUser } from '../../Services/AuthService';
 
 import moment from "moment";
 
@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const UserTasks = () => {
+const TasksColumns = () => {
     const classes = useStyles();
     const [expandedTask, setExpandedTask] = useState('');
     const [expandedSubTask, setExpandedSubTask] = useState('');
@@ -435,4 +435,4 @@ const UserTasks = () => {
         </div>
     );
 }
-export default UserTasks;
+export default TasksColumns;

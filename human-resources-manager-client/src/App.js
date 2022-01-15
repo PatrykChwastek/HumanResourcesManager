@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { createTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 
-import LoginUser from './Components/LoginUser';
+import LoginUser from './Components/Users/LoginUser';
 import MainComponent from './Components/MainComponent';
 import StartPage from './Components/StartPage';
 

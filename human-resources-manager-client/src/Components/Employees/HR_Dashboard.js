@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import APIURL from '../Services/Globals'
+import APIURL from '../../Services/Globals'
 import { Link } from "react-router-dom";
 
 import Table from '@material-ui/core/Table';
@@ -96,7 +96,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Dashboard = () => {
+const HR_Dashboard = () => {
     const classes = useStyles();
     const [employees, setEmployees] = useState([]);
     const [stats, setStats] = useState();
@@ -255,4 +255,4 @@ const Dashboard = () => {
         </div>
     );
 }
-export default Dashboard;
+export default HR_Dashboard;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { DarkTextField, DarkSelect } from './GlobalComponents';
-import APIURL from '../Services/Globals'
+import { DarkTextField, DarkSelect } from '../GlobalComponents';
+import APIURL from '../../Services/Globals'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 

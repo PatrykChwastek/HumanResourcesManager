@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import APIURL from '../Services/Globals'
+import APIURL from '../../Services/Globals'
 
 const CreateJobApplication = () => {
     const [selectedFile, setSelectedFile] = useState();
