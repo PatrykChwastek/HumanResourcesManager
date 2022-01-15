@@ -16,6 +16,26 @@ import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Toolbar from '@material-ui/core/Toolbar';
 
 const useStyles = makeStyles((theme) => ({
+    taskTabContainer: {
+        margin: '0 auto',
+        width: 'max-content'
+    },
+    filterBox: {
+        padding: ".1rem",
+        paddingLeft: "1.8rem",
+        paddingRight: "1.8rem",
+        borderRadius: '4px',
+        marginLeft: '8px',
+        width: "max-content",
+        background: theme.palette.grey[800],
+        boxShadow:
+            "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)",
+    },
+    whiteText: {
+        color: "white",
+        marginLeft: "0px",
+        marginRight: "8px",
+    },
     column: {
         margin: "8px",
         display: "flex",
@@ -31,6 +51,14 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: theme.shadows[2],
         width: '100%',
     },
+    chipContainer: {
+        display: "flex",
+        flexDirection: "row",
+        alignContent: 'space-around',
+        alignItems: 'stretch',
+        flexwrap: 'nowrap',
+        justifyContent: 'space-evenly'
+    },
     timeChip: {
         margin: "2px",
         boxShadow: theme.shadows[2],
@@ -38,20 +66,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: "550"
 
     },
-    filterBox: {
-        padding: ".1rem",
-        paddingLeft: "1.8rem",
-        paddingRight: "1.8rem",
-        width: "max-content",
-        background: theme.palette.grey[800],
-        boxShadow:
-            "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)",
-    },
-    whiteText: {
-        color: "white",
-        marginLeft: "0px",
-        marginRight: "8px",
-    },
+
 }));
 
 const UserTasks = () => {
@@ -235,7 +250,7 @@ const UserTasks = () => {
     }
 
     return (
-        <div>
+        <div className={classes.taskTabContainer}>
             <Toolbar className={classes.filterBox}>
                 <h3 className={classes.whiteText}>Tasks From: </h3>
 
@@ -284,8 +299,14 @@ const UserTasks = () => {
                                                         : "#424242",
                                                     padding: "10px",
                                                     paddingBottom: "0",
-                                                    minWidth: "300px",
-                                                    minHeight: "300px"
+                                                    width: "400px",
+                                                    hight: "410px",
+                                                    maxHeight: "410px",
+                                                    minHeight: "410px",
+                                                    overflowY: 'scroll',
+                                                    WebkitScrollbarButton: {
+                                                        height: '100%',
+                                                    }
                                                 }}
                                             >
                                                 {column.items.map((item, index) => {
@@ -331,14 +352,7 @@ const UserTasks = () => {
                                                                             flexDirection: 'column',
                                                                             padding: '0px',
                                                                         }}>
-                                                                            <div style={{
-                                                                                display: "flex",
-                                                                                flexDirection: "row",
-                                                                                alignContent: 'space-around',
-                                                                                alignItems: 'stretch',
-                                                                                flexwrap: 'nowrap',
-                                                                                justifyContent: 'space-evenly'
-                                                                            }}>
+                                                                            <div className={classes.chipContainer}>
                                                                                 <Chip
                                                                                     className={classes.timeChip}
                                                                                     label={"Start: " + item.startTime.toString().split('T')[0]}
