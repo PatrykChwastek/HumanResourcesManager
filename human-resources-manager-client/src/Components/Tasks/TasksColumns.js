@@ -290,10 +290,10 @@ const TasksColumns = () => {
                                                                             userSelect: "none",
                                                                             backgroundColor:
                                                                                 item.status === "In-Progress"
-                                                                                    ? "rgb(93 135 230)"
+                                                                                    ? "rgb(56 81 216)"
                                                                                     : item.status === "Requested"
-                                                                                        ? "rgb(255 188 0)"
-                                                                                        : "rgb(3 189 0)",
+                                                                                        ? "rgb(231 170 35)"
+                                                                                        : "rgb(0 158 7)",
                                                                             color: "black",
                                                                             borderRadius: '4px',
                                                                             marginBottom: '4px',

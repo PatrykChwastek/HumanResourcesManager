@@ -1,12 +1,21 @@
 import APIURL from './Globals'
 
 export const getTasks = async (page, size, employeeid, bStartTime, aStartTime) => {
+    let getTasksUrl = `tasks?page=${page}&size=${size}&employeeid=${employeeid}`;
+
+    if (bStartTime !== undefined) {
+        getTasksUrl += `&b_start_time=${bStartTime}`
+    };
+
+    if (aStartTime !== undefined) {
+        getTasksUrl += `&a_start_time=${aStartTime}`
+    };
+
     const requestOptions = {
         method: 'Get',
         headers: { 'Content-Type': 'application/json' }
     };
-    return await fetch(APIURL +
-        `tasks?page=${page}&size=${size}&employeeid=${employeeid}&b_start_time=${bStartTime}&a_start_time=${aStartTime}`,
+    return await fetch(APIURL + getTasksUrl,
         requestOptions
     ).then((response) => {
         if (response.ok)
