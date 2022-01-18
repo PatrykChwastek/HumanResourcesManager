@@ -9,6 +9,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import { Accordion, AccordionSummary, AccordionDetails, Chip } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
@@ -66,13 +67,29 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: "550"
 
     },
+    subtaskAccordion: {
+        backgroundColor: '#bdbdbd',
+        color: "black",
+        marginTop: "8px",
+        marginBottom: '4px',
+        borderRadius: '4px',
+        padding: '0px',
+        '&::before': {
+            height: 0
+        }
+    },
+    buttonSection: {
+        display: 'grid',
+        padding: '16px',
+        marginTop: 'auto',
+    },
 }));
 
 const TasksList = () => {
     const classes = useStyles();
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [tasks, setTasks] = useState([]);
-
+    const [expandedSubTask, setExpandedSubTask] = useState('');
 
     useEffect(() => {
         getTasks(1, 10, 12).then((data) => {
@@ -84,15 +101,22 @@ const TasksList = () => {
         setSelectedIndex(index);
     };
 
+    const handleSubTaskExpand = (taskId) => (event, newExpanded) => {
+        setExpandedSubTask(newExpanded ? taskId : false);
+    }
+
+    const hendleChangeStatus = () => {
+    }
+
     return (
         <div >
             {tasks.length === 0 ? null :
                 <div className={classes.tasksContainer}>
                     <List component="nav" className={classes.listComponent}>
                         {tasks.map((task, index) => (
-                            <div>
+                            <div key={task.id}>
                                 <ListItem
-                                    key={task.id}
+
                                     button
                                     selected={selectedIndex === index}
                                     onClick={(event) => handleListItemClick(event, index)}
@@ -116,7 +140,8 @@ const TasksList = () => {
                                     />
 
                                 </ListItem>
-                                <Divider variant="inset" style={{ width: "100%", margin: "0" }} /></div>
+                                <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
+                            </div>
                         ))
                         }
                     </List>
@@ -149,7 +174,8 @@ const TasksList = () => {
                                 }}
                             />
                         </div>
-                        <CardContent>
+                        <CardContent style={{ paddingTop: 0 }}>
+                            <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0", marginTop: '2px' }} />
                             <div className={classes.chipContainer}>
                                 <Chip
                                     className={classes.timeChip}
@@ -162,12 +188,51 @@ const TasksList = () => {
                                     color="primary"
                                 />
                             </div>
-                        </CardContent>
+                            <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
 
+                            <Typography variant="subtitle1">
+                                {tasks[selectedIndex].description}
+                            </Typography>
+                            <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
+
+                            <Typography noWrap variant="subtitle1">
+                                Subtasks:
+                            </Typography>
+
+                            {tasks[selectedIndex].subtasks.map((subtask, index) => (
+                                <Accordion
+                                    expanded={expandedSubTask === subtask.id}
+                                    onChange={handleSubTaskExpand(subtask.id)}
+                                    key={subtask.id}
+                                    className={classes.subtaskAccordion}
+                                >
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
+                                    >
+                                        <Typography>
+                                            {subtask.name}
+                                        </Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        {subtask.description}
+                                    </AccordionDetails>
+                                </Accordion>
+                            ))}
+
+                        </CardContent>                            <div className={classes.buttonSection}>
+                            <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
+
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={hendleChangeStatus}
+                            >Task Completed
+                            </Button>
+                        </div>
                     </Card>
                 </div>
             }
-        </div>
+        </div >
     );
 }
 export default TasksList;
