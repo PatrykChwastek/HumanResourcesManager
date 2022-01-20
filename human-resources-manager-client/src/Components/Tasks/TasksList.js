@@ -3,7 +3,7 @@ import APIURL from '../../Services/Globals';
 import { getCurrentUser } from '../../Services/AuthService';
 import moment from "moment";
 import { makeStyles } from '@material-ui/core/styles';
-import { getTasks } from "../../Services/TasksService";
+import { getTasks, changeTaskStatus } from "../../Services/TasksService";
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -15,8 +15,15 @@ import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
 import Divider from '@material-ui/core/Divider';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
 
 const useStyles = makeStyles((theme) => ({
     tasksContainer: {
@@ -82,20 +89,34 @@ const useStyles = makeStyles((theme) => ({
         display: 'grid',
         padding: '16px',
         marginTop: 'auto',
+        justifyItems: 'center',
+        "& .MuiButton-label": {
+            paddingLeft: '4px',
+            paddingRight: '4px',
+        }
     },
 }));
 
+const taskStatusAll = ['Completed', 'Requested', 'In-Progress'];
+const allowedStatuses = taskStatusAll;
 const TasksList = () => {
     const classes = useStyles();
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [tasks, setTasks] = useState([]);
     const [expandedSubTask, setExpandedSubTask] = useState('');
+    const [openStatusSel, setOpenStatusSel] = useState(false);
+    const [statusSelIndex, setStatusSelIndex] = React.useState(1);
+    const anchorRef = React.useRef(null);
 
     useEffect(() => {
+        loadTasksList()
+    }, []);
+
+    const loadTasksList = () => {
         getTasks(1, 10, 12).then((data) => {
             setTasks(data.items)
         })
-    }, []);
+    }
 
     const handleListItemClick = (event, index) => {
         setSelectedIndex(index);
@@ -106,8 +127,43 @@ const TasksList = () => {
     }
 
     const hendleChangeStatus = () => {
+        changeTaskStatus(tasks[selectedIndex].id, allowedStatuses[statusSelIndex])
+            .then((d) => { loadTasksList() },
+                e => { console.log("status change error") });
     }
 
+    const handleMenuItemClick = (event, index) => {
+        setStatusSelIndex(index);
+        setOpenStatusSel(false);
+    };
+
+    const handleStatSellToggle = () => {
+        setOpenStatusSel((prevOpen) => !prevOpen);
+    };
+
+    const handleStatSellClose = (event) => {
+        if (anchorRef.current && anchorRef.current.contains(event.target)) {
+            return;
+        }
+
+        setOpenStatusSel(false);
+    };
+
+    const changeCipColor = (status) => {
+        return {
+            boxShadow: 'rgb(0 0 0 / 20%) 0px 0px 1px -2px, rgb(0 0 0 / 14%) 0px 1px 2px 0px, rgb(0 0 0 / 12%) 0px 0px 5px 0px',
+            fontSize: "12px",
+            fontWeight: "550",
+            padding: "5px",
+            minWidth: '92px',
+            color: status === "In-Progress" ? "white" : "black",
+            background: status === "In-Progress"
+                ? "rgb(56 81 216)"
+                : status === "Requested"
+                    ? "rgb(231 170 35)"
+                    : "rgb(0 158 7)",
+        }
+    }
     return (
         <div >
             {tasks.length === 0 ? null :
@@ -124,19 +180,7 @@ const TasksList = () => {
                                     <ListItemText primary={task.name} />
                                     <Chip
                                         label={task.status}
-                                        style={{
-                                            boxShadow: 'rgb(0 0 0 / 20%) 0px 0px 1px -2px, rgb(0 0 0 / 14%) 0px 1px 2px 0px, rgb(0 0 0 / 12%) 0px 0px 5px 0px',
-                                            fontSize: "12px",
-                                            fontWeight: "550",
-                                            padding: "5px",
-                                            minWidth: '92px',
-                                            color: task.status === "In-Progress" ? "white" : "black",
-                                            background: task.status === "In-Progress"
-                                                ? "rgb(56 81 216)"
-                                                : task.status === "Requested"
-                                                    ? "rgb(231 170 35)"
-                                                    : "rgb(0 158 7)",
-                                        }}
+                                        style={changeCipColor(task.status)}
                                     />
 
                                 </ListItem>
@@ -219,15 +263,51 @@ const TasksList = () => {
                                 </Accordion>
                             ))}
 
-                        </CardContent>                            <div className={classes.buttonSection}>
+                        </CardContent>
+                        <div className={classes.buttonSection}>
                             <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
+                            <ButtonGroup variant="contained" color="primary" ref={anchorRef}>
+                                <Button onClick={hendleChangeStatus}>{allowedStatuses[statusSelIndex]}</Button>
+                                <Button
+                                    color="primary"
+                                    size="small"
+                                    aria-controls={openStatusSel ? 'split-button-menu' : undefined}
+                                    aria-expanded={openStatusSel ? 'true' : undefined}
+                                    aria-label="select merge strategy"
+                                    aria-haspopup="menu"
+                                    onClick={handleStatSellToggle}
+                                >
+                                    <ArrowDropDownIcon />
+                                </Button>
+                            </ButtonGroup>
+                            <Popper open={openStatusSel} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                                {({ TransitionProps, placement }) => (
+                                    <Grow
+                                        {...TransitionProps}
+                                        style={{
+                                            transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                                        }}
+                                    >
+                                        <Paper>
+                                            <ClickAwayListener onClickAway={handleStatSellClose}>
+                                                <MenuList id="split-button-menu">
+                                                    {allowedStatuses.map((option, index) => (
+                                                        <MenuItem
+                                                            key={option}
+                                                            //  disabled={index === 2}
+                                                            selected={index === statusSelIndex}
+                                                            onClick={(event) => handleMenuItemClick(event, index)}
+                                                        >
+                                                            {option}
+                                                        </MenuItem>
+                                                    ))}
+                                                </MenuList>
+                                            </ClickAwayListener>
+                                        </Paper>
+                                    </Grow>
+                                )}
+                            </Popper>
 
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={hendleChangeStatus}
-                            >Task Completed
-                            </Button>
                         </div>
                     </Card>
                 </div>

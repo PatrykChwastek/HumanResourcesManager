@@ -64,9 +64,7 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: theme.shadows[2],
         fontSize: "11px",
         fontWeight: "550"
-
     },
-
 }));
 
 const TasksColumns = () => {
@@ -332,8 +330,6 @@ const TasksColumns = () => {
                                                                             >
                                                                                 {item.description}
                                                                             </Typography>
-
-
                                                                             {item.subtasks.length === 0 ? null :
                                                                                 <div style={{
                                                                                     paddingLeft: '8px',
