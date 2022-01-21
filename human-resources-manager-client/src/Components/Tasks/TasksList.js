@@ -24,33 +24,53 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
+import Pagination from '@material-ui/lab/Pagination';
+
 
 const useStyles = makeStyles((theme) => ({
     tasksContainer: {
         margin: '0 auto',
         display: 'flex',
         flexDirection: 'row',
+        justifyContent: 'center'
     },
     listComponent: {
+        margin: '8px',
         width: '100%',
-        maxWidth: 360,
+        paddingTop: 0,
         backgroundColor: theme.palette.background.paper,
         color: 'white',
         boxShadow: theme.shadows[2],
-        borderRadius: '3px'
+        borderRadius: '4px',
+        display: "flex",
+        flexDirection: 'column',
+    },
+    pagination: {
+        display: 'grid',
+        padding: '8px',
+        marginTop: 'auto',
+        "& .Mui-selected": {
+            color: 'white',
+            backgroundColor: 'rgb(63 81 181 / 80%)',
+        },
+        "& .MuiPaginationItem-outlined": {
+            boxShadow: theme.shadows[2],
+            border: '1px solid rgb(149 149 149 / 23%)'
+        }
     },
     tasksDetailsCol: {
         margin: "8px",
+        width: '100%',
         display: "flex",
         flexDirection: "column",
     },
     title: {
         color: theme.palette.text.primary,
         textAlign: 'center',
-        padding: '8px',
-        marginBottom: '2px',
+        padding: '6px 0',
         backgroundColor: theme.palette.primary.main,
         boxShadow: theme.shadows[2],
+        borderRadius: '3px 3px 0 0',
         width: '100%',
     },
     statusContainer: {
@@ -101,20 +121,32 @@ const taskStatusAll = ['Completed', 'Requested', 'In-Progress'];
 const allowedStatuses = taskStatusAll;
 const TasksList = () => {
     const classes = useStyles();
+    const anchorRef = React.useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [tasks, setTasks] = useState([]);
     const [expandedSubTask, setExpandedSubTask] = useState('');
     const [openStatusSel, setOpenStatusSel] = useState(false);
-    const [statusSelIndex, setStatusSelIndex] = React.useState(1);
-    const anchorRef = React.useRef(null);
+    const [statusSelIndex, setStatusSelIndex] = useState(1);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        size: 10,
+        totalPages: 1,
+        totalItems: 0
+    });
 
     useEffect(() => {
-        loadTasksList()
+        loadTasksList(pagination.page, pagination.size);
     }, []);
 
-    const loadTasksList = () => {
-        getTasks(1, 10, 12).then((data) => {
-            setTasks(data.items)
+    const loadTasksList = (page, size) => {
+        getTasks(page, size, 12).then((data) => {
+            setPagination({
+                page: page,
+                size: size,
+                totalPages: data.totalPages - 1,
+                totalItems: data.totalItems,
+            })
+            setTasks(data.items);
         })
     }
 
@@ -122,13 +154,16 @@ const TasksList = () => {
         setSelectedIndex(index);
     };
 
+    const handlePageChange = (event, value) => {
+        loadTasksList(value, pagination.size);
+    };
     const handleSubTaskExpand = (taskId) => (event, newExpanded) => {
         setExpandedSubTask(newExpanded ? taskId : false);
     }
 
     const hendleChangeStatus = () => {
         changeTaskStatus(tasks[selectedIndex].id, allowedStatuses[statusSelIndex])
-            .then((d) => { loadTasksList() },
+            .then((d) => { loadTasksList(pagination.page, pagination.size) },
                 e => { console.log("status change error") });
     }
 
@@ -169,6 +204,11 @@ const TasksList = () => {
             {tasks.length === 0 ? null :
                 <div className={classes.tasksContainer}>
                     <List component="nav" className={classes.listComponent}>
+                        <div className={classes.title}>
+                            <Typography variant="h6">
+                                List of Tasks:
+                            </Typography>
+                        </div>
                         {tasks.map((task, index) => (
                             <div key={task.id}>
                                 <ListItem
@@ -188,6 +228,13 @@ const TasksList = () => {
                             </div>
                         ))
                         }
+                        <Pagination
+                            className={classes.pagination}
+                            count={pagination.totalPages}
+                            page={pagination.page}
+                            onChange={handlePageChange}
+                            variant="outlined"
+                        />
                     </List>
                     <Card className={classes.tasksDetailsCol}>
                         <div className={classes.title}>
