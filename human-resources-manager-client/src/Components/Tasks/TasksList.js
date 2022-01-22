@@ -4,6 +4,7 @@ import { getCurrentUser } from '../../Services/AuthService';
 import moment from "moment";
 import { makeStyles } from '@material-ui/core/styles';
 import { getTasks, changeTaskStatus } from "../../Services/TasksService";
+import { DarkTextField, DarkSelect } from '../GlobalComponents';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -25,9 +26,63 @@ import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import Pagination from '@material-ui/lab/Pagination';
-
+import Toolbar from '@material-ui/core/Toolbar';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import MomentUtils from "@date-io/moment";
+import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = makeStyles((theme) => ({
+    filterBox: {
+        padding: ".1rem",
+        paddingLeft: "1.1rem",
+        paddingRight: "1.1rem",
+        borderRadius: '4px',
+        marginLeft: '8px',
+        width: "max-content",
+        background: theme.palette.grey[800],
+        boxShadow:
+            "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)",
+        "& .MuiAccordion-root": {
+            margin: "0px",
+            color: "black",
+            backgroundColor: '#bdbdbd',
+            borderRadius: "4px",
+            width: '243px',
+            boxShadow:
+                "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)",
+            '&:before': {
+                display: 'none',
+            },
+        },
+        "& .MuiAccordionSummary-root": {
+            minHeight: "36px",
+            maxHeight: "36px"
+        },
+        "& .MuiCollapse-root": {
+            position: "absolute",
+            top: "30px",
+            paddingTop: "20px",
+            backgroundColor: '#bdbdbd',
+            zIndex: '1',
+            borderRadius: "4px",
+            boxShadow:
+                "-1px 2px 1px 0px rgb(0 0 0 / 20%), -2px 3px 3px 0px rgb(0 0 0 / 35%), 1px 2px 1px 1px rgb(0 0 0 / 30%)",
+        },
+        "& .MuiAccordionDetails-root": {
+            flexWrap: 'wrap'
+        }
+    },
+    filterDate: {
+        padding: '0 6px',
+        margin: '3px',
+        display: 'flex',
+        width: '190px'
+    },
+    whiteText: {
+        color: "white",
+        margin: "0px",
+        marginRight: "8px",
+    },
     tasksContainer: {
         margin: '0 auto',
         display: 'flex',
@@ -116,8 +171,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
 }));
-
-const taskStatusAll = ['Completed', 'Requested', 'In-Progress'];
+const taskStatusAll = [{ id: 1, name: 'Completed' }, { id: 2, name: 'Requested' }, { id: 3, name: 'In-Progress' }];
 const allowedStatuses = taskStatusAll;
 const TasksList = () => {
     const classes = useStyles();
@@ -130,24 +184,106 @@ const TasksList = () => {
     const [pagination, setPagination] = useState({
         page: 1,
         size: 10,
-        totalPages: 1,
-        totalItems: 0
+        totalPages: 1
+    });
+    const [filterParams, setFilterParams] = useState({
+        name: "",
+        status: undefined,
+        isBStartTime: false,
+        bStartTime: undefined,
+        isAStartTime: false,
+        aStartTime: undefined,
+        isBDeadline: false,
+        bDeadline: undefined,
+        isADeadline: false,
+        aDeadline: undefined
     });
 
     useEffect(() => {
-        loadTasksList(pagination.page, pagination.size);
+        loadTasksList(
+            pagination.page,
+            pagination.size);
     }, []);
 
     const loadTasksList = (page, size) => {
-        getTasks(page, size, 12).then((data) => {
+        getTasks(
+            page, size, 12,
+            filterParams.name,
+            filterParams.status,
+            filterParams.bStartTime,
+            filterParams.aStartTime,
+            filterParams.bDeadline,
+            filterParams.aDeadline
+        ).then((data) => {
             setPagination({
                 page: page,
                 size: size,
                 totalPages: data.totalPages - 1,
-                totalItems: data.totalItems,
             })
             setTasks(data.items);
         })
+    }
+
+    const handleChangeFilterParams = e => {
+        if (e.target.name === 'statusSel') {
+            setFilterParams({
+                ...filterParams,
+                status: e.target.value.name
+            })
+        }
+        if (e.target.name === 'taskName') {
+            setFilterParams({
+                ...filterParams,
+                name: e.target.value
+            })
+        }
+        if (e.target.type === "checkbox") {
+            const today = moment().format('yyy-MM-DD');
+            switch (e.target.name) {
+                case 'isBStartTime':
+                    setFilterParams({
+                        ...filterParams,
+                        isBStartTime: e.target.checked,
+                        bStartTime: e.target.checked === false ? undefined :
+                            filterParams.bStartTime === undefined ? today :
+                                filterParams.bStartTime
+                    });
+                    break;
+                case 'isAStartTime':
+                    setFilterParams({
+                        ...filterParams,
+                        isAStartTime: e.target.checked,
+                        aStartTime: e.target.checked === false ? undefined :
+                            filterParams.aStartTime === undefined ? today :
+                                filterParams.aStartTime
+                    });
+                    break;
+                case 'isBDeadline':
+                    setFilterParams({
+                        ...filterParams,
+                        isBDeadline: e.target.checked,
+                        bDeadline: e.target.checked === false ? undefined :
+                            filterParams.bDeadline === undefined ? today :
+                                filterParams.bDeadline
+                    });
+                    break;
+                case 'isADeadline':
+                    setFilterParams({
+                        ...filterParams,
+                        isADeadline: e.target.checked,
+                        aDeadline: e.target.checked === false ? undefined :
+                            filterParams.aDeadline === undefined ? today :
+                                filterParams.aDeadline
+                    });
+                    break;
+            }
+        }
+
+    }
+
+    const handleApplyFilters = () => {
+        console.log(filterParams);
+        loadTasksList(pagination.page, pagination.size)
     }
 
     const handleListItemClick = (event, index) => {
@@ -162,7 +298,7 @@ const TasksList = () => {
     }
 
     const hendleChangeStatus = () => {
-        changeTaskStatus(tasks[selectedIndex].id, allowedStatuses[statusSelIndex])
+        changeTaskStatus(tasks[selectedIndex].id, allowedStatuses[statusSelIndex].name)
             .then((d) => { loadTasksList(pagination.page, pagination.size) },
                 e => { console.log("status change error") });
     }
@@ -201,6 +337,158 @@ const TasksList = () => {
     }
     return (
         <div >
+            <Toolbar className={classes.filterBox}>
+                <h3 className={classes.whiteText}>Tasks From: </h3>
+                <DarkTextField
+                    onChange={handleChangeFilterParams}
+                    label='Task Name...'
+                    name='taskName'
+                />
+                <DarkSelect
+                    label="Status"
+                    name="statusSel"
+                    collection={allowedStatuses}
+                    firstVal={{ id: 0, name: 'All' }}
+                    onChange={handleChangeFilterParams}
+                />
+                <Accordion>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
+                    >
+                        <Typography>
+                            Select Task by Date
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Card className={classes.filterDate}>
+                            <Checkbox
+                                color="secondary"
+                                name="isBStartTime"
+                                checked={filterParams.isBStartTime}
+                                onChange={handleChangeFilterParams}
+                            />
+                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                <KeyboardDatePicker
+                                    disableToolbar
+                                    name="bStartTime"
+                                    variant="inline"
+                                    format="yyyy-MM-DD"
+                                    margin="normal"
+                                    id="date-picker-inline"
+                                    label="Before Start Time:"
+                                    value={filterParams.bStartTime}
+                                    onChange={(date) => {
+                                        setFilterParams({
+                                            ...filterParams,
+                                            isBStartTime: true,
+                                            bStartTime: date.format('yyyy-MM-DD'),
+                                        })
+                                    }}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Card>
+                        <Card className={classes.filterDate}>
+                            <Checkbox
+                                color="secondary"
+                                name="isAStartTime"
+                                checked={filterParams.isAStartTime}
+                                onChange={handleChangeFilterParams}
+                            />
+                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                <KeyboardDatePicker
+                                    disableToolbar
+                                    name="datePicker"
+                                    variant="inline"
+                                    format="yyyy-MM-DD"
+                                    margin="normal"
+                                    id="date-picker-inline"
+                                    label="After Start Time:"
+                                    value={filterParams.aStartTime}
+                                    onChange={(date) => {
+                                        setFilterParams({
+                                            ...filterParams,
+                                            isAStartTime: true,
+                                            aStartTime: date.format('yyyy-MM-DD'),
+                                        })
+                                    }}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Card>
+                        <Card className={classes.filterDate}>
+                            <Checkbox
+                                color="secondary"
+                                name="isBDeadline"
+                                checked={filterParams.isBDeadline}
+                                onChange={handleChangeFilterParams}
+                            />
+                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                <KeyboardDatePicker
+                                    disableToolbar
+                                    name="datePicker"
+                                    variant="inline"
+                                    format="yyyy-MM-DD"
+                                    margin="normal"
+                                    id="date-picker-inline"
+                                    label="Before Deadline:"
+                                    value={filterParams.bDeadline}
+                                    onChange={(date) => {
+                                        setFilterParams({
+                                            ...filterParams,
+                                            isBDeadline: true,
+                                            bDeadline: date.format('yyyy-MM-DD'),
+                                        })
+                                    }}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Card>
+                        <Card className={classes.filterDate}>
+                            <Checkbox
+                                color="secondary"
+                                name="isADeadline"
+                                checked={filterParams.isADeadline}
+                                onChange={handleChangeFilterParams}
+                            />
+                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                <KeyboardDatePicker
+                                    disableToolbar
+                                    name="datePicker"
+                                    variant="inline"
+                                    format="yyyy-MM-DD"
+                                    margin="normal"
+                                    id="date-picker-inline"
+                                    label="After Deadline:"
+                                    value={filterParams.aDeadline}
+                                    onChange={(date) => {
+                                        setFilterParams({
+                                            ...filterParams,
+                                            isADeadline: true,
+                                            aDeadline: date.format('yyyy-MM-DD'),
+                                        })
+                                    }}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </Card>
+                    </AccordionDetails>
+                </Accordion>
+                <Button
+                    style={{ marginLeft: '15px' }}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleApplyFilters}
+                >Submit</Button>
+            </Toolbar>
             {tasks.length === 0 ? null :
                 <div className={classes.tasksContainer}>
                     <List component="nav" className={classes.listComponent}>
@@ -284,37 +572,40 @@ const TasksList = () => {
                             <Typography variant="subtitle1">
                                 {tasks[selectedIndex].description}
                             </Typography>
-                            <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
+                            {tasks[selectedIndex].subtasks.length < 1 ? null :
+                                <div>
+                                    <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
+                                    <Typography noWrap variant="subtitle1">
+                                        Subtasks:
+                                    </Typography>
+                                    {tasks[selectedIndex].subtasks.map((subtask, index) => (
+                                        <Accordion
+                                            expanded={expandedSubTask === subtask.id}
+                                            onChange={handleSubTaskExpand(subtask.id)}
+                                            key={subtask.id}
+                                            className={classes.subtaskAccordion}
+                                        >
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
+                                            >
+                                                <Typography>
+                                                    {subtask.name}
+                                                </Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                {subtask.description}
+                                            </AccordionDetails>
+                                        </Accordion>
+                                    ))}
+                                </div>
+                            }
 
-                            <Typography noWrap variant="subtitle1">
-                                Subtasks:
-                            </Typography>
-
-                            {tasks[selectedIndex].subtasks.map((subtask, index) => (
-                                <Accordion
-                                    expanded={expandedSubTask === subtask.id}
-                                    onChange={handleSubTaskExpand(subtask.id)}
-                                    key={subtask.id}
-                                    className={classes.subtaskAccordion}
-                                >
-                                    <AccordionSummary
-                                        expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
-                                    >
-                                        <Typography>
-                                            {subtask.name}
-                                        </Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        {subtask.description}
-                                    </AccordionDetails>
-                                </Accordion>
-                            ))}
 
                         </CardContent>
                         <div className={classes.buttonSection}>
                             <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
                             <ButtonGroup variant="contained" color="primary" ref={anchorRef}>
-                                <Button onClick={hendleChangeStatus}>{allowedStatuses[statusSelIndex]}</Button>
+                                <Button onClick={hendleChangeStatus}>{allowedStatuses[statusSelIndex].name}</Button>
                                 <Button
                                     color="primary"
                                     size="small"
@@ -340,12 +631,12 @@ const TasksList = () => {
                                                 <MenuList id="split-button-menu">
                                                     {allowedStatuses.map((option, index) => (
                                                         <MenuItem
-                                                            key={option}
+                                                            key={option.name}
                                                             //  disabled={index === 2}
                                                             selected={index === statusSelIndex}
                                                             onClick={(event) => handleMenuItemClick(event, index)}
                                                         >
-                                                            {option}
+                                                            {option.name}
                                                         </MenuItem>
                                                     ))}
                                                 </MenuList>

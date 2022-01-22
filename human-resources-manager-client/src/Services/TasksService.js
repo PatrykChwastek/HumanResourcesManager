@@ -1,7 +1,15 @@
 import APIURL from './Globals'
 
-export const getTasks = async (page, size, employeeid, bStartTime, aStartTime) => {
+export const getTasks = async (page, size, employeeid, taskName, status, bStartTime, aStartTime) => {
     let getTasksUrl = `tasks?page=${page}&size=${size}&employeeid=${employeeid}`;
+
+    if (taskName !== undefined || taskName !== '') {
+        getTasksUrl += `&name=${taskName}`
+    }
+
+    if (status !== undefined) {
+        getTasksUrl += `&status=${status}`
+    }
 
     if (bStartTime !== undefined) {
         getTasksUrl += `&b_start_time=${bStartTime}`
