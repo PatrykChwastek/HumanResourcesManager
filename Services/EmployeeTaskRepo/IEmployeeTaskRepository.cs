@@ -14,7 +14,8 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
         Task<EmployeeTask> CreateTask(EmployeeTask taskEntity);
         Task<EmployeeTask> PutTask(long id, EmployeeTask taskEntity);
         Task<EmployeeTask> changeTaskStatus(long id, string status);
-        Task<int> TasksCount();
+        Task<int> AllTasksCount();
+        Task<int> TasksCount(IQueryable<EmployeeTask> employeeTasksQuery);
         Task<bool> DeleteTask(long id);
     }
 }

@@ -35,7 +35,7 @@ namespace HumanResourcesManager.Controllers
                 var employeeTasks= _employeeTaskRepository.
                 GetTasks(name, employeeid, status, b_start_time, a_start_time, b_deadline, a_deadline);
                 var mappedEmployeeTasks = _mapper.Map<List<EmployeeTaskDTO>>(employeeTasks);
-                var totalEmployeeTask = await _employeeTaskRepository.TasksCount();
+                var totalEmployeeTask = await _employeeTaskRepository.TasksCount(employeeTasks);
 
                 var pageOfTasks = new Pagination(page, size, totalEmployeeTask);
                 return Ok(await pageOfTasks.InitPagination(mappedEmployeeTasks.AsQueryable()));

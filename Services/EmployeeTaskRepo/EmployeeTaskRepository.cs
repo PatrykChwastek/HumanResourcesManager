@@ -100,9 +100,14 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
             return (await _mDBContext.SaveChangesAsync()) >= 0;
         }
 
-        public async Task<int> TasksCount()
+        public async Task<int> AllTasksCount()
         {
             return await _mDBContext.EmployeeTask.CountAsync();
+        }
+
+        public async Task<int> TasksCount(IQueryable<EmployeeTask> employeeTasksQuery)
+        {
+            return await employeeTasksQuery.CountAsync();
         }
 
         private bool EmployeeTaskExists(long id)
