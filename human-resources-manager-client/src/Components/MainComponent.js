@@ -15,11 +15,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
+import TreeView from '@material-ui/lab/TreeView';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import TreeItem from '@material-ui/lab/TreeItem';
 
 const drawerWidth = 240;
 
@@ -41,6 +42,18 @@ const useStyles = makeStyles((theme) => ({
     },
     drawerContainer: {
         overflow: 'auto',
+        '& .MuiTypography-body1': {
+            fontSize: '19px'
+        },
+        '& .MuiTreeItem-root.Mui-selected > .MuiTreeItem-content .MuiTreeItem-label': {
+            backgroundColor: "#3f51b5",
+            color: 'white',
+            marginRight: '12px',
+            padding: '2px 6px',
+            paddingRight: '0',
+            borderRadius: '4px',
+            boxShadow: theme.shadows[2],
+        },
     },
     content: {
         flexGrow: 1,
@@ -86,58 +99,39 @@ const MainComponent = () => {
                 >
                     <Toolbar />
                     <div className={classes.drawerContainer}>
-                        <List>
+                        <TreeView
+                            defaultExpanded={['2']}
+                            defaultSelected={['4']}
+                            defaultCollapseIcon={<ExpandMoreIcon />}
+                            defaultExpandIcon={<ChevronRightIcon />}
+                        >
                             {userAccess.humanResources === false ? null :
                                 <Link className={classes.linkButtons} to="/main/dashboard">
-                                    <ListItem button>
-                                        <ListItemText primary="Dashboard" />
-                                    </ListItem>
+                                    <TreeItem nodeId="1" label="Dashboard" />
                                 </Link>
                             }
-                            <Link className={classes.linkButtons} to="/main/tasks-columns">
-                                <ListItem button>
-                                    <ListItemText primary="My Tasks" />
-                                </ListItem>
-                            </Link>
-                            <Link className={classes.linkButtons} to="/main/tasks-list">
-                                <ListItem button>
-                                    <ListItemText primary="Tasks List" />
-                                </ListItem>
-                            </Link>
+                            <TreeItem nodeId="2" label="My Tasks:">
+                                <Link className={classes.linkButtons} to="/main/tasks-columns">
+                                    <TreeItem nodeId="3" label="Columns" />
+                                </Link>
+                                <Link className={classes.linkButtons} to="/main/tasks-list" >
+                                    <TreeItem nodeId="4" label="List" />
+                                </Link>
+                            </TreeItem>
                             {userAccess.humanResources === false ? null :
-                                <Link className={classes.linkButtons} to="/main/employees">
-                                    <ListItem button>
-                                        <ListItemText primary="Employees" />
-                                    </ListItem>
-                                </Link>
+                                <React.Fragment>
+                                    <Link className={classes.linkButtons} to="/main/employees">
+                                        <TreeItem nodeId="5" label="Employees" />
+                                    </Link>
+                                    <Link className={classes.linkButtons} to="/main/create-employee">
+                                        <TreeItem nodeId="6" label="Create Employee" />
+                                    </Link>
+                                    <Link className={classes.linkButtons} to="/main/applications">
+                                        <TreeItem nodeId="7" label="Job Applications" />
+                                    </Link>
+                                </React.Fragment>
                             }
-                            {userAccess.humanResources === false ? null :
-                                <Link className={classes.linkButtons} to="/main/create-employee">
-                                    <ListItem button>
-                                        <ListItemText primary="Create Employee" />
-                                    </ListItem>
-                                </Link>
-                            }
-                            {userAccess.teamManager === false ? null :
-                                <Link className={classes.linkButtons} to="/main/team-manager">
-                                    <ListItem button>
-                                        <ListItemText primary="Team-Manager" />
-                                    </ListItem>
-                                </Link>
-                            }
-                            {userAccess.humanResources === false ? null :
-                                <Link className={classes.linkButtons} to="/main/applications">
-                                    <ListItem button>
-                                        <ListItemText primary="Applications" />
-                                    </ListItem>
-                                </Link>
-                            }
-                            <Link className={classes.linkButtons} to="/login">
-                                <ListItem button>
-                                    <ListItemText primary="Login" />
-                                </ListItem>
-                            </Link>
-                        </List>
+                        </TreeView>
                     </div>
                 </Drawer>
                 <main className={classes.content}>
