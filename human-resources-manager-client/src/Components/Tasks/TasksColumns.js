@@ -104,8 +104,8 @@ const TasksColumns = () => {
         let requested = [];
         let progress = [];
         console.log(taskFilter);
-        getTasks(1, 10,
-            userID,
+        getTasks(1, 50, userID,
+            '', undefined,
             taskFilter.beforeStartTime,
             taskFilter.afterStartTime)
             .then((data) => {

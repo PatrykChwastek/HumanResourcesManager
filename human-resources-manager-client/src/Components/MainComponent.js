@@ -9,7 +9,7 @@ import LoginUser from './Users/LoginUser';
 import TeamManager from './Teams/TeamManager';
 import TasksColumns from './Tasks/TasksColumns';
 import TasksList from "./Tasks/TasksList";
-import { getUserAccess, logout } from '../Services/AuthService';
+import { getUserAccess, logout, getCurrentUser } from '../Services/AuthService';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -67,13 +67,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MainComponent = () => {
-    const [userAccess, setUserAccess] = useState(getUserAccess());
+    const [userAccess] = useState(getUserAccess());
     const history = useHistory();
-    useEffect(() => {
 
-        console.log(userAccess);
-    }, []);
-
+    const currentLocation = () => {
+        switch (history.location.pathname) {
+            case '/main/dashboard':
+                return ['1'];
+            case '/main/tasks-columns':
+                return ['3'];
+            case '/main/tasks-list':
+                return ['4'];
+        }
+    }
     const handleLogout = () => {
         logout();
         history.push("/login");
@@ -101,7 +107,7 @@ const MainComponent = () => {
                     <div className={classes.drawerContainer}>
                         <TreeView
                             defaultExpanded={['2']}
-                            defaultSelected={['4']}
+                            defaultSelected={currentLocation()}
                             defaultCollapseIcon={<ExpandMoreIcon />}
                             defaultExpandIcon={<ChevronRightIcon />}
                         >
@@ -143,7 +149,7 @@ const MainComponent = () => {
                             <TasksColumns />
                         </Route>
                         <Route path="/main/tasks-list">
-                            <TasksList />
+                            <TasksList userId={getCurrentUser().userDetails.employeeDTO.id} />
                         </Route>
                         <Route path="/main/create-employee">
                             <CreateEmployee />

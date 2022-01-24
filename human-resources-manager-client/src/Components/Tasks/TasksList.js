@@ -173,7 +173,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const taskStatusAll = [{ id: 1, name: 'Completed' }, { id: 2, name: 'Requested' }, { id: 3, name: 'In-Progress' }];
 const allowedStatuses = taskStatusAll;
-const TasksList = () => {
+const TasksList = ({ userId }) => {
     const classes = useStyles();
     const anchorRef = React.useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -202,12 +202,13 @@ const TasksList = () => {
     useEffect(() => {
         loadTasksList(
             pagination.page,
-            pagination.size);
+            pagination.size
+        );
     }, []);
 
     const loadTasksList = (page, size) => {
         getTasks(
-            page, size, 12,
+            page, size, userId,
             filterParams.name,
             filterParams.status,
             filterParams.bStartTime,
