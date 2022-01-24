@@ -7,6 +7,7 @@ import CreateEmployee from './Employees/CreateEmployee';
 import { EmployeeDetails } from './Employees/EmployeeDetails';
 import LoginUser from './Users/LoginUser';
 import TeamManager from './Teams/TeamManager';
+import TeamTasks from "./Teams/TeamTasks";
 import TasksColumns from './Tasks/TasksColumns';
 import TasksList from "./Tasks/TasksList";
 import { getUserAccess, logout, getCurrentUser } from '../Services/AuthService';
@@ -137,6 +138,17 @@ const MainComponent = () => {
                                     </Link>
                                 </React.Fragment>
                             }
+
+                            <TreeItem nodeId="8" label="Team Manager">
+                                <Link className={classes.linkButtons} to="/main/team-manager">
+                                    <TreeItem nodeId="9" label="Team Dashboard" />
+                                </Link>
+                                <Link className={classes.linkButtons} to="/main/team-tasks">
+                                    <TreeItem nodeId="10" label="Team Tasks" />
+                                </Link>
+                            </TreeItem >
+
+
                         </TreeView>
                     </div>
                 </Drawer>
@@ -162,6 +174,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/team-manager">
                             <TeamManager />
+                        </Route>
+                        <Route path="/main/team-tasks">
+                            <TeamTasks />
                         </Route>
                     </Switch>
                 </main>

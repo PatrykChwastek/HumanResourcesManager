@@ -263,9 +263,9 @@ const TasksColumns = () => {
                                                     hight: "410px",
                                                     maxHeight: "410px",
                                                     minHeight: "410px",
-                                                    overflowY: 'scroll',
+                                                    overflowY: 'auto',
                                                     WebkitScrollbarButton: {
-                                                        height: '100%',
+                                                        height: '100%'
                                                     }
                                                 }}
                                             >
@@ -276,7 +276,7 @@ const TasksColumns = () => {
                                                             draggableId={String(item.id)}
                                                             index={index}
                                                         >
-                                                            {(provided, snapshot) => {
+                                                            {(provided) => {
                                                                 return (
                                                                     <Accordion
                                                                         expanded={expandedTask === item.id}
@@ -292,7 +292,7 @@ const TasksColumns = () => {
                                                                                     : item.status === "Requested"
                                                                                         ? "rgb(231 170 35)"
                                                                                         : "rgb(0 158 7)",
-                                                                            color: "black",
+                                                                            color: item.status === "In-Progress" ? "white" : "black",
                                                                             borderRadius: '4px',
                                                                             marginBottom: '4px',
                                                                             ...provided.draggableProps.style
@@ -352,7 +352,7 @@ const TasksColumns = () => {
                                                                                                             : item.status === "Requested"
                                                                                                                 ? "rgb(255 234 144)"
                                                                                                                 : "rgb(3 189 0)",
-                                                                                                    color: "black",
+                                                                                                    color: item.status === "In-Progress" ? "white" : "black",
                                                                                                     marginBottom: '4px',
                                                                                                     borderRadius: '4px',
                                                                                                     padding: '0px'

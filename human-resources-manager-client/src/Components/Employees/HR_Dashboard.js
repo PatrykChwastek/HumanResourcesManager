@@ -116,7 +116,6 @@ const HR_Dashboard = () => {
     }, [stats]);
 
     useEffect(() => {
-        console.log(APIURL);
         getEmploees(1, 5);
         getStats();
     }, []);
