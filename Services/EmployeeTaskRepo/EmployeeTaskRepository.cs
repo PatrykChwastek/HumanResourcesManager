@@ -53,7 +53,7 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
         public IQueryable<EmployeeTask> GetTasks(
             string taskName, long employeeId, string status, DateTime? bStartTime, DateTime? aStartTime, DateTime? bDeadline, DateTime? aDeadline)
         {
-            return FilterTasks(taskName, employeeId, status, bStartTime, aStartTime, bDeadline, aDeadline);
+            return FilterTasks(taskName, employeeId, status, bStartTime, aStartTime, bDeadline, aDeadline).OrderBy(et => et.StartTime);
         }
 
         public async Task<EmployeeTask> PutTask(long id, EmployeeTask taskEntity)

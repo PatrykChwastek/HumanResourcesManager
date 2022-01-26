@@ -3,8 +3,9 @@ import APIURL from './Globals'
 export const getTasks = async (page, size, employeeid, taskName, status, bStartTime, aStartTime, bDeadline, aDeadline) => {
     let getTasksUrl = `tasks?page=${page}&size=${size}&employeeid=${employeeid}`;
 
-    if (taskName !== undefined || taskName !== '') {
-        getTasksUrl += `&name=${taskName}`
+    if (taskName !== undefined) {
+        if (taskName !== '')
+            getTasksUrl += `&name=${taskName}`
     }
 
     if (status !== undefined) {
@@ -31,6 +32,7 @@ export const getTasks = async (page, size, employeeid, taskName, status, bStartT
         method: 'Get',
         headers: { 'Content-Type': 'application/json' }
     };
+
     return await fetch(APIURL + getTasksUrl,
         requestOptions
     ).then((response) => {

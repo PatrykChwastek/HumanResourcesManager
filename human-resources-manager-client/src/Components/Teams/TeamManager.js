@@ -3,6 +3,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import APIURL from '../../Services/Globals';
 import { getCurrentUser } from '../../Services/AuthService';
 import { Link } from "react-router-dom";
+import { getTasks } from "../../Services/TasksService";
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -19,6 +20,7 @@ import IconButton from '@material-ui/core/IconButton';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import CloseIcon from '@material-ui/icons/Close';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Typography from '@material-ui/core/Typography';
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -64,25 +66,70 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: "0px",
         marginRight: "8px",
     },
+    currentTask: {
+        borderRadius: '4px',
+        backgroundColor: "green",
+        color: "white",
+        boxShadow: theme.shadows[2],
+    },
+    noTask: {
+        borderRadius: '4px',
+        backgroundColor: "#bd0000",
+        color: "white",
+        boxShadow: theme.shadows[2],
+    }
 }));
 const leaderID = getCurrentUser().userDetails.employeeDTO.id;
 const TeamManager = () => {
     const classes = useStyles();
 
     const [team, setTeam] = useState({});
-
+    const [currentTasks, setCurrentTasks] = useState([]);
     useEffect(() => {
         getTeam();
     }, []);
 
-    const getTeam = async () => {
+    const getTeam = () => {
         const requestOptions = {
             method: 'Get',
             headers: { 'Content-Type': 'application/json' }
         };
-        await fetch(APIURL + `teams/leader/${leaderID}`, requestOptions)
+        fetch(APIURL + `teams/leader/${leaderID}`, requestOptions)
             .then(response => response.json())
-            .then(data => (setTeam(data), console.log(data)));
+            .then(data => (setTeam(data),
+                data.members.map((member) => {
+                    getTasks(1, 1, member.id, undefined, "In-Progress").then((data) => {
+                        setCurrentTasks(old => [
+                            ...old, data.items[0]
+                        ])
+                    })
+                })
+            ));
+    }
+
+    const currentTaskBar = (memberId) => {
+        let boxStyle = classes.currentTask;
+        let text = loadCurrrentTask(memberId);
+        if (text === undefined) {
+            boxStyle = classes.noTask;
+            text = "No Task Assigned"
+        }
+        return (
+            <Typography variant="body1" className={boxStyle}>
+                {text}
+            </Typography>
+        );
+    }
+    const loadCurrrentTask = (id) => {
+        let currTask;
+        currentTasks.map(task => {
+            if (task !== undefined) {
+                if (task.assignedEmployeeId === id) {
+                    currTask = task.name;
+                }
+            }
+        });
+        return currTask;
     }
     return (
         <div>
@@ -117,6 +164,9 @@ const TeamManager = () => {
                                     <StyledTableCell align="center">
                                         Remote Work
                                     </StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        Now Working On
+                                    </StyledTableCell>
                                     <StyledTableCell>
                                     </StyledTableCell>
                                 </TableRow>
@@ -145,6 +195,13 @@ const TeamManager = () => {
                                         <StyledTableCell align="center">
                                             {employee.remoteWork === true ?
                                                 <CheckCircleIcon /> : <CloseIcon />}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="center">
+
+                                            {currentTasks.length !== team.members.length ? null :
+                                                currentTaskBar(employee.id)
+                                            }
+
                                         </StyledTableCell>
                                         <StyledTableCell align="center">
                                             <Link to={{ pathname: `/main/employee-details/${employee.id}` }}>
