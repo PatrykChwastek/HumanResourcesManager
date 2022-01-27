@@ -42,6 +42,61 @@ namespace HumanResourcesManager.Controllers
 
         }
 
+        [HttpGet("byteam")]
+        public async Task<ActionResult<IEnumerable<EmployeeTaskDTO>>> GetTeaamMemberseTasks(
+            int page, int size, string name, long teamid, string status,
+            DateTime? b_start_time, DateTime? a_start_time, DateTime? b_deadline, DateTime? a_deadline)
+         {
+
+            var employeeTasks = _employeeTaskRepository.
+            GetTeamMembersTasks(name, teamid, status, b_start_time, a_start_time, b_deadline, a_deadline);
+            var mappedEmployeeTasks = _mapper.Map<List<EmployeeTaskDTO>>(employeeTasks);
+            var totalEmployeeTask = await _employeeTaskRepository.TasksCount(employeeTasks);
+
+            var pageOfTasks = new Pagination(page, size, totalEmployeeTask);
+            return Ok(await pageOfTasks.InitPagination(mappedEmployeeTasks.AsQueryable()));
+        }
+
+        [HttpGet("stats")]
+        public async Task<ActionResult<IEnumerable<EmployeeTaskDTO>>> GetTasksStats(long teamid, long employeeid)
+        {
+            if (teamid == 0 && employeeid == 0)
+                return BadRequest("Team ID or Eployee ID required");
+
+            DateTime today = DateTime.Now.Date;
+            int days = today.DayOfWeek - DayOfWeek.Monday;
+            DateTime weekStart = DateTime.Now.AddDays(-days).Date;
+            DateTime weekEnd = weekStart.AddDays(6);
+
+            DateTime monthStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime monthEnd = new DateTime(today.Year, today.Month,
+                              DateTime.DaysInMonth(today.Year, today.Month));
+
+            var todayCompleted = await TasksCountByDate(teamid, employeeid, "Completed", today, today);
+            var todayProgress = await TasksCountByDate(teamid, employeeid, "In-Progress", today, today);
+            var todayRequested = await TasksCountByDate(teamid, employeeid, "Requested", today, today);
+
+            var weekCompleted = await TasksCountByDate(teamid, employeeid, "Completed", weekEnd,weekStart);
+            var weekProgress = await TasksCountByDate(teamid, employeeid, "In-Progress", weekEnd, weekStart);
+            var weekRequested = await TasksCountByDate(teamid, employeeid, "Requested",weekEnd ,weekStart);
+
+            var monthCompleted = await TasksCountByDate(teamid, employeeid, "Completed", monthEnd, monthStart);
+            var monthProgress = await TasksCountByDate(teamid, employeeid, "In-Progress", monthEnd, monthStart);
+            var monthRequested = await TasksCountByDate(teamid, employeeid, "Requested", monthEnd, monthStart);
+
+            return Ok(new {
+                todayCompleted,
+                todayProgress,
+                todayRequested,
+                weekCompleted,
+                weekProgress,
+                weekRequested,
+                monthCompleted,
+                monthProgress,
+                monthRequested
+            });
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<EmployeeTaskDTO>> GetTask(long id)
         {
@@ -98,6 +153,23 @@ namespace HumanResourcesManager.Controllers
             }
 
             return StatusCode(500, "Server Error: EmployeeTask not exist");
+        }
+
+
+        private async Task<int> TasksCountByDate(long teamId, long employeeId, string status, DateTime b_startTime, DateTime a_startTime)
+        {
+            IQueryable<EmployeeTask> employeeTasks;
+            if (teamId != 0)
+            {
+                employeeTasks = _employeeTaskRepository.
+                GetTeamMembersTasks(null, teamId, status, b_startTime, a_startTime, null, null);
+            }
+            else
+            {
+                employeeTasks = _employeeTaskRepository.
+                    GetTasks(null, employeeId, status, b_startTime, a_startTime, null, null);
+            }
+            return await _employeeTaskRepository.TasksCount(employeeTasks);
         }
     }
 }

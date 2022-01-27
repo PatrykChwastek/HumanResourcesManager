@@ -1,5 +1,6 @@
 ﻿using HumanResourcesManager.Context;
 using HumanResourcesManager.Models.Entity;
+using HumanResourcesManager.Services.TeamRepo;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,11 +15,13 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
     {
         private readonly MDBContext _mDBContext;
         private readonly ILogger<EmployeeTaskRepository> _logger;
+        private readonly ITeamRepository _teamRepository;
 
-        public EmployeeTaskRepository(MDBContext mDBContext, ILogger<EmployeeTaskRepository> logger)
+        public EmployeeTaskRepository(MDBContext mDBContext, ILogger<EmployeeTaskRepository> logger, ITeamRepository teamRepository)
         {
             _mDBContext = mDBContext;
             _logger = logger;
+            _teamRepository = teamRepository;
         }
 
         public async Task<EmployeeTask> CreateTask(EmployeeTask taskEntity)
@@ -54,6 +57,27 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
             string taskName, long employeeId, string status, DateTime? bStartTime, DateTime? aStartTime, DateTime? bDeadline, DateTime? aDeadline)
         {
             return FilterTasks(taskName, employeeId, status, bStartTime, aStartTime, bDeadline, aDeadline).OrderBy(et => et.StartTime);
+        }
+
+        public IQueryable<EmployeeTask> GetTeamMembersTasks(
+            string taskName, long teamId, string status, DateTime? bStartTime, DateTime? aStartTime, DateTime? bDeadline, DateTime? aDeadline)
+        {
+            var members = _teamRepository.GetTeam(teamId).Result.Members;
+            IQueryable<EmployeeTask> res = null;
+            foreach (var member in members)
+            {               
+                var temp = FilterTasks(taskName, member.EmployeeId, status, bStartTime, aStartTime, bDeadline, aDeadline).OrderBy(et => et.StartTime);             
+
+                if (temp != null)
+                    {
+                        if(res == null)
+                        {
+                        res = temp;
+                        }                
+                    res = res.Concat(temp.Where(t => !temp.Contains(t)));
+                    }                  
+            }
+            return res;
         }
 
         public async Task<EmployeeTask> PutTask(long id, EmployeeTask taskEntity)
