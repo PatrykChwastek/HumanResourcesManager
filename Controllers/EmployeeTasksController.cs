@@ -75,25 +75,31 @@ namespace HumanResourcesManager.Controllers
             var todayCompleted = await TasksCountByDate(teamid, employeeid, "Completed", today, today);
             var todayProgress = await TasksCountByDate(teamid, employeeid, "In-Progress", today, today);
             var todayRequested = await TasksCountByDate(teamid, employeeid, "Requested", today, today);
+            var todayTotal = todayCompleted + todayProgress + todayRequested;
 
             var weekCompleted = await TasksCountByDate(teamid, employeeid, "Completed", weekEnd,weekStart);
             var weekProgress = await TasksCountByDate(teamid, employeeid, "In-Progress", weekEnd, weekStart);
             var weekRequested = await TasksCountByDate(teamid, employeeid, "Requested",weekEnd ,weekStart);
+            var weekTotal = weekCompleted + weekProgress + weekRequested;
 
             var monthCompleted = await TasksCountByDate(teamid, employeeid, "Completed", monthEnd, monthStart);
             var monthProgress = await TasksCountByDate(teamid, employeeid, "In-Progress", monthEnd, monthStart);
             var monthRequested = await TasksCountByDate(teamid, employeeid, "Requested", monthEnd, monthStart);
+            var monthTotal = monthCompleted + monthProgress + monthRequested;
 
             return Ok(new {
                 todayCompleted,
                 todayProgress,
                 todayRequested,
+                todayTotal,
                 weekCompleted,
                 weekProgress,
                 weekRequested,
+                weekTotal,
                 monthCompleted,
                 monthProgress,
-                monthRequested
+                monthRequested,
+                monthTotal
             });
         }
 

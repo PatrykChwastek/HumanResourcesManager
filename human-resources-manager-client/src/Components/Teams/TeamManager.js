@@ -4,6 +4,7 @@ import APIURL from '../../Services/Globals';
 import { getCurrentUser } from '../../Services/AuthService';
 import { Link } from "react-router-dom";
 import { getTasks } from "../../Services/TasksService";
+import { StatBar } from "../GlobalComponents"
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -41,9 +42,21 @@ const useStyles = makeStyles((theme) => ({
     container: {
         maxHeight: 550,
     },
-    pagination: {
-        background: theme.palette.grey[800],
-        color: "white",
+    statsMain: {
+        display: 'flex'
+    },
+    statsContainer: {
+        display: 'flex',
+        padding: '0 6px 4px',
+    },
+    title: {
+        color: theme.palette.text.primary,
+        textAlign: 'center',
+        padding: '2px 6px 2px',
+        marginBottom: '5px',
+        backgroundColor: theme.palette.primary.main,
+        boxShadow: theme.shadows[2],
+        width: '100%',
     },
     button: {
         background: theme.palette.grey[300],
@@ -51,15 +64,6 @@ const useStyles = makeStyles((theme) => ({
         "margin-left": ".2rem",
         "margin-right": ".2rem",
         color: theme.palette.grey[800],
-    },
-    searchBox: {
-        padding: ".1rem",
-        paddingLeft: "1.8rem",
-        paddingRight: "1.8rem",
-        width: "max-content",
-        background: theme.palette.grey[800],
-        boxShadow:
-            "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)",
     },
     whiteText: {
         color: "white",
@@ -84,19 +88,22 @@ const TeamManager = () => {
     const classes = useStyles();
 
     const [team, setTeam] = useState({});
+    const [tasksStats, setTasksStats] = useState({});
     const [currentTasks, setCurrentTasks] = useState([]);
     useEffect(() => {
-        getTeam();
+        getData();
     }, []);
 
-    const getTeam = () => {
+    const getData = () => {
         const requestOptions = {
             method: 'Get',
             headers: { 'Content-Type': 'application/json' }
         };
         fetch(APIURL + `teams/leader/${leaderID}`, requestOptions)
             .then(response => response.json())
-            .then(data => (setTeam(data),
+            .then(data => (
+                setTeam(data),
+                getTasksStats(data.id),
                 data.members.map((member) => {
                     getTasks(1, 1, member.id, undefined, "In-Progress").then((data) => {
                         setCurrentTasks(old => [
@@ -105,6 +112,17 @@ const TeamManager = () => {
                     })
                 })
             ));
+    }
+
+    const getTasksStats = (teamId) => {
+        const requestOptions = {
+            method: 'Get',
+            headers: { 'Content-Type': 'application/json' }
+        };
+        fetch(APIURL + `tasks/stats?teamid=${teamId}`, requestOptions)
+            .then(response => response.json())
+            .then(data => (setTasksStats(data)));
+
     }
 
     const currentTaskBar = (memberId) => {
@@ -133,6 +151,85 @@ const TeamManager = () => {
     }
     return (
         <div>
+            {tasksStats.monthTotal === undefined ? null :
+                <div className={classes.statsMain}>
+                    <Card style={{ width: 'max-content' }}>
+                        <div className={classes.title}>
+                            <Typography variant="h6">Today Tasks: {tasksStats.todayTotal}</Typography>
+                        </div>
+                        <div className={classes.statsContainer}>
+                            <StatBar
+                                valueMax={tasksStats.todayTotal}
+                                valueCurrent={tasksStats.todayRequested}
+                                text={"Requested: " + tasksStats.todayRequested}
+                                bcolor='rgb(231, 170, 35)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.todayTotal}
+                                valueCurrent={tasksStats.todayProgress}
+                                text={"In-Progress: " + tasksStats.todayProgress}
+                                bcolor='rgb(56, 81, 216)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.todayTotal}
+                                valueCurrent={tasksStats.todayCompleted}
+                                text={"Completed: " + tasksStats.todayCompleted}
+                                bcolor='rgb(0, 158, 7)'
+                            />
+                        </div>
+                    </Card>
+                    <Card style={{ width: 'max-content', marginLeft: '22px' }}>
+                        <div className={classes.title}>
+                            <Typography variant="h6">This Week Tasks: {tasksStats.weekTotal}</Typography>
+                        </div>
+                        <div className={classes.statsContainer}>
+                            <StatBar
+                                valueMax={tasksStats.weekTotal}
+                                valueCurrent={tasksStats.weekRequested}
+                                text={"Requested: " + tasksStats.weekRequested}
+                                bcolor='rgb(231, 170, 35)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.weekTotal}
+                                valueCurrent={tasksStats.weekProgress}
+                                text={"In-Progress: " + tasksStats.weekProgress}
+                                bcolor='rgb(56, 81, 216)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.weekTotal}
+                                valueCurrent={tasksStats.weekCompleted}
+                                text={"Completed: " + tasksStats.weekCompleted}
+                                bcolor='rgb(0, 158, 7)'
+                            />
+                        </div>
+                    </Card>
+                    <Card style={{ width: 'max-content', marginLeft: '22px' }}>
+                        <div className={classes.title}>
+                            <Typography variant="h6">This Month Tasks: {tasksStats.monthTotal}</Typography>
+                        </div>
+                        <div className={classes.statsContainer}>
+                            <StatBar
+                                valueMax={tasksStats.monthTotal}
+                                valueCurrent={tasksStats.monthRequested}
+                                text={"Requested: " + tasksStats.monthRequested}
+                                bcolor='rgb(231, 170, 35)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.monthTotal}
+                                valueCurrent={tasksStats.monthProgress}
+                                text={"In-Progress: " + tasksStats.monthProgress}
+                                bcolor='rgb(56, 81, 216)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.monthTotal}
+                                valueCurrent={tasksStats.monthCompleted}
+                                text={"Completed: " + tasksStats.monthCompleted}
+                                bcolor='rgb(0, 158, 7)'
+                            />
+                        </div>
+                    </Card>
+                </div>
+            }
             {team.members === undefined ? <div></div> :
                 <Card className={classes.root}>
                     <CardHeader

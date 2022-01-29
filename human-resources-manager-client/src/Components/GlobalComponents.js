@@ -5,7 +5,9 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Chip from '@material-ui/core/Chip';
-import Paper from '@material-ui/core/Paper';
+import Card from "@material-ui/core/Card";
+import Typography from '@material-ui/core/Typography';
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 const StyledTextField = withStyles({
     root: {
@@ -69,6 +71,30 @@ const StyledSelectFC = withStyles({
     },
 })(FormControl);
 
+const BorderLinearProgress = withStyles((theme) => {
+    return {
+        root: {
+            borderRadius: "6px",
+            width: "32px",
+            height: "100%",
+            marginBottom: "2px"
+        },
+        colorPrimary: {
+            boxShadow: 'inset 0px 3px 3px -2px rgb(0 0 0 / 20%), inset 0px 3px 4px 0px rgb(0 0 0 / 14%), inset 0px 1px 8px 0px rgb(0 0 0 / 12%), ' + theme.shadows[1],
+            backgroundColor: '#a9a6a6',
+            borderRadius: '4px',
+        },
+        bar: {
+            borderRadius: "6px",
+            boxShadow: theme.shadows[3],
+            transform: ({ value }) => {
+                return `translateY(${value}%) !important`;
+            },
+            backgroundColor: ({ bcolor }) => { return bcolor }
+        },
+    };
+})(LinearProgress);
+
 const useStyles = makeStyles((theme) => ({
     formControl: {
         minWidth: 138,
@@ -88,6 +114,30 @@ const useStyles = makeStyles((theme) => ({
     },
     chipItem: {
         margin: theme.spacing(0.5),
+    },
+    title: {
+        color: theme.palette.text.primary,
+        textAlign: 'center',
+        padding: '2px 6px 2px',
+        marginBottom: '5px',
+        backgroundColor: theme.palette.primary.main,
+        boxShadow: theme.shadows[2],
+        width: '100%',
+    },
+    barBox: {
+        minHeight: "160px",
+        display: "flex",
+        padding: "0",
+        margin: '6px',
+        width: "max-content",
+        boxshadow: theme.shadows[2]
+    },
+    stats: {
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "column",
+        backgroundColor: '#bdbdbd',
+        color: 'black'
     }
 }));
 
@@ -170,8 +220,28 @@ export const DarkChipList = ({ onChange, label, name, value, firstVal, firstLabe
     );
 };
 
+export const StatBar = ({ valueMax, valueCurrent, text, bcolor }) => {
+    const classes = useStyles();
+
+    const barLvl = 100 - (valueCurrent * 100) / valueMax;
+
+    return (
+        <Card className={classes.barBox}>
+
+            <div className={classes.stats}>
+                <div className={classes.title}>
+                    <Typography noWrap variant="body2">{text}</Typography>
+                </div>
+                <BorderLinearProgress variant="determinate" bcolor={bcolor} value={barLvl} />
+                <Typography variant="button">{Math.round(100 - barLvl)}%</Typography>
+            </div>
+        </Card>
+    );
+}
+
 export default {
     DarkChipList,
     DarkSelect,
-    DarkTextField
+    DarkTextField,
+    StatBar
 };
