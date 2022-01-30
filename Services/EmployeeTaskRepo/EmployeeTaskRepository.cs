@@ -50,13 +50,18 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
 
         public async Task<EmployeeTask> GetTask(long id)
         {
-            return await _mDBContext.EmployeeTask.Include(et => et.Subtasks).FirstOrDefaultAsync(et => et.Id == id);
+            var task = await _mDBContext.EmployeeTask.Include(et => et.Subtasks).FirstOrDefaultAsync(et => et.Id == id);
+            if (task.Deadline > DateTime.Now.Date && task.Status != "Delayed")
+            {
+               return await changeTaskStatus(task.Id, "Delayed");
+            }
+            return task;
         }
 
         public IQueryable<EmployeeTask> GetTasks(
             string taskName, long employeeId, string status, DateTime? bStartTime, DateTime? aStartTime, DateTime? bDeadline, DateTime? aDeadline)
         {
-            return FilterTasks(taskName, employeeId, status, bStartTime, aStartTime, bDeadline, aDeadline).OrderBy(et => et.StartTime);
+            return FilterTasksAsync(taskName, employeeId, status, bStartTime, aStartTime, bDeadline, aDeadline).OrderBy(et => et.StartTime);
         }
 
         public IQueryable<EmployeeTask> GetTeamMembersTasks(
@@ -66,7 +71,7 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
             IQueryable<EmployeeTask> res = null;
             foreach (var member in members)
             {               
-                var temp = FilterTasks(taskName, member.EmployeeId, status, bStartTime, aStartTime, bDeadline, aDeadline).OrderBy(et => et.StartTime);             
+                var temp = FilterTasksAsync(taskName, member.EmployeeId, status, bStartTime, aStartTime, bDeadline, aDeadline).OrderBy(et => et.StartTime);             
 
                 if (temp != null)
                     {
@@ -139,7 +144,7 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
             return _mDBContext.EmployeeTask.Any(t => t.Id == id);
         }
 
-        private IQueryable<EmployeeTask> FilterTasks(
+        private IQueryable<EmployeeTask> FilterTasksAsync(
             string taskName, long employeeId, string status, DateTime? bStartTime, DateTime? aStartTime, DateTime? bDeadline, DateTime? aDeadline)
         {
             StringBuilder whereQuery = new StringBuilder("et => et.Id != 0 ");
@@ -173,7 +178,23 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
                 Include(et => et.Subtasks).
                 Where(whereQuery.ToString());
 
+          var toChange= query.Where(et => et.Status != "Delayed" && et.Status != "Completed" && et.Deadline !<= DateTime.Now);
+
+            if (toChange.Count() > 0)
+            {
+                makeDelayed(toChange);
+            }
             return query;
+        }
+
+        private void makeDelayed(IQueryable<EmployeeTask> query)
+        {
+            foreach (var item in query)
+            {
+                item.Status = "Delayed";
+                _mDBContext.Entry(item).State = EntityState.Modified;
+            }
+            _mDBContext.SaveChanges();
         }
 
         private string filderTasksBytDate(DateTime? beforeDate, DateTime? afterDate, string taskDateType)

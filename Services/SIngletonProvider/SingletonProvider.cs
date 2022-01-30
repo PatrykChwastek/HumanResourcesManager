@@ -14,6 +14,7 @@
                 "Requested",
                 "In-Progress",
                 "Completed",
+                "Delayed",
                 "Abandoned"
             };
         }

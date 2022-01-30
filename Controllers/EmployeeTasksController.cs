@@ -72,20 +72,82 @@ namespace HumanResourcesManager.Controllers
             DateTime monthEnd = new DateTime(today.Year, today.Month,
                               DateTime.DaysInMonth(today.Year, today.Month));
 
-            var todayCompleted = await TasksCountByDate(teamid, employeeid, "Completed", today, today);
-            var todayProgress = await TasksCountByDate(teamid, employeeid, "In-Progress", today, today);
-            var todayRequested = await TasksCountByDate(teamid, employeeid, "Requested", today, today);
-            var todayTotal = todayCompleted + todayProgress + todayRequested;
+           var todayCompleted = 0;
+           var todayProgress = 0;
+           var todayRequested = 0;
 
-            var weekCompleted = await TasksCountByDate(teamid, employeeid, "Completed", weekEnd,weekStart);
-            var weekProgress = await TasksCountByDate(teamid, employeeid, "In-Progress", weekEnd, weekStart);
-            var weekRequested = await TasksCountByDate(teamid, employeeid, "Requested",weekEnd ,weekStart);
-            var weekTotal = weekCompleted + weekProgress + weekRequested;
+           var weekCompleted = 0;
+           var weekProgress = 0;
+           var weekRequested = 0;
 
-            var monthCompleted = await TasksCountByDate(teamid, employeeid, "Completed", monthEnd, monthStart);
-            var monthProgress = await TasksCountByDate(teamid, employeeid, "In-Progress", monthEnd, monthStart);
-            var monthRequested = await TasksCountByDate(teamid, employeeid, "Requested", monthEnd, monthStart);
-            var monthTotal = monthCompleted + monthProgress + monthRequested;
+           var monthCompleted = 0;
+           var monthProgress = 0;
+           var monthRequested = 0;
+           var totalDelayedTasks = 0;
+
+            var todayTasks = TasksByDate(teamid, employeeid, today, today);
+            foreach (var t in todayTasks)
+            {
+                switch (t.Status)
+                {
+                    case "Completed":
+                        todayCompleted += 1;
+                        break;
+                    case "Requested":
+                        todayRequested += 1;
+                        break;
+                    case "In-Progress":
+                        todayProgress += 1;
+                        break;
+                    case "Delayed":
+                        totalDelayedTasks += 1;
+                        break;
+                }
+            }
+
+            var weekTasks = TasksByDate(teamid, employeeid, weekEnd, weekStart);
+            foreach (var t in weekTasks)
+            {
+                switch (t.Status)
+                {
+                    case "Completed":
+                        weekCompleted += 1;
+                        break;
+                    case "Requested":
+                        weekRequested += 1;
+                        break;
+                    case "In-Progress":
+                        weekProgress += 1;
+                        break;
+                    case "Delayed":
+                        totalDelayedTasks += 1;
+                        break;
+                }
+            }
+
+            var monthTasks = TasksByDate(teamid, employeeid, monthEnd, monthStart);
+            foreach (var t in monthTasks)
+            {
+                switch (t.Status)
+                {
+                    case "Completed":
+                        monthCompleted += 1;
+                        break;
+                    case "Requested":
+                        monthRequested += 1;
+                        break;
+                    case "In-Progress":
+                        monthProgress += 1;
+                        break;
+                    case "Delayed":
+                        totalDelayedTasks += 1;
+                        break;
+                }
+            }
+
+            var todayTotal = await _employeeTaskRepository.TasksCount(todayTasks);
+            var weekTotal = await _employeeTaskRepository.TasksCount(weekTasks);
+            var monthTotal = await _employeeTaskRepository.TasksCount(monthTasks);
 
             return Ok(new {
                 todayCompleted,
@@ -99,7 +161,8 @@ namespace HumanResourcesManager.Controllers
                 monthCompleted,
                 monthProgress,
                 monthRequested,
-                monthTotal
+                monthTotal,
+                totalDelayedTasks
             });
         }
 
@@ -162,20 +225,16 @@ namespace HumanResourcesManager.Controllers
         }
 
 
-        private async Task<int> TasksCountByDate(long teamId, long employeeId, string status, DateTime b_startTime, DateTime a_startTime)
+        private IQueryable<EmployeeTask> TasksByDate(long teamId, long employeeId, DateTime? b_startTime, DateTime? a_startTime)
         {
             IQueryable<EmployeeTask> employeeTasks;
             if (teamId != 0)
             {
-                employeeTasks = _employeeTaskRepository.
-                GetTeamMembersTasks(null, teamId, status, b_startTime, a_startTime, null, null);
+               return employeeTasks = _employeeTaskRepository.
+                GetTeamMembersTasks(null, teamId, null, b_startTime, a_startTime, null, null);
             }
-            else
-            {
-                employeeTasks = _employeeTaskRepository.
-                    GetTasks(null, employeeId, status, b_startTime, a_startTime, null, null);
-            }
-            return await _employeeTaskRepository.TasksCount(employeeTasks);
+            return employeeTasks = _employeeTaskRepository.
+                GetTasks(null, employeeId, null, b_startTime, a_startTime, null, null);
         }
     }
 }
