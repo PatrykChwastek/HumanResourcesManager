@@ -223,7 +223,8 @@ export const DarkChipList = ({ onChange, label, name, value, firstVal, firstLabe
 export const StatBar = ({ valueMax, valueCurrent, text, bcolor }) => {
     const classes = useStyles();
 
-    const barLvl = 100 - (valueCurrent * 100) / valueMax;
+    const barLvl = valueMax === 0 && valueCurrent === 0 ? 100 :
+        100 - (valueCurrent * 100) / valueMax;
 
     return (
         <Card className={classes.barBox}>

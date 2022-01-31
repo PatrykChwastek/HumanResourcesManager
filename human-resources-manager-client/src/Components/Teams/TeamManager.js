@@ -36,14 +36,14 @@ const StyledTableCell = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginTop: '1rem',
         width: '100%',
     },
     container: {
         maxHeight: 550,
     },
     statsMain: {
-        display: 'flex'
+        display: 'flex',
+        flexWrap: 'wrap'
     },
     statsContainer: {
         display: 'flex',
@@ -57,6 +57,16 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.main,
         boxShadow: theme.shadows[2],
         width: '100%',
+    },
+    statsBox: {
+        width: "120px",
+        height: "60px",
+        padding: "12px",
+        marginRight: '22px',
+        marginBottom: '22px',
+        position: "relative",
+        background: theme.palette.grey[800],
+        color: "white",
     },
     button: {
         background: theme.palette.grey[300],
@@ -88,12 +98,23 @@ const TeamManager = () => {
     const classes = useStyles();
 
     const [team, setTeam] = useState({});
+    const [idleMembers, setIdleMembers] = useState(0);
     const [tasksStats, setTasksStats] = useState({});
     const [currentTasks, setCurrentTasks] = useState([]);
     useEffect(() => {
         getData();
     }, []);
-
+    useEffect(() => {
+        if (team.members !== undefined && currentTasks.length === team.members.length) {
+            let couter = 0;
+            currentTasks.forEach(element => {
+                if (element === undefined) {
+                    couter++;
+                }
+            });
+            setIdleMembers(couter)
+        }
+    }, [currentTasks]);
     const getData = () => {
         const requestOptions = {
             method: 'Get',
@@ -130,7 +151,7 @@ const TeamManager = () => {
         let text = loadCurrrentTask(memberId);
         if (text === undefined) {
             boxStyle = classes.noTask;
-            text = "No Task Assigned"
+            text = "No Task Assigned";
         }
         return (
             <Typography variant="body1" className={boxStyle}>
@@ -153,7 +174,7 @@ const TeamManager = () => {
         <div>
             {tasksStats.monthTotal === undefined ? null :
                 <div className={classes.statsMain}>
-                    <Card style={{ width: 'max-content' }}>
+                    <Card style={{ width: 'max-content', marginRight: '22px', marginBottom: '22px' }}>
                         <div className={classes.title}>
                             <Typography variant="h6">Today Tasks: {tasksStats.todayTotal}</Typography>
                         </div>
@@ -178,7 +199,7 @@ const TeamManager = () => {
                             />
                         </div>
                     </Card>
-                    <Card style={{ width: 'max-content', marginLeft: '22px' }}>
+                    <Card style={{ width: 'max-content', marginRight: '22px', marginBottom: '22px' }}>
                         <div className={classes.title}>
                             <Typography variant="h6">This Week Tasks: {tasksStats.weekTotal}</Typography>
                         </div>
@@ -203,7 +224,7 @@ const TeamManager = () => {
                             />
                         </div>
                     </Card>
-                    <Card style={{ width: 'max-content', marginLeft: '22px' }}>
+                    <Card style={{ width: 'max-content', marginRight: '22px', marginBottom: '22px' }}>
                         <div className={classes.title}>
                             <Typography variant="h6">This Month Tasks: {tasksStats.monthTotal}</Typography>
                         </div>
@@ -227,6 +248,14 @@ const TeamManager = () => {
                                 bcolor='rgb(0, 158, 7)'
                             />
                         </div>
+                    </Card>
+                    <Card className={classes.statsBox}>
+                        <Typography noWrap variant="h5">{tasksStats.totalDelayedTasks}</Typography>
+                        <Typography noWrap variant="subtitle1">Delayed Tasks</Typography>
+                    </Card>
+                    <Card className={classes.statsBox}>
+                        <Typography noWrap variant="h5">{idleMembers}</Typography>
+                        <Typography noWrap variant="subtitle1">Idle Members</Typography>
                     </Card>
                 </div>
             }
@@ -294,11 +323,9 @@ const TeamManager = () => {
                                                 <CheckCircleIcon /> : <CloseIcon />}
                                         </StyledTableCell>
                                         <StyledTableCell align="center">
-
                                             {currentTasks.length !== team.members.length ? null :
                                                 currentTaskBar(employee.id)
                                             }
-
                                         </StyledTableCell>
                                         <StyledTableCell align="center">
                                             <Link to={{ pathname: `/main/employee-details/${employee.id}` }}>

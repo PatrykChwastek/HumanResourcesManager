@@ -78,8 +78,8 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
                         if(res == null)
                         {
                         res = temp;
-                        }                
-                    res = res.Concat(temp.Where(t => !temp.Contains(t)));
+                        }else                
+                    res = res.Concat(temp);
                     }                  
             }
             return res;
@@ -178,7 +178,7 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
                 Include(et => et.Subtasks).
                 Where(whereQuery.ToString());
 
-          var toChange= query.Where(et => et.Status != "Delayed" && et.Status != "Completed" && et.Deadline !<= DateTime.Now);
+          var toChange= query.Where(et => et.Status != "Delayed" && et.Status != "Completed" && et.Deadline < DateTime.Now.Date);
 
             if (toChange.Count() > 0)
             {

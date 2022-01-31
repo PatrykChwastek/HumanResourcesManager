@@ -162,7 +162,8 @@ namespace HumanResourcesManager.Controllers
                 monthProgress,
                 monthRequested,
                 monthTotal,
-                totalDelayedTasks
+                totalDelayedTasks,
+                todayTasks
             });
         }
 
