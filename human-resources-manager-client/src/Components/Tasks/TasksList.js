@@ -328,12 +328,14 @@ const TasksList = ({ userId }) => {
             fontWeight: "550",
             padding: "5px",
             minWidth: '92px',
-            color: status === "In-Progress" ? "white" : "black",
+            color: status === "In-Progress" || status === "Delayed" ? "white" : "black",
             background: status === "In-Progress"
                 ? "rgb(56 81 216)"
                 : status === "Requested"
-                    ? "rgb(231 170 35)"
-                    : "rgb(0 158 7)",
+                    ? "rgb(231 170 35)" :
+                    status === "Delayed" ?
+                        "#bd0000" :
+                        "rgb(0 158 7)",
         }
     }
     return (
@@ -545,12 +547,15 @@ const TasksList = ({ userId }) => {
                                     marginLeft: "10px",
                                     marginRight: "10px",
                                     width: "99%",
-                                    color: tasks[selectedIndex].status === "In-Progress" ? "white" : "black",
+                                    color: tasks[selectedIndex].status === "In-Progress" ||
+                                        tasks[selectedIndex].status === "Delayed" ? "white" : "black",
                                     background: tasks[selectedIndex].status === "In-Progress"
                                         ? "rgb(56 81 216)"
                                         : tasks[selectedIndex].status === "Requested"
-                                            ? "rgb(231 170 35)"
-                                            : "rgb(0 158 7)",
+                                            ? "rgb(231 170 35): " :
+                                            tasks[selectedIndex].status === "Delayed" ?
+                                                "#bd0000" :
+                                                "rgb(0 158 7)",
                                 }}
                             />
                         </div>
