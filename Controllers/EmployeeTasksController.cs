@@ -99,9 +99,6 @@ namespace HumanResourcesManager.Controllers
                     case "In-Progress":
                         todayProgress += 1;
                         break;
-                    case "Delayed":
-                        totalDelayedTasks += 1;
-                        break;
                 }
             }
 
@@ -118,9 +115,6 @@ namespace HumanResourcesManager.Controllers
                         break;
                     case "In-Progress":
                         weekProgress += 1;
-                        break;
-                    case "Delayed":
-                        totalDelayedTasks += 1;
                         break;
                 }
             }
@@ -139,11 +133,10 @@ namespace HumanResourcesManager.Controllers
                     case "In-Progress":
                         monthProgress += 1;
                         break;
-                    case "Delayed":
-                        totalDelayedTasks += 1;
-                        break;
                 }
             }
+            var delayedTasks = TasksByDate(teamid, employeeid, null, null);
+            totalDelayedTasks = await _employeeTaskRepository.TasksCount(delayedTasks);
 
             var todayTotal = await _employeeTaskRepository.TasksCount(todayTasks);
             var weekTotal = await _employeeTaskRepository.TasksCount(weekTasks);
@@ -162,8 +155,7 @@ namespace HumanResourcesManager.Controllers
                 monthProgress,
                 monthRequested,
                 monthTotal,
-                totalDelayedTasks,
-                todayTasks
+                totalDelayedTasks
             });
         }
 
