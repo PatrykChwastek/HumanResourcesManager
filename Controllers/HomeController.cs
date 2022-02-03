@@ -1,5 +1,9 @@
 ﻿using HumanResourcesManager.Context;
+using HumanResourcesManager.DataGenerator;
+using HumanResourcesManager.Models.Entity;
+using HumanResourcesManager.Services.SIngletonProvider;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +18,24 @@ namespace HumanResourcesManager.Controllers
     public class HomeController : ControllerBase
     {
         private readonly MDBContext _context;
-
-        public HomeController(MDBContext context)
+        private readonly ISingletonProvider _singletonProvider;
+        public HomeController(MDBContext context, ISingletonProvider singletonProvider)
         {
             _context = context;
+            _singletonProvider = singletonProvider;
         }
 
+        [HttpGet]
+        [ActionName("generate")]
+        public async Task<ActionResult> GenerateData()
+        {
+            EmployeeTaskGenerator employeeTaskGenerator = new EmployeeTaskGenerator(_context, _singletonProvider);
+            employeeTaskGenerator.ClearData();
+            await employeeTaskGenerator.Generate();
+          
+
+            return Ok(employeeTaskGenerator.data);
+        }
 
         [HttpGet]
         [ActionName("stats")]
