@@ -3,7 +3,7 @@ import APIURL from '../../Services/Globals';
 import { getCurrentUser } from '../../Services/AuthService';
 import moment from "moment";
 import { makeStyles } from '@material-ui/core/styles';
-import { getTasks, changeTaskStatus } from "../../Services/TasksService";
+import { getTasks, changeTaskStatus, getTeamTasks } from "../../Services/TasksService";
 import { DarkTextField, DarkSelect } from '../GlobalComponents';
 
 import Card from '@material-ui/core/Card';
@@ -173,10 +173,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 const taskStatusAll = [{ id: 1, name: 'Completed' }, { id: 2, name: 'Requested' }, { id: 3, name: 'In-Progress' }];
 const allowedStatuses = taskStatusAll;
-const TasksList = ({ userId }) => {
+const TasksList = ({ userId, teamId }) => {
     const classes = useStyles();
     const anchorRef = React.useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selTaskEmployee, setSelTaskEmployee] = useState({});
     const [tasks, setTasks] = useState([]);
     const [expandedSubTask, setExpandedSubTask] = useState('');
     const [openStatusSel, setOpenStatusSel] = useState(false);
@@ -206,23 +207,60 @@ const TasksList = ({ userId }) => {
         );
     }, []);
 
+    useEffect(() => {
+        if (teamId !== undefined && tasks[selectedIndex] !== undefined) {
+            getAssignedEmployee(tasks[selectedIndex].assignedEmployeeId);
+        }
+    }, [selectedIndex, tasks]);
+
+    const getAssignedEmployee = async (empID) => {
+        const requestOptions = {
+            method: 'Get',
+            headers: { 'Content-Type': 'application/json' }
+        };
+        await fetch(APIURL + `employee/get/` + empID,
+            requestOptions
+        )
+            .then(response => response.json())
+            .then(data => setSelTaskEmployee(data));
+    }
+
     const loadTasksList = (page, size) => {
-        getTasks(
-            page, size, userId,
-            filterParams.name,
-            filterParams.status,
-            filterParams.bStartTime,
-            filterParams.aStartTime,
-            filterParams.bDeadline,
-            filterParams.aDeadline
-        ).then((data) => {
-            setPagination({
-                page: page,
-                size: size,
-                totalPages: data.totalPages - 1,
+        if (teamId === undefined && userId !== undefined) {
+            getTasks(
+                page, size, userId,
+                filterParams.name,
+                filterParams.status,
+                filterParams.bStartTime,
+                filterParams.aStartTime,
+                filterParams.bDeadline,
+                filterParams.aDeadline
+            ).then((data) => {
+                setPagination({
+                    page: page,
+                    size: size,
+                    totalPages: data.totalPages - 1,
+                })
+                setTasks(data.items);
             })
-            setTasks(data.items);
-        })
+        } else {
+            getTeamTasks(
+                page, size, teamId,
+                filterParams.name,
+                filterParams.status,
+                filterParams.bStartTime,
+                filterParams.aStartTime,
+                filterParams.bDeadline,
+                filterParams.aDeadline
+            ).then((data) => {
+                setPagination({
+                    page: page,
+                    size: size,
+                    totalPages: data.totalPages - 1,
+                })
+                setTasks(data.items)
+            })
+        }
     }
 
     const handleChangeFilterParams = e => {
@@ -558,7 +596,19 @@ const TasksList = ({ userId }) => {
                                                 "rgb(0 158 7)",
                                 }}
                             />
+
                         </div>
+                        {selTaskEmployee.id === undefined ? null :
+                            <div className={classes.statusContainer}>
+                                <Typography noWrap variant="h6">
+                                    {"Assigned Employee: " +
+                                        selTaskEmployee.person.name + " " +
+                                        selTaskEmployee.person.surname
+                                    }
+                                </Typography>
+                            </div>
+
+                        }
                         <CardContent style={{ paddingTop: 0 }}>
                             <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0", marginTop: '2px' }} />
                             <div className={classes.chipContainer}>

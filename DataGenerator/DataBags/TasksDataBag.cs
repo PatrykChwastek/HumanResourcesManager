@@ -48,8 +48,8 @@ namespace HumanResourcesManager.DataGenerator.DataBags
                 "Morbi eget lacus volutpat, condimentum ante ut, efficitur dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
                 "Nunc consectetur lacinia quam vitae congue. Nullam vitae suscipit nunc.",
                 "This is generated task description. It's just a placeholder for presentation purpose. " +
-                "Normally here should be details of this task. But from the lack of time to come up with something more appropriate. " +
-                "I should write a few more sentences. But I have no idea what would it be. So leave it as it is. "
+                "Normally here should be details of this task. But from the lack of time, to come up with something more appropriate. " +
+                "This creative text was created. I should write a few more sentences. But I have no idea what would it be. So leave it as it is."
             };
         }
     }
