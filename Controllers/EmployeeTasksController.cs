@@ -135,7 +135,8 @@ namespace HumanResourcesManager.Controllers
                         break;
                 }
             }
-            var delayedTasks = TasksByDate(teamid, employeeid, null, null);
+            var delayedTasks = _employeeTaskRepository.
+                GetTeamMembersTasks(null, teamid, "Delayed", null, null, null, null);
             totalDelayedTasks = await _employeeTaskRepository.TasksCount(delayedTasks);
 
             var todayTotal = await _employeeTaskRepository.TasksCount(todayTasks);
