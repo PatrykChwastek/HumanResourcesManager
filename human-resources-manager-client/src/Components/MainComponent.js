@@ -10,6 +10,7 @@ import TeamManager from './Teams/TeamManager';
 import TeamTasks from "./Teams/TeamTasks";
 import TasksColumns from './Tasks/TasksColumns';
 import TasksList from "./Tasks/TasksList";
+import CreateTask from "./Tasks/CreateTask";
 import { getUserAccess, logout, getCurrentUser } from '../Services/AuthService';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -147,8 +148,6 @@ const MainComponent = () => {
                                     <TreeItem nodeId="10" label="Team Tasks" />
                                 </Link>
                             </TreeItem >
-
-
                         </TreeView>
                     </div>
                 </Drawer>
@@ -177,6 +176,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/team-tasks">
                             <TeamTasks />
+                        </Route>
+                        <Route path="/main/create-task">
+                            <CreateTask />
                         </Route>
                     </Switch>
                 </main>

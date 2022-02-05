@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import APIURL from '../../Services/Globals';
+import { Link } from "react-router-dom";
 import { getCurrentUser } from '../../Services/AuthService';
 import moment from "moment";
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { Accordion, AccordionSummary, AccordionDetails, Chip } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import Icon from '@material-ui/core/Icon';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -127,6 +129,14 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: theme.shadows[2],
         borderRadius: '3px 3px 0 0',
         width: '100%',
+        display: 'flex',
+        justifyContent: 'center'
+    },
+    linkButton: {
+        marginRight: '10px',
+        marginLeft: 'auto',
+        textDecoration: "none",
+        color: "white",
     },
     statusContainer: {
         display: "flex",
@@ -534,9 +544,19 @@ const TasksList = ({ userId, teamId }) => {
                 <div className={classes.tasksContainer}>
                     <List component="nav" className={classes.listComponent}>
                         <div className={classes.title}>
-                            <Typography variant="h6">
+                            <Typography variant="h6" style={{ marginLeft: '16px' }}>
                                 List of Tasks:
                             </Typography>
+                            {teamId === undefined ? null :
+                                <Link className={classes.linkButton} to="/main/create-task">
+                                    <Button
+                                        size="small"
+                                        variant="contained"
+                                        color="secondary"
+                                        endIcon={<AddCircleIcon />}
+                                    >NEW Task</Button>
+                                </Link>
+                            }
                         </div>
                         {tasks.map((task, index) => (
                             <div key={task.id}>

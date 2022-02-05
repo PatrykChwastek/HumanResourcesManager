@@ -141,10 +141,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const DarkTextField = ({ onChange, label, name, type }) => {
+export const DarkTextField = ({ onChange, label, name, type, maxRows }) => {
     return (
         <StyledTextField
             onChange={onChange}
+            multiline
+            maxRows={maxRows}
             label={label}
             name={name}
             type={type}
@@ -197,7 +199,7 @@ export const DarkChipList = ({ onChange, label, name, value, firstVal, firstLabe
                     }
                     {collection === undefined ? <div></div> :
                         collection.map((item, index) => (
-                            <MenuItem id={"permissionMenuItem" + item.id} key={index} value={item}>{item.name}</MenuItem>
+                            <MenuItem id={"chipMenuItem" + item.id} key={"chipKey" + item.id} value={item}>{item.name}</MenuItem>
                         ))
                     }
                 </Select>
