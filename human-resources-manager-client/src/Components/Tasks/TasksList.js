@@ -249,7 +249,7 @@ const TasksList = ({ userId, teamId }) => {
                 setPagination({
                     page: page,
                     size: size,
-                    totalPages: data.totalPages - 1,
+                    totalPages: data.totalPages,
                 })
                 setTasks(data.items);
             })
@@ -266,7 +266,7 @@ const TasksList = ({ userId, teamId }) => {
                 setPagination({
                     page: page,
                     size: size,
-                    totalPages: data.totalPages - 1,
+                    totalPages: data.totalPages,
                 })
                 setTasks(data.items)
             })

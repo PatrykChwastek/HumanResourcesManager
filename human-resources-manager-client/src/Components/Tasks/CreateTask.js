@@ -171,13 +171,13 @@ const CreateTask = () => {
                             disableToolbar
                             name="dateDeadline"
                             variant="inline"
-                            format="yyyy-MM-dd"
+                            format="yyyy-MM-DD"
                             margin="normal"
                             id="date-picker-inline"
                             label="Deadline"
                             value={task.Deadline}
                             onChange={(date) => {
-                                setTask({ ...task, deadline: date.format('yyyy-MM-dd') })
+                                setTask({ ...task, deadline: date.format('yyyy-MM-DD') })
                             }}
                             KeyboardButtonProps={{
                                 'aria-label': 'change date',
