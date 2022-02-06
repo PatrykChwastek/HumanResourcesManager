@@ -26,13 +26,47 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
 
         public async Task<EmployeeTask> CreateTask(EmployeeTask taskEntity)
         {
-            _logger.LogInformation($"Creating new EmployeeTask: {taskEntity.Name} Assigned to: {taskEntity.AssignedEmployee}");
+            _logger.LogInformation($"Creating new EmployeeTask: {taskEntity.Name} Assigned to emplyee: {taskEntity.AssignedEmployeeId}");
             _mDBContext.Add(taskEntity);
 
             await Save();
             await _mDBContext.Entry(taskEntity).GetDatabaseValuesAsync();
             return await GetTask(taskEntity.Id);
         }
+
+        public async Task<EmployeeTask[]> CreateMultipleTasks(EmployeeTask taskEntity, int[] employeesId)
+        {
+            EmployeeTask[] resTasks = new EmployeeTask[employeesId.Length];
+            _logger.LogInformation($"Creating multiple EmployeeTasks: {taskEntity.Name}");
+            for (int i = 0; i < employeesId.Length; i++)
+            {
+                resTasks[i] = new EmployeeTask() {
+                    Name = taskEntity.Name,
+                    Description = taskEntity.Description,
+                    Status = taskEntity.Status,
+                    StartTime = taskEntity.StartTime,
+                    Deadline = taskEntity.Deadline,
+                    AssignedEmployeeId = employeesId[i]
+                };
+
+                foreach (var subtask in taskEntity.Subtasks)
+                {
+                   resTasks[i].Subtasks.Add(new EmployeeTask() {
+                       Name = subtask.Name,
+                       Description = subtask.Description,
+                       Status = taskEntity.Status,
+                       StartTime = taskEntity.StartTime,
+                       Deadline = taskEntity.Deadline,
+                       AssignedEmployeeId = employeesId[i]
+                   });
+                }
+            }
+            
+            await _mDBContext.AddRangeAsync(resTasks);
+            await Save();
+            return resTasks;
+        }
+
 
         public async Task<bool> DeleteTask(long id)
         {

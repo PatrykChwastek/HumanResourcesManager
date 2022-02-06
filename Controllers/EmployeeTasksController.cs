@@ -206,6 +206,18 @@ namespace HumanResourcesManager.Controllers
             return Created("get", taskDTO);
         }
 
+        [HttpPost("multi")]
+        public async Task<ActionResult<EmployeeTaskDTO[]>> PostMultipleTasks([FromBody]EmployeeTasksMultipleDTO employeeTasksMultipleDTO)
+        {
+            var mappedTask = _mapper.Map<EmployeeTask>(employeeTasksMultipleDTO.EmployeeTaskDTO);
+
+            var tasks = await _employeeTaskRepository.CreateMultipleTasks(mappedTask, employeeTasksMultipleDTO.EmployeesID);
+            var tasksDTO=_mapper.Map<EmployeeTaskDTO[]>(tasks);
+            
+
+            return Created("get", tasksDTO);
+        }  
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<EmployeeTask>> DeleteTask(long id)
         {
