@@ -210,10 +210,8 @@ namespace HumanResourcesManager.Controllers
         public async Task<ActionResult<EmployeeTaskDTO[]>> PostMultipleTasks([FromBody]EmployeeTasksMultipleDTO employeeTasksMultipleDTO)
         {
             var mappedTask = _mapper.Map<EmployeeTask>(employeeTasksMultipleDTO.EmployeeTaskDTO);
-
             var tasks = await _employeeTaskRepository.CreateMultipleTasks(mappedTask, employeeTasksMultipleDTO.EmployeesID);
-            var tasksDTO=_mapper.Map<EmployeeTaskDTO[]>(tasks);
-            
+            var tasksDTO=_mapper.Map<EmployeeTaskDTO[]>(tasks);       
 
             return Created("get", tasksDTO);
         }  

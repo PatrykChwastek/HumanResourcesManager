@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
     formGrid: {
         display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr",
+        gridTemplateColumns: "1fr 2fr",
         justifyContent: "space-between",
         alignContent: "space-between",
         gridGap: "1.2rem 1.2rem",
@@ -60,7 +60,7 @@ const CreateTask = () => {
         } else
             setTask({
                 ...task,
-                assignedEmployeeId: null,
+                assignedEmployeeId: 0,
             })
     }, [employeesToAssign]);
 
@@ -88,6 +88,24 @@ const CreateTask = () => {
             body: JSON.stringify(formData),
         };
         fetch(APIURL + 'tasks', requestOptions)
+            .then(response => response.json())
+            .then(data => console.log(data));
+    }
+
+    const PostTasks = (formData) => {
+        let employeesId = [];
+        employeesToAssign.map(employee => {
+            employeesId.push(employee.id);
+        })
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                employeeTaskDTO: formData,
+                employeesID: employeesId
+            }),
+        };
+        fetch(APIURL + 'tasks/multi', requestOptions)
             .then(response => response.json())
             .then(data => console.log(data));
     }
@@ -125,7 +143,11 @@ const CreateTask = () => {
     }
 
     const hendlePostTask = () => {
-        PostTask(task);
+        if (employeesToAssign.length === 0) {
+            PostTask(task);
+            return;
+        }
+        PostTasks(task);
     }
 
     return (

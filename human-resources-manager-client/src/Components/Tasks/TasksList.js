@@ -251,6 +251,7 @@ const TasksList = ({ userId, teamId }) => {
                     size: size,
                     totalPages: data.totalPages,
                 })
+                setSelectedIndex(0);
                 setTasks(data.items);
             })
         } else {
@@ -268,6 +269,7 @@ const TasksList = ({ userId, teamId }) => {
                     size: size,
                     totalPages: data.totalPages,
                 })
+                setSelectedIndex(0);
                 setTasks(data.items)
             })
         }
@@ -340,6 +342,7 @@ const TasksList = ({ userId, teamId }) => {
     };
 
     const handlePageChange = (event, value) => {
+
         loadTasksList(value, pagination.size);
     };
     const handleSubTaskExpand = (taskId) => (event, newExpanded) => {
