@@ -132,6 +132,17 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center'
     },
+    detailsTitle: {
+        color: theme.palette.text.primary,
+        padding: '6px 0 2px 12px',
+        backgroundColor: theme.palette.primary.main,
+        boxShadow: theme.shadows[2],
+        borderRadius: '3px 3px 0 0',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: "column"
+    },
     linkButton: {
         marginRight: '10px',
         marginLeft: 'auto',
@@ -392,7 +403,7 @@ const TasksList = ({ userId, teamId }) => {
     return (
         <div >
             <Toolbar className={classes.filterBox}>
-                <h3 className={classes.whiteText}>Tasks From: </h3>
+                <h3 className={classes.whiteText}>Search Tasks: </h3>
                 <DarkTextField
                     onChange={handleChangeFilterParams}
                     label='Task Name...'
@@ -589,36 +600,18 @@ const TasksList = ({ userId, teamId }) => {
                         />
                     </List>
                     <Card className={classes.tasksDetailsCol}>
-                        <div className={classes.title}>
+                        <div className={classes.detailsTitle}>
                             <Typography noWrap variant="h5">
                                 {tasks[selectedIndex].name}
                             </Typography>
-                        </div>
-                        <div className={classes.statusContainer}>
-                            <Typography variant="h6">
-                                Status:
-                            </Typography>
-                            <Chip
-                                label={tasks[selectedIndex].status}
-                                style={{
-                                    boxShadow: '0px 3px 1px -2px rgba(0, 0, 0, 0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)',
-                                    fontSize: "14px",
-                                    fontWeight: "550",
-                                    margin: "2px",
-                                    marginLeft: "10px",
-                                    marginRight: "10px",
-                                    width: "99%",
-                                    color: tasks[selectedIndex].status === "In-Progress" ||
-                                        tasks[selectedIndex].status === "Delayed" ? "white" : "black",
-                                    background: tasks[selectedIndex].status === "In-Progress"
-                                        ? "rgb(56 81 216)"
-                                        : tasks[selectedIndex].status === "Requested"
-                                            ? "rgb(231 170 35): " :
-                                            tasks[selectedIndex].status === "Delayed" ?
-                                                "#bd0000" :
-                                                "rgb(0 158 7)",
-                                }}
-                            />
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                                <Typography variant="subtitle1" style={{ marginRight: "6px" }}>
+                                    {"Status: "}
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    {tasks[selectedIndex].status}
+                                </Typography>
+                            </div>
 
                         </div>
                         {selTaskEmployee.id === undefined ? null :
