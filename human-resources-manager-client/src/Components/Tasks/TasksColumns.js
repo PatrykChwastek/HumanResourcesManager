@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { getTasks, changeTaskStatus } from '../../Services/TasksService';
+import { getTasks, changeTaskStatus, getUserTasksStats } from '../../Services/TasksService';
 import { getCurrentUser } from '../../Services/AuthService';
-
+import { Link } from "react-router-dom";
 import moment from "moment";
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,6 +20,10 @@ const useStyles = makeStyles((theme) => ({
         margin: '0 auto',
         width: 'max-content'
     },
+    topBar: {
+        display: 'flex',
+        flexDirection: 'row'
+    },
     filterBox: {
         padding: ".1rem",
         paddingLeft: "1.8rem",
@@ -30,6 +34,19 @@ const useStyles = makeStyles((theme) => ({
         background: theme.palette.grey[800],
         boxShadow:
             "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)",
+    },
+    delayedDisplay: {
+        width: "max-content",
+        padding: "0 8px 0",
+        marginLeft: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        background: theme.palette.grey[800],
+        "& a": {
+            color: "white",
+            textDecoration: "none",
+        }
+
     },
     whiteText: {
         color: "white",
@@ -67,10 +84,25 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const filter = {
+    name: "",
+    status: "Delayed",
+    isBStartTime: false,
+    bStartTime: undefined,
+    isAStartTime: false,
+    aStartTime: undefined,
+    isBDeadline: false,
+    bDeadline: undefined,
+    isADeadline: false,
+    aDeadline: undefined
+};
+
+const userID = getCurrentUser().userDetails.employeeDTO.id;
 const TasksColumns = () => {
     const classes = useStyles();
     const [expandedTask, setExpandedTask] = useState('');
     const [expandedSubTask, setExpandedSubTask] = useState('');
+    const [userTaskStats, setUserTaskStats] = useState({});
     const [taskFilter, setTaskFilter] = useState({
         filterMode: "Today",
         beforeStartTime: moment().format("YYYY-MM-DD"),
@@ -98,12 +130,17 @@ const TasksColumns = () => {
         }
     });
 
+
     useEffect(() => {
-        const userID = getCurrentUser().userDetails.employeeDTO.id;
+        getUserTasksStats(userID).then((data) => {
+            setUserTaskStats(data)
+        });
+    }, []);
+
+    useEffect(() => {
         let completed = [];
         let requested = [];
         let progress = [];
-        console.log(taskFilter);
         getTasks(1, 50, userID,
             '', undefined,
             taskFilter.beforeStartTime,
@@ -211,30 +248,46 @@ const TasksColumns = () => {
 
     return (
         <div className={classes.taskTabContainer}>
-            <Toolbar className={classes.filterBox}>
-                <h3 className={classes.whiteText}>Tasks From: </h3>
+            <div className={classes.topBar}>
+                <Toolbar className={classes.filterBox}>
+                    <h3 className={classes.whiteText}>Tasks From: </h3>
 
-                <ButtonGroup variant="contained">
-                    <Button
-                        color={taskFilter.filterMode === 'Today' ? 'primary' : 'default'}
-                        onClick={() => { handleFilterChange('today') }}
-                    >
-                        Today
-                    </Button>
-                    <Button
-                        color={taskFilter.filterMode === 'This Week' ? 'primary' : 'default'}
-                        onClick={() => { handleFilterChange('week') }}
-                    >
-                        This Week
-                    </Button>
-                    <Button
-                        color={taskFilter.filterMode === 'This Month' ? 'primary' : 'default'}
-                        onClick={() => { handleFilterChange('month') }}
-                    >
-                        This Month
-                    </Button>
-                </ButtonGroup>
-            </Toolbar>
+                    <ButtonGroup variant="contained">
+                        <Button
+                            color={taskFilter.filterMode === 'Today' ? 'primary' : 'default'}
+                            onClick={() => { handleFilterChange('today') }}
+                        >
+                            Today
+                        </Button>
+                        <Button
+                            color={taskFilter.filterMode === 'This Week' ? 'primary' : 'default'}
+                            onClick={() => { handleFilterChange('week') }}
+                        >
+                            This Week
+                        </Button>
+                        <Button
+                            color={taskFilter.filterMode === 'This Month' ? 'primary' : 'default'}
+                            onClick={() => { handleFilterChange('month') }}
+                        >
+                            This Month
+                        </Button>
+                    </ButtonGroup>
+                </Toolbar>
+                {userTaskStats.totalDelayedTasks === undefined ? null :
+                    <Card className={classes.delayedDisplay}>
+                        <Link to={
+                            {
+                                pathname: "/main/tasks-list",
+                                filter: { filter }
+                            }}>
+                            <Typography noWrap variant="h6">
+                                {'Delayed Tasks: ' + userTaskStats.totalDelayedTasks}
+                            </Typography>
+                        </Link>
+                    </Card>
+                }
+
+            </div>
             <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
                 <DragDropContext
                     onDragEnd={(result) => onDragEnd(result, columns, setColumns)}

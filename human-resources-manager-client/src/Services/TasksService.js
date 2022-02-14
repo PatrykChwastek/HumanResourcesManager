@@ -111,9 +111,29 @@ export const changeTaskStatus = async (taskID, status) => {
         })
 }
 
+export const getUserTasksStats = async (employeeID) => {
+    const requestOptions = {
+        method: 'Get',
+        headers: { 'Content-Type': 'application/json' }
+    };
+    return await fetch(APIURL +
+        `tasks/stats?employeeid=${employeeID}`,
+        requestOptions
+    ).then((response) => {
+        if (response.ok)
+            return response.json();
+        else
+            return Promise.reject();
+    })
+        .then(data => {
+            return data
+        })
+}
+
 // eslint-disable-next-line
 export default {
     getTasks,
     getTeamTasks,
-    changeTaskStatus
+    changeTaskStatus,
+    getUserTasksStats
 };

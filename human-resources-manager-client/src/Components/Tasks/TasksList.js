@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import APIURL from '../../Services/Globals';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { getCurrentUser } from '../../Services/AuthService';
 import moment from "moment";
 import { makeStyles } from '@material-ui/core/styles';
@@ -192,10 +192,25 @@ const useStyles = makeStyles((theme) => ({
         }
     },
 }));
+
+const noFilter = {
+    name: "",
+    status: undefined,
+    isBStartTime: false,
+    bStartTime: undefined,
+    isAStartTime: false,
+    aStartTime: undefined,
+    isBDeadline: false,
+    bDeadline: undefined,
+    isADeadline: false,
+    aDeadline: undefined
+}
 const taskStatusAll = [{ id: 1, name: 'Completed' }, { id: 2, name: 'Requested' }, { id: 3, name: 'In-Progress' }];
 const allowedStatuses = taskStatusAll;
-const TasksList = ({ userId, teamId }) => {
+
+const TasksList = (props) => {
     const classes = useStyles();
+    const location = useLocation();
     const anchorRef = React.useRef(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selTaskEmployee, setSelTaskEmployee] = useState({});
@@ -208,20 +223,10 @@ const TasksList = ({ userId, teamId }) => {
         size: 10,
         totalPages: 1
     });
-    const [filterParams, setFilterParams] = useState({
-        name: "",
-        status: undefined,
-        isBStartTime: false,
-        bStartTime: undefined,
-        isAStartTime: false,
-        aStartTime: undefined,
-        isBDeadline: false,
-        bDeadline: undefined,
-        isADeadline: false,
-        aDeadline: undefined
-    });
+    const [filterParams, setFilterParams] = useState(location.filter === undefined ? noFilter : location.filter.filter);
 
     useEffect(() => {
+        console.log(filterParams);
         loadTasksList(
             pagination.page,
             pagination.size
@@ -229,7 +234,7 @@ const TasksList = ({ userId, teamId }) => {
     }, []);
 
     useEffect(() => {
-        if (teamId !== undefined && tasks[selectedIndex] !== undefined) {
+        if (props.teamId !== undefined && tasks[selectedIndex] !== undefined) {
             getAssignedEmployee(tasks[selectedIndex].assignedEmployeeId);
         }
     }, [selectedIndex, tasks]);
@@ -247,9 +252,9 @@ const TasksList = ({ userId, teamId }) => {
     }
 
     const loadTasksList = (page, size) => {
-        if (teamId === undefined && userId !== undefined) {
+        if (props.teamId === undefined && props.userId !== undefined) {
             getTasks(
-                page, size, userId,
+                page, size, props.userId,
                 filterParams.name,
                 filterParams.status,
                 filterParams.bStartTime,
@@ -267,7 +272,7 @@ const TasksList = ({ userId, teamId }) => {
             })
         } else {
             getTeamTasks(
-                page, size, teamId,
+                page, size, props.teamId,
                 filterParams.name,
                 filterParams.status,
                 filterParams.bStartTime,
@@ -561,7 +566,7 @@ const TasksList = ({ userId, teamId }) => {
                             <Typography variant="h6" style={{ marginLeft: '16px' }}>
                                 List of Tasks:
                             </Typography>
-                            {teamId === undefined ? null :
+                            {props.teamId === undefined ? null :
                                 <Link className={classes.linkButton} to="/main/create-task">
                                     <Button
                                         size="small"
