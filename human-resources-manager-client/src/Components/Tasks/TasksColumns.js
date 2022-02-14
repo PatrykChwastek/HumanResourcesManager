@@ -159,7 +159,7 @@ const TasksColumns = () => {
             destItems.splice(destItems.length, 0, changed);
             //destItems.splice(destination.index, 0, removed);
 
-            changeTaskStatus(changed.id, changed.status).then();
+            changeTaskStatus(changed.id, changed.status).then(() => { });
 
             setColumns({
                 ...columns,

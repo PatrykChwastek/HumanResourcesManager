@@ -85,7 +85,7 @@ namespace HumanResourcesManager.Services.EmployeeTaskRepo
         public async Task<EmployeeTask> GetTask(long id)
         {
             var task = await _mDBContext.EmployeeTask.Include(et => et.Subtasks).FirstOrDefaultAsync(et => et.Id == id);
-            if (task.Deadline > DateTime.Now.Date && task.Status != "Delayed")
+            if (task.Deadline.Date < DateTime.Now.Date && task.Status == "Requested")
             {
                return await changeTaskStatus(task.Id, "Delayed");
             }
