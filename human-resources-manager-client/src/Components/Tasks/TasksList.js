@@ -679,51 +679,53 @@ const TasksList = (props) => {
 
 
                         </CardContent>
-                        <div className={classes.buttonSection}>
-                            <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
-                            <ButtonGroup variant="contained" color="primary" ref={anchorRef}>
-                                <Button onClick={hendleChangeStatus}>{allowedStatuses[statusSelIndex].name}</Button>
-                                <Button
-                                    color="primary"
-                                    size="small"
-                                    aria-controls={openStatusSel ? 'split-button-menu' : undefined}
-                                    aria-expanded={openStatusSel ? 'true' : undefined}
-                                    aria-label="select merge strategy"
-                                    aria-haspopup="menu"
-                                    onClick={handleStatSellToggle}
-                                >
-                                    <ArrowDropDownIcon />
-                                </Button>
-                            </ButtonGroup>
-                            <Popper open={openStatusSel} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-                                {({ TransitionProps, placement }) => (
-                                    <Grow
-                                        {...TransitionProps}
-                                        style={{
-                                            transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-                                        }}
+                        {props.type === 'view' ? null :
+                            <div className={classes.buttonSection}>
+                                <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
+                                <ButtonGroup variant="contained" color="primary" ref={anchorRef}>
+                                    <Button onClick={hendleChangeStatus}>{allowedStatuses[statusSelIndex].name}</Button>
+                                    <Button
+                                        color="primary"
+                                        size="small"
+                                        aria-controls={openStatusSel ? 'split-button-menu' : undefined}
+                                        aria-expanded={openStatusSel ? 'true' : undefined}
+                                        aria-label="select merge strategy"
+                                        aria-haspopup="menu"
+                                        onClick={handleStatSellToggle}
                                     >
-                                        <Paper>
-                                            <ClickAwayListener onClickAway={handleStatSellClose}>
-                                                <MenuList id="split-button-menu">
-                                                    {allowedStatuses.map((option, index) => (
-                                                        <MenuItem
-                                                            key={option.name}
-                                                            //  disabled={index === 2}
-                                                            selected={index === statusSelIndex}
-                                                            onClick={(event) => handleMenuItemClick(event, index)}
-                                                        >
-                                                            {option.name}
-                                                        </MenuItem>
-                                                    ))}
-                                                </MenuList>
-                                            </ClickAwayListener>
-                                        </Paper>
-                                    </Grow>
-                                )}
-                            </Popper>
+                                        <ArrowDropDownIcon />
+                                    </Button>
+                                </ButtonGroup>
+                                <Popper open={openStatusSel} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                                    {({ TransitionProps, placement }) => (
+                                        <Grow
+                                            {...TransitionProps}
+                                            style={{
+                                                transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                                            }}
+                                        >
+                                            <Paper>
+                                                <ClickAwayListener onClickAway={handleStatSellClose}>
+                                                    <MenuList id="split-button-menu">
+                                                        {allowedStatuses.map((option, index) => (
+                                                            <MenuItem
+                                                                key={option.name}
+                                                                //  disabled={index === 2}
+                                                                selected={index === statusSelIndex}
+                                                                onClick={(event) => handleMenuItemClick(event, index)}
+                                                            >
+                                                                {option.name}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </MenuList>
+                                                </ClickAwayListener>
+                                            </Paper>
+                                        </Grow>
+                                    )}
+                                </Popper>
 
-                        </div>
+                            </div>
+                        }
                     </Card>
                 </div>
             }
