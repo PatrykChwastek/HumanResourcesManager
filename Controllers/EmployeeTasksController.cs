@@ -60,9 +60,6 @@ namespace HumanResourcesManager.Controllers
         [HttpGet("stats")]
         public async Task<ActionResult<IEnumerable<EmployeeTaskDTO>>> GetTasksStats(long teamid, long employeeid)
         {
-            if (teamid == 0 && employeeid == 0)
-                return BadRequest("Team ID or Eployee ID required");
-
             DateTime today = DateTime.Now.Date;
             int days = today.DayOfWeek - DayOfWeek.Monday;
             DateTime weekStart = DateTime.Now.AddDays(-days).Date;
@@ -143,7 +140,8 @@ namespace HumanResourcesManager.Controllers
 
                 totalDelayedTasks = await _employeeTaskRepository.TasksCount(delayedTasks);
             }
-            else
+
+            if (teamid != 0 && employeeid == 0)
             {
                 var delayedTasks = _employeeTaskRepository.
                     GetTeamMembersTasks(null, teamid, "Delayed", null, null, null, null);
@@ -151,6 +149,13 @@ namespace HumanResourcesManager.Controllers
                 totalDelayedTasks = await _employeeTaskRepository.TasksCount(delayedTasks);
             }
 
+            if (teamid == 0 && employeeid == 0)
+            {
+                var delayedTasks = _employeeTaskRepository.
+                     GetTasks(null, 0, "Delayed", null, null, null, null);
+
+                totalDelayedTasks = await _employeeTaskRepository.TasksCount(delayedTasks);
+            }
 
             var todayTotal = await _employeeTaskRepository.TasksCount(todayTasks);
             var weekTotal = await _employeeTaskRepository.TasksCount(weekTasks);
@@ -244,14 +249,16 @@ namespace HumanResourcesManager.Controllers
 
         private IQueryable<EmployeeTask> TasksByDate(long teamId, long employeeId, DateTime? b_startTime, DateTime? a_startTime)
         {
-            IQueryable<EmployeeTask> employeeTasks;
-            if (teamId != 0)
-            {
-               return employeeTasks = _employeeTaskRepository.
+            if (teamId != 0 && employeeId == 0)
+               return _ = _employeeTaskRepository.
                 GetTeamMembersTasks(null, teamId, null, b_startTime, a_startTime, null, null);
-            }
-            return employeeTasks = _employeeTaskRepository.
-                GetTasks(null, employeeId, null, b_startTime, a_startTime, null, null);
+
+            if (teamId == 0 && employeeId != 0)
+                return _ = _employeeTaskRepository.
+                    GetTasks(null, employeeId, null, b_startTime, a_startTime, null, null);
+
+            return _ = _employeeTaskRepository.
+                    GetTasks(null, 0, null, b_startTime, a_startTime, null, null);
         }
     }
 }
