@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const CreateEmploy = () => {
+const EmployeeForm = () => {
     const classes = useStyles();
     const [employee, setEmployee] = useState({
         id: 0,
@@ -274,4 +274,4 @@ const CreateEmploy = () => {
         </div>
     );
 }
-export default CreateEmploy;
+export default EmployeeForm;

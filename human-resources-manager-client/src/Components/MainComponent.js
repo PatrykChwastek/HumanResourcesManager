@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link, useHistory } from "react-
 import EmployeeList from './Employees/EmployeeList';
 import HR_Dashboard from './Employees/HR_Dashboard';
 import CreateJobApplication from './JobApplication/CreateJobApplication';
-import CreateEmployee from './Employees/CreateEmployee';
+import EmployeeForm from './Employees/EmployeeForm';
 import { EmployeeDetails } from './Employees/EmployeeDetails';
 import LoginUser from './Users/LoginUser';
 import TeamManager from './Teams/TeamManager';
@@ -163,7 +163,7 @@ const MainComponent = () => {
                             <TasksList userId={getCurrentUser().userDetails.employeeDTO.id} />
                         </Route>
                         <Route path="/main/create-employee">
-                            <CreateEmployee />
+                            <EmployeeForm />
                         </Route>
                         <Route path="/main/employees" >
                             <EmployeeList />
