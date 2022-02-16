@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { DarkTextField, DarkSelect, DarkChipList } from '../GlobalComponents';
 import APIURL from '../../Services/Globals'
-
+import { useLocation } from "react-router-dom";
 import Button from '@material-ui/core/Button';
 
 import DateFnsUtils from '@date-io/date-fns';
@@ -43,33 +43,36 @@ const useStyles = makeStyles((theme) => ({
 
 const EmployeeForm = () => {
     const classes = useStyles();
-    const [employee, setEmployee] = useState({
-        id: 0,
-        employmentDate: format(new Date(), "yyy-MM-dd"),
-        remoteWork: false,
-        person: {
-            id: 0,
-            name: "",
-            surname: "",
-            phoneNumber: "",
-            email: "",
-            employeeAddress: {
+    const location = useLocation();
+    const [employee, setEmployee] = useState(
+        location.employee !== undefined ? location.employee.employee :
+            {
                 id: 0,
-                city: "",
-                postCode: "",
-                street: ""
-            }
-        },
-        position: {
-            id: 0,
-            name: "",
-        },
-        department: {
-            id: 0,
-            name: "",
-        },
-        permissions: []
-    });
+                employmentDate: format(new Date(), "yyy-MM-dd"),
+                remoteWork: false,
+                person: {
+                    id: 0,
+                    name: "",
+                    surname: "",
+                    phoneNumber: "",
+                    email: "",
+                    employeeAddress: {
+                        id: 0,
+                        city: "",
+                        postCode: "",
+                        street: ""
+                    }
+                },
+                position: {
+                    id: 0,
+                    name: "",
+                },
+                department: {
+                    id: 0,
+                    name: "",
+                },
+                permissions: []
+            });
     const [departments, setDepartments] = useState([]);
     const [positions, setPositions] = useState([]);
     const remoteWork = [
@@ -77,7 +80,10 @@ const EmployeeForm = () => {
         { id: true, name: "Remote" }
     ];
     const [allPermissions, setAllPermissions] = useState([]);
-    const [employeePermissions, setEmployeePermissions] = useState([]);
+    const [employeePermissions, setEmployeePermissions] = useState(
+        location.employee !== undefined ? location.employee.employee.permissions : []
+    );
+
     useEffect(() => {
         getEmployeeProps()
     }, []);
@@ -97,6 +103,16 @@ const EmployeeForm = () => {
         };
         fetch(APIURL + 'employee/create', requestOptions)
             .then(response => response.json())
+            .then(data => console.log(data));
+    }
+
+    const PutEmployee = (id, formData) => {
+        const requestOptions = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+        };
+        fetch(APIURL + 'employee/put/' + id, requestOptions)
             .then(data => console.log(data));
     }
 
@@ -142,15 +158,15 @@ const EmployeeForm = () => {
         }
 
         setEmployee({
-            id: 0,
+            ...employee,
             person: {
-                id: 0,
+                ...employee.person,
                 name: e.target.name === "employeeName" ? e.target.value : employee.person.name,
                 surname: e.target.name === "employeeSurname" ? e.target.value : employee.person.surname,
                 phoneNumber: e.target.name === "employeePhone" ? e.target.value : employee.person.phoneNumber,
                 email: e.target.name === "employeeEmail" ? e.target.value : employee.person.email,
                 employeeAddress: {
-                    id: 0,
+                    ...employee.person.employeeAddress,
                     city: e.target.name === "employeeCity" ? e.target.value : employee.person.employeeAddress.city,
                     postCode: e.target.name === "employeePostCode" ? e.target.value : employee.person.employeeAddress.postCode,
                     street: e.target.name === "employeeStreet" ? e.target.value : employee.person.employeeAddress.street
@@ -171,9 +187,20 @@ const EmployeeForm = () => {
         setEmployeePermissions(chips => chips.filter(chip => chip.name !== chipToDelete.name));
     }
 
-    const hendlePostEmployee = () => {
+    const hendleSubmitEmployee = () => {
         console.log(employee);
+        if (location.employee !== undefined) {
+            PutEmployee(employee.id, employee)
+            return;
+        }
         PostEmployee(employee);
+    }
+
+    const setSelectVall = (colection, objId) => {
+        if (colection[0] === undefined || objId === 0)
+            return '';
+
+        return colection[colection.findIndex((item) => item.id === objId)];
     }
 
     return (
@@ -186,49 +213,58 @@ const EmployeeForm = () => {
                     <DarkTextField
                         label="Name"
                         name="employeeName"
+                        value={employee.person.name}
                         onChange={headleFormChange}
                     />
                     <DarkTextField
                         label="Surname"
                         name="employeeSurname"
+                        value={employee.person.surname}
                         onChange={headleFormChange}
                     />
                     <DarkTextField
                         label="Phone Number"
                         name="employeePhone"
                         type="tel"
+                        value={employee.person.phoneNumber}
                         onChange={headleFormChange}
                     />
                     <DarkTextField
                         label="Email"
                         name="employeeEmail"
+                        value={employee.person.email}
                         onChange={headleFormChange}
                     />
                     <DarkTextField
                         label="City"
                         name="employeeCity"
+                        value={employee.person.employeeAddress.city}
                         onChange={headleFormChange}
                     />
                     <DarkTextField
                         label="Post Code"
                         name="employeePostCode"
+                        value={employee.person.employeeAddress.postCode}
                         onChange={headleFormChange}
                     />
                     <DarkTextField
                         label="Street"
                         name="employeeStreet"
+                        value={employee.person.employeeAddress.street}
                         onChange={headleFormChange}
                     />
                     <DarkSelect
                         label="Department"
                         name="departmentSelect"
                         collection={departments}
+                        value={setSelectVall(departments, employee.department.id)}
                         onChange={headleFormChange}
                     />
                     <DarkSelect
                         label="Position"
                         name="positionSelect"
                         collection={positions}
+                        value={setSelectVall(positions, employee.position.id)}
                         onChange={headleFormChange}
                     />
                     <DarkSelect
@@ -268,7 +304,7 @@ const EmployeeForm = () => {
                     className={classes.createButton}
                     variant="contained"
                     color="primary"
-                    onClick={hendlePostEmployee}
+                    onClick={hendleSubmitEmployee}
                 >Create</Button>
             </form>
         </div>

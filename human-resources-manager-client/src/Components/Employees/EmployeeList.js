@@ -274,9 +274,11 @@ const EmployList = () => {
                                                     <VisibilityIcon />
                                                 </IconButton>
                                             </Link>
-                                            <IconButton className={classes.button} size="small" aria-label="edit">
-                                                <EditIcon />
-                                            </IconButton>
+                                            <Link to={{ pathname: `/main/employee-form`, employee: { employee } }}>
+                                                <IconButton className={classes.button} size="small" aria-label="edit">
+                                                    <EditIcon />
+                                                </IconButton>
+                                            </Link>
                                             <IconButton className={classes.button} size="small" aria-label="del">
                                                 <DeleteIcon />
                                             </IconButton>

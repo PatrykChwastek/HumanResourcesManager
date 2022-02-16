@@ -166,7 +166,6 @@ export const DarkSelect = ({ onChange, label, name, value, firstVal, collection 
                 name={name}
                 onChange={onChange}
                 value={value}
-                defaultValue=""
             >
                 {
                     firstVal === undefined ? null :

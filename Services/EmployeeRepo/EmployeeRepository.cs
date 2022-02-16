@@ -83,6 +83,8 @@ namespace HumanResourcesManager.Services.EmployeeRepo
         public async Task<Employee> PutEmployee(long id, Employee employeeEntity)
         {
             _mDBContext.Entry(employeeEntity).State = EntityState.Modified;
+            _mDBContext.Entry(employeeEntity.Person).State = EntityState.Modified;
+            _mDBContext.Entry(employeeEntity.Person.EmployeeAddress).State = EntityState.Modified;
             try
             {
                 await Save();

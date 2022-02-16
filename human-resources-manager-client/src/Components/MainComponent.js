@@ -131,7 +131,7 @@ const MainComponent = () => {
                                     <Link className={classes.linkButtons} to="/main/employees">
                                         <TreeItem nodeId="5" label="Employees" />
                                     </Link>
-                                    <Link className={classes.linkButtons} to="/main/create-employee">
+                                    <Link className={classes.linkButtons} to="/main/employee-form">
                                         <TreeItem nodeId="6" label="Create Employee" />
                                     </Link>
                                     <Link className={classes.linkButtons} to="/main/applications">
@@ -162,7 +162,7 @@ const MainComponent = () => {
                         <Route path="/main/tasks-list">
                             <TasksList userId={getCurrentUser().userDetails.employeeDTO.id} />
                         </Route>
-                        <Route path="/main/create-employee">
+                        <Route path="/main/employee-form">
                             <EmployeeForm />
                         </Route>
                         <Route path="/main/employees" >
