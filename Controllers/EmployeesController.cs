@@ -41,7 +41,7 @@ namespace HumanResourcesManager.Controllers
             {
                 var employees = _employeeRepository.GetEmployees(order, search,seniority, department, position, isremote);
                 var mappedEmployees =_mapper.Map<List<EmployeeDTO> >(employees);
-                var totalEmployees = await _employeeRepository.EmployeesCount();
+                var totalEmployees = await _employeeRepository.EmployeesCount(employees);
 
                 var pageOfEmployees = new Pagination(page, size, totalEmployees);
                 return Ok(await pageOfEmployees.InitPagination(mappedEmployees.AsQueryable()));

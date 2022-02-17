@@ -49,10 +49,15 @@ namespace HumanResourcesManager.Services.EmployeeRepo
             return true;
         }
 
-        public async Task<int> EmployeesCount()
+        public async Task<int> AllEmployeesCount()
         {
             int res = await _mDBContext.Employee.CountAsync();
             return res;
+        }
+
+        public async Task<int> EmployeesCount(IQueryable<Employee> employeesQuery)
+        {
+            return await employeesQuery.CountAsync();
         }
 
         public async Task<Employee> GetEmployee(long id)

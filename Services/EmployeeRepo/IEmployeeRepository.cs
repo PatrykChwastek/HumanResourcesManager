@@ -7,7 +7,8 @@ namespace HumanResourcesManager.Services
     public interface IEmployeeRepository
     {
         Task<bool> Save();
-        Task<int> EmployeesCount();
+        Task<int> AllEmployeesCount();
+        Task<int> EmployeesCount(IQueryable<Employee> employees);
         IQueryable<Employee> GetEmployees(
             string order, 
             string search,
