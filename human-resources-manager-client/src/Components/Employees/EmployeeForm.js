@@ -4,11 +4,15 @@ import { DarkTextField, DarkSelect, DarkChipList } from '../GlobalComponents';
 import APIURL from '../../Services/Globals'
 import { useLocation } from "react-router-dom";
 import Button from '@material-ui/core/Button';
-
 import DateFnsUtils from '@date-io/date-fns';
 import { format } from 'date-fns'
-
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
     mainConteiner: {
@@ -89,6 +93,11 @@ const EmployeeForm = () => {
     const [employeePermissions, setEmployeePermissions] = useState(
         location.employee !== undefined ? location.employee.employee.permissions : []
     );
+    const [allertProps, setAllertProps] = useState({
+        text: '',
+        open: false,
+        type: 'success'
+    });
 
     useEffect(() => {
         getEmployeeProps()
@@ -109,7 +118,21 @@ const EmployeeForm = () => {
         };
         fetch(APIURL + 'employee/create', requestOptions)
             .then(response => response.json())
-            .then(data => console.log(data));
+            .then(() => {
+                setAllertProps({
+                    text: "Employee Created",
+                    open: true,
+                    type: "success"
+                })
+            }
+                , (err) => {
+                    console.log(err)
+                    setAllertProps({
+                        text: "Employee Creation Error!",
+                        open: true,
+                        type: "error"
+                    })
+                });
     }
 
     const PutEmployee = (id, formData) => {
@@ -119,7 +142,20 @@ const EmployeeForm = () => {
             body: JSON.stringify(formData),
         };
         fetch(APIURL + 'employee/put/' + id, requestOptions)
-            .then(data => console.log(data));
+            .then(() => setAllertProps({
+                text: "Employee Modified",
+                open: true,
+                type: 'success'
+            })
+                , (err) => {
+                    console.log(err)
+                    setAllertProps({
+                        text: "Employee Edit Error!",
+                        open: true,
+                        type: "error"
+                    })
+                }
+            );
     }
 
     const getEmployeeProps = async () => {
@@ -209,8 +245,20 @@ const EmployeeForm = () => {
         return colection[colection.findIndex((item) => item.id === objId)];
     }
 
+    const handleAllertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAllertProps({ ...allertProps, open: false });
+    };
+
     return (
         <div className={classes.mainConteiner}>
+            <Snackbar open={allertProps.open} autoHideDuration={4000} onClose={handleAllertClose}>
+                <Alert onClose={handleAllertClose} severity={allertProps.type}>
+                    {allertProps.text}
+                </Alert>
+            </Snackbar>
             <div boxshadow={2} className={classes.title}>
                 {employee.id !== 0 ?
                     <h3 >{'Edit Employee: ' + employee.id}</h3> :
