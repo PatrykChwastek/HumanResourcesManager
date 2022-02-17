@@ -224,6 +224,9 @@ const EmployList = () => {
                                         Position
                                     </StyledTableCell>
                                     <StyledTableCell align="center">
+                                        Seniority
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center">
                                         Department
                                     </StyledTableCell>
                                     <StyledTableCell align="center">
@@ -257,6 +260,9 @@ const EmployList = () => {
                                         </StyledTableCell>
                                         <StyledTableCell align="center">
                                             {employee.position.name}
+                                        </StyledTableCell>
+                                        <StyledTableCell align="center">
+                                            {employee.seniority}
                                         </StyledTableCell>
                                         <StyledTableCell align="center">
                                             {employee.department.name}

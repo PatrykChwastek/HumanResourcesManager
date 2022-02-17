@@ -44,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
 const EmployeeForm = () => {
     const classes = useStyles();
     const location = useLocation();
+    const [seniorityLvs] = useState([
+        { id: 1, name: "Junior" },
+        { id: 2, name: "Regular" },
+        { id: 3, name: "Senior" },
+    ]);
     const [employee, setEmployee] = useState(
         location.employee !== undefined ? location.employee.employee :
             {
@@ -71,6 +76,7 @@ const EmployeeForm = () => {
                     id: 0,
                     name: "",
                 },
+                seniority: "",
                 permissions: []
             });
     const [departments, setDepartments] = useState([]);
@@ -156,7 +162,6 @@ const EmployeeForm = () => {
                 }
             }
         }
-
         setEmployee({
             ...employee,
             person: {
@@ -176,6 +181,7 @@ const EmployeeForm = () => {
             department: e.target.name === "departmentSelect" ? e.target.value : employee.department,
             employmentDate: employee.employmentDate,
             remoteWork: e.target.name === "remoteWork" ? e.target.value.id : employee.remoteWork,
+            seniority: e.target.name === "seniority" ? e.target.value.name : employee.seniority,
             permissions: employee.permissions
         })
     }
@@ -265,6 +271,14 @@ const EmployeeForm = () => {
                         name="positionSelect"
                         collection={positions}
                         value={setSelectVall(positions, employee.position.id)}
+                        onChange={headleFormChange}
+                    />
+                    <DarkSelect
+                        label="Seniority"
+                        name="seniority"
+                        collection={seniorityLvs}
+                        value={
+                            seniorityLvs[seniorityLvs.findIndex((item) => item.name === employee.seniority)]} //sen
                         onChange={headleFormChange}
                     />
                     <DarkSelect

@@ -124,6 +124,10 @@ export const EmployeeDetails = () => {
                                 <p>{employee.position.name}</p>
                             </div>
                             <div  >
+                                <h3>Seniority Lvl: </h3>
+                                <p>{employee.seniority}</p>
+                            </div>
+                            <div  >
                                 <h3>Department: </h3>
                                 <p>{employee.department.name}</p>
                             </div>
