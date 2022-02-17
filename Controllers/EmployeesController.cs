@@ -35,11 +35,11 @@ namespace HumanResourcesManager.Controllers
         [HttpGet]
         [ActionName("all")]
         public async Task<ActionResult<Pagination>> GetEmployee(
-            int page,int size, string order, string search, long department, long position, bool? isremote)
+            int page,int size, string order, string search, string seniority, long department, long position, bool? isremote)
         {
             try
             {
-                var employees = _employeeRepository.GetEmployees(order, search, department, position, isremote);
+                var employees = _employeeRepository.GetEmployees(order, search,seniority, department, position, isremote);
                 var mappedEmployees =_mapper.Map<List<EmployeeDTO> >(employees);
                 var totalEmployees = await _employeeRepository.EmployeesCount();
 

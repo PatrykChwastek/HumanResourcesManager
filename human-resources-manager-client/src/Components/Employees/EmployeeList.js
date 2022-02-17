@@ -90,10 +90,17 @@ const EmployList = () => {
         { id: true, name: "Remote" },
         { id: false, name: "Office" },
     ]);
+    const [seniorityLvs] = useState([
+        firstRecord,
+        { id: 1, name: "Junior" },
+        { id: 2, name: "Regular" },
+        { id: 3, name: "Senior" },
+    ]);
     const [searchParams, setSearchParams] = useState({
         searchString: '',
         department: firstRecord,
         position: firstRecord,
+        seniority: firstRecord,
         orderBy: orderOptions[4],
         isRemote: remoteOptions[0]
     });
@@ -111,7 +118,12 @@ const EmployList = () => {
             headers: { 'Content-Type': 'application/json' }
         };
         await fetch(APIURL +
-            `employee/all?page=${page}&size=${size}&order=${searchParams.orderBy.id}&search=${searchParams.searchString}&department=${searchParams.department.id}&position=${searchParams.position.id}&isremote=${searchParams.isRemote.id}`,
+            `employee/all?page=${page}&size=${size}&order=${searchParams.orderBy.id}` +
+            `&search=${searchParams.searchString}` +
+            `&department=${searchParams.department.id}` +
+            `&position=${searchParams.position.id}` +
+            `&seniority=${searchParams.seniority.id === 0 ? '' : searchParams.seniority.name}` +
+            `&isremote=${searchParams.isRemote.id}`,
             requestOptions
         )
             .then(response => response.json())
@@ -150,6 +162,7 @@ const EmployList = () => {
             searchString: event.target.name === "searchInput" ? event.target.value : searchParams.searchString,
             department: event.target.name === "departmentSelect" ? event.target.value : searchParams.department,
             position: event.target.name === "positionSelect" ? event.target.value : searchParams.position,
+            seniority: event.target.name === "senioritySelect" ? event.target.value : searchParams.seniority,
             orderBy: event.target.name === "orderBy" ? event.target.value : searchParams.orderBy,
             isRemote: event.target.name === "isRemote" ? event.target.value : searchParams.isRemote,
         });
@@ -157,7 +170,6 @@ const EmployList = () => {
 
     const handleSearch = () => {
         getEmploees(1, rowsPerPage);
-        console.log(searchParams);
     };
     return (
         <div>
@@ -180,6 +192,13 @@ const EmployList = () => {
                     name="positionSelect"
                     collection={positions}
                     value={searchParams.position}
+                    onChange={handleChangeSearchParams}
+                />
+                <DarkSelect
+                    label="Seniority"
+                    name="senioritySelect"
+                    collection={seniorityLvs}
+                    value={searchParams.seniority}
                     onChange={handleChangeSearchParams}
                 />
                 <DarkSelect

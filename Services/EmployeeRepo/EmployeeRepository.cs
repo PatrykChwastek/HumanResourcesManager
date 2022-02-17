@@ -72,9 +72,9 @@ namespace HumanResourcesManager.Services.EmployeeRepo
                 return employee;
         }
 
-        public IQueryable<Employee> GetEmployees(string order, string search, long department, long position, bool? isremote)
+        public IQueryable<Employee> GetEmployees(string order, string search, string seniority, long department, long position, bool? isremote)
         {
-            var employees = FilterEmployees(search, department, position, isremote);
+            var employees = FilterEmployees(search, seniority, department, position, isremote);
             employees = orderEmployees(employees, order);
 
             return employees;
@@ -111,7 +111,7 @@ namespace HumanResourcesManager.Services.EmployeeRepo
             return (await _mDBContext.SaveChangesAsync()) >= 0;
         }
 
-        private IQueryable<Employee> FilterEmployees(string search, long department, long position, bool? isremote)
+        private IQueryable<Employee> FilterEmployees(string search,string seniority , long department, long position, bool? isremote)
         {
             StringBuilder whereQuery = new StringBuilder("e => e.Id != 0 ");
 
@@ -119,10 +119,16 @@ namespace HumanResourcesManager.Services.EmployeeRepo
                 whereQuery.Append("&& e.Department.Id == " + department + " ");
 
             if (position != 0)
-                whereQuery.Append("&& e.Position.Id == " + position + " ");
+                whereQuery.Append("&& e.Position.Id == " + position + " ");             
 
             if (isremote != null)
                 whereQuery.Append("&& e.RemoteWork == " + isremote + " ");
+
+            if (seniority != null || seniority == "")
+            {
+                seniority = seniority.ToLower();
+                whereQuery.Append("&& e.seniority.ToLower().Contains("+'"' + seniority + '"' + ") ");
+            }
 
             if (search != null)
             {

@@ -10,7 +10,8 @@ namespace HumanResourcesManager.Services
         Task<int> EmployeesCount();
         IQueryable<Employee> GetEmployees(
             string order, 
-            string search, 
+            string search,
+            string seniority,
             long department, 
             long position, 
             bool? isremote

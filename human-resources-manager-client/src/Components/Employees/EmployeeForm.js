@@ -212,7 +212,10 @@ const EmployeeForm = () => {
     return (
         <div className={classes.mainConteiner}>
             <div boxshadow={2} className={classes.title}>
-                <h3 >Create new employee</h3>
+                {employee.id !== 0 ?
+                    <h3 >{'Edit Employee: ' + employee.id}</h3> :
+                    <h3 >Create New Employee</h3>
+                }
             </div>
             <form className={classes.root} noValidate autoComplete="off">
                 <div className={classes.formGrid}>
@@ -319,7 +322,7 @@ const EmployeeForm = () => {
                     variant="contained"
                     color="primary"
                     onClick={hendleSubmitEmployee}
-                >Create</Button>
+                >Submit </Button>
             </form>
         </div>
     );
