@@ -169,8 +169,8 @@ const HR_Dashboard = () => {
                 <Card className={classes.root}>
                     <CardHeader
                         title="Newly Hired Employees:"
-                    />
 
+                    />
                     <TableContainer className={classes.container}>
                         <Table stickyHeader aria-label="sticky table" >
                             <TableHead>

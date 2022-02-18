@@ -8,6 +8,11 @@ import Chip from '@material-ui/core/Chip';
 import Card from "@material-ui/core/Card";
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from "@material-ui/core/LinearProgress";
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const StyledTextField = withStyles({
     root: {
@@ -242,9 +247,43 @@ export const StatBar = ({ valueMax, valueCurrent, text, bcolor }) => {
     );
 }
 
+export const ConfirmDialog = (props) => {
+    const { title, children, open, setOpen, onConfirm } = props;
+    return (
+        <Dialog
+            open={open}
+            onClose={() => setOpen(false)}
+            aria-labelledby="confirm-dialog"
+        >
+            <DialogTitle id="confirm-dialog">{title}</DialogTitle>
+            <DialogContent>{children}</DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    onClick={() => setOpen(false)}
+                    color="secondary"
+                >
+                    No
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={() => {
+                        setOpen(false);
+                        onConfirm();
+                    }}
+                    color="default"
+                >
+                    Yes
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
 export default {
     DarkChipList,
     DarkSelect,
     DarkTextField,
-    StatBar
+    StatBar,
+    ConfirmDialog
 };

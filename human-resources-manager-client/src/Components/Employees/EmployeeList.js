@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DarkTextField, DarkSelect } from '../GlobalComponents';
+import { DarkTextField, DarkSelect, ConfirmDialog } from '../GlobalComponents';
 import APIURL from '../../Services/Globals'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
@@ -12,7 +12,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-
+import Divider from '@material-ui/core/Divider';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -37,6 +38,18 @@ const useStyles = makeStyles((theme) => ({
     root: {
         marginTop: '1rem',
         width: '100%',
+    },
+    tabTop: {
+        display: 'flex',
+        padding: '9px',
+        justifyContent: 'space-between',
+        "& h2": {
+            margin: 0,
+        },
+        "& a": {
+            textDecoration: "none",
+            color: "white",
+        }
     },
     container: {
         maxHeight: 550,
@@ -73,6 +86,10 @@ const EmployList = () => {
     const [employees, setEmployees] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [positions, setPositions] = useState([]);
+    const [delDialogProps, setDelDialogProps] = useState({
+        open: false,
+        employeeId: null,
+    });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [totalItems, setTotalItems] = useState(1);
@@ -171,8 +188,32 @@ const EmployList = () => {
     const handleSearch = () => {
         getEmploees(1, rowsPerPage);
     };
+
+    const hendleDeleteEmployee = () => {
+        const requestOptions = {
+            method: 'Delete',
+            headers: { 'Content-Type': 'application/json' }
+        };
+        fetch(APIURL +
+            `employee/delete/${delDialogProps.employeeId}`,
+            requestOptions
+        ).then(data => console.log(data), setPage(0));
+    };
+
+    const delDialogOpen = () => {
+        setDelDialogProps({ ...delDialogProps, open: !delDialogProps.open })
+    }
+
     return (
         <div>
+            <ConfirmDialog
+                title={"Delete Employee: " + delDialogProps.employeeId}
+                open={delDialogProps.open}
+                setOpen={delDialogOpen}
+                onConfirm={hendleDeleteEmployee}
+            >
+                Are you sure you want to delete employee?
+            </ConfirmDialog>
             <Toolbar className={classes.searchBox}>
                 <h3 className={classes.whiteText}>Employees</h3>
                 <DarkTextField
@@ -220,6 +261,21 @@ const EmployList = () => {
 
             {employees === undefined ? <div></div> :
                 <Paper className={classes.root}>
+                    <div className={classes.tabTop}>
+                        <h2 >Employee List:</h2>
+                        <Link to="/main/employee-form">
+                            <Button
+                                variant="contained"
+                                color="secondary"
+
+                                endIcon={<AddCircleIcon />}
+                                onClick={handleSearch}
+                            >
+                                New Employee
+                            </Button>
+                        </Link>
+                    </div>
+                    <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
                     <TableContainer className={classes.container}>
                         <Table stickyHeader aria-label="sticky table" >
                             <TableHead>
@@ -304,7 +360,14 @@ const EmployList = () => {
                                                     <EditIcon />
                                                 </IconButton>
                                             </Link>
-                                            <IconButton className={classes.button} size="small" aria-label="del">
+                                            <IconButton
+                                                className={classes.button}
+                                                size="small"
+                                                onClick={() => setDelDialogProps({
+                                                    open: true,
+                                                    employeeId: employee.id
+                                                })}
+                                            >
                                                 <DeleteIcon />
                                             </IconButton>
                                         </StyledTableCell>

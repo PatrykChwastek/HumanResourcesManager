@@ -131,9 +131,6 @@ const MainComponent = () => {
                                     <Link className={classes.linkButtons} to="/main/employees">
                                         <TreeItem nodeId="5" label="Employees" />
                                     </Link>
-                                    <Link className={classes.linkButtons} to="/main/employee-form">
-                                        <TreeItem nodeId="6" label="Create Employee" />
-                                    </Link>
                                     <Link className={classes.linkButtons} to="/main/applications">
                                         <TreeItem nodeId="7" label="Job Applications" />
                                     </Link>

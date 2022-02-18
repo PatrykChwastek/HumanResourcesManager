@@ -75,6 +75,7 @@ namespace HumanResourcesManager.Context
                 .HasOne<User>(e => e.User)
                 .WithOne(u => u.Employee)
                 .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasForeignKey<User>(u => u.EmployeeId);
 
             modelBuilder.Entity<TeamEmployees>()
@@ -99,6 +100,7 @@ namespace HumanResourcesManager.Context
             modelBuilder.Entity<EmployeeTask>()
                 .HasOne<Employee>(x => x.AssignedEmployee)
                     .WithMany(x => x.Task)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasForeignKey(et => et.AssignedEmployeeId);
 
         }
