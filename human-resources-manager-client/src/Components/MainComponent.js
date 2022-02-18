@@ -6,7 +6,7 @@ import CreateJobApplication from './JobApplication/CreateJobApplication';
 import EmployeeForm from './Employees/EmployeeForm';
 import { EmployeeDetails } from './Employees/EmployeeDetails';
 import LoginUser from './Users/LoginUser';
-import TeamManager from './Teams/TeamManager';
+import Team_Dashboard from './Teams/Team_Dashboard';
 import TeamTasks from "./Teams/TeamTasks";
 import TasksColumns from './Tasks/TasksColumns';
 import TasksList from "./Tasks/TasksList";
@@ -169,7 +169,7 @@ const MainComponent = () => {
                             <EmployeeDetails />
                         </Route>
                         <Route path="/main/team-manager">
-                            <TeamManager />
+                            <Team_Dashboard />
                         </Route>
                         <Route path="/main/team-tasks">
                             <TeamTasks />

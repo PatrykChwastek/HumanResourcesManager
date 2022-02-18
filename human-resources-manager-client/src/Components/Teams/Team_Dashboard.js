@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 const leaderID = getCurrentUser().userDetails.employeeDTO.id;
-const TeamManager = () => {
+const Team_Dashboard = () => {
     const classes = useStyles();
 
     const [team, setTeam] = useState({});
@@ -344,4 +344,4 @@ const TeamManager = () => {
         </div>
     );
 }
-export default TeamManager;
+export default Team_Dashboard;
