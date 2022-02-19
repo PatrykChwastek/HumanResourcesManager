@@ -225,7 +225,6 @@ const TasksList = (props) => {
     const [filterParams, setFilterParams] = useState(location.filter === undefined ? noFilter : location.filter.filter);
 
     useEffect(() => {
-        console.log(filterParams);
         loadTasksList(
             pagination.page,
             pagination.size
@@ -357,7 +356,6 @@ const TasksList = (props) => {
     };
 
     const handlePageChange = (event, value) => {
-
         loadTasksList(value, pagination.size);
     };
     const handleSubTaskExpand = (taskId) => (event, newExpanded) => {

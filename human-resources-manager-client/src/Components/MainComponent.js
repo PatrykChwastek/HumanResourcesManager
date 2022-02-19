@@ -11,6 +11,7 @@ import TeamTasks from "./Teams/TeamTasks";
 import TasksColumns from './Tasks/TasksColumns';
 import TasksList from "./Tasks/TasksList";
 import CreateTask from "./Tasks/CreateTask";
+import TeamList from "./Teams/TeamList"
 import { getUserAccess, logout, getCurrentUser } from '../Services/AuthService';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -131,6 +132,9 @@ const MainComponent = () => {
                                     <Link className={classes.linkButtons} to="/main/employees">
                                         <TreeItem nodeId="5" label="Employees" />
                                     </Link>
+                                    <Link className={classes.linkButtons} to="/main/team-list">
+                                        <TreeItem nodeId="6" label="Team List" />
+                                    </Link>
                                     <Link className={classes.linkButtons} to="/main/applications">
                                         <TreeItem nodeId="7" label="Job Applications" />
                                     </Link>
@@ -167,6 +171,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/employee-details/:id" >
                             <EmployeeDetails />
+                        </Route>
+                        <Route path="/main/team-list">
+                            <TeamList />
                         </Route>
                         <Route path="/main/team-manager">
                             <Team_Dashboard />
