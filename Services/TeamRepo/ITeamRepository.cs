@@ -9,8 +9,9 @@ namespace HumanResourcesManager.Services.TeamRepo
     public interface ITeamRepository
     { 
         Task<bool> Save();
-        Task<int> TeamsCount();
-        IQueryable<Team> GetTeams();
+        Task<int> AllTeamsCount();
+        Task<int> TeamsCount(IQueryable<Team> teamQuery);
+        IQueryable<Team> GetTeams(string searchBy, string search);
         IQueryable<Team> GetTeams(int limit);
         Task<Team> GetTeamsByLeaderId(long leaderID);
         Task<Team> GetTeamsByMemberId(long memberID);

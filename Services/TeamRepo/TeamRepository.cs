@@ -52,9 +52,9 @@ namespace HumanResourcesManager.Services.TeamRepo
             return await fullTeamQuery().FirstOrDefaultAsync(t => t.Id == id);
         }
 
-        public IQueryable<Team> GetTeams()
+        public IQueryable<Team> GetTeams(string searchBy ,string search)
         {
-            return fullTeamQuery();
+            return FilterTeam(searchBy,search);
         }
 
         public IQueryable<Team> GetTeams(int limit)
@@ -101,10 +101,15 @@ namespace HumanResourcesManager.Services.TeamRepo
             _logger.LogInformation("Saving changes...");
             return (await _mDBContext.SaveChangesAsync()) >= 0;
         }
-
-        public async Task<int> TeamsCount()
+       
+        public async Task<int> AllTeamsCount()
         {
             return await _mDBContext.Teams.CountAsync();
+        }
+
+        public async Task<int> TeamsCount(IQueryable<Team> teamQuery)
+        {
+            return await teamQuery.CountAsync();
         }
 
         private bool TeamExists(long id)
@@ -112,40 +117,54 @@ namespace HumanResourcesManager.Services.TeamRepo
             return _mDBContext.Permissions.Any(p => p.Id == id);
         }
         // need test
-        private IQueryable<Team> FilterTeam(string search, long department, long position, bool? isremote)
+        private IQueryable<Team> FilterTeam(string searchBy, string search)
         {
-            StringBuilder whereQuery = new StringBuilder("t => t.Members.Select(e => e.Employee.Id != 0 &&");
+            StringBuilder whereQuery = new StringBuilder("t => t.Id != 0 ");
 
-            if (department != 0)
-                whereQuery.Append("&& e.Department.Id == " + department + " ");
-
-            if (position != 0)
-                whereQuery.Append("&& e.Position.Id == " + position + " ");
-
-            if (isremote != null)
-                whereQuery.Append("&& e.RemoteWork == " + isremote + " ");
-
-            if (search != null)
+            if (search != null && searchBy != null)
             {
                 search = search.ToLower().TrimEnd();
-                if (search.Contains(" "))
+                switch (searchBy)
                 {
-                    string[] searchSplited = search.Split(" ");
-                    whereQuery.Append("&& e.Person.Name.ToLower().Contains(" +
-                        '"' + searchSplited[0] + '"' + ") && e.Person.Surname.ToLower().Contains(" +
-                         '"' + searchSplited[1] + '"' + ") ");
+                    case "teamName":
+                        whereQuery.Append("&& t.Name.ToLower().Contains("+'"'+search+'"'+") ");
+                            break;
+                    case "leaderName":
+                        if (search.Contains(" "))
+                        {
+                            string[] searchSplited = search.Split(" ");
+                            whereQuery.Append("&& t.TeamLeader.Person.Name.ToLower().Contains("+'"'+
+                                searchSplited[0] + '"'+ ") && t.TeamLeader.Person.Surname.ToLower().Contains(" + '"'+
+                                searchSplited[1] + '"' + ") ");
+                            break;
+                        }
+                        whereQuery.Append("&& t.TeamLeader.Person.Name.ToLower().Contains(" + '"' +
+                            search + '"' + ") || t.TeamLeader.Person.Surname.ToLower().Contains(" + '"' +
+                            search + '"' + ") ");
+                        break;
+                    case "memberName":
+                        if (search.Contains(" "))
+                        {
+                            string[] searchSplited = search.Split(" ");
+                            whereQuery.Append("&& t.Members.Any(m => m.Employee.Person.Name.ToLower().Contains(" + '"' +
+                                searchSplited[0] + '"' + ")) && t.Members.Any(m => m.Employee.Person.Surname.ToLower().Contains(" + '"' +
+                                searchSplited[1] + '"' + ")) ");
+                            break;
+                        }
+                        whereQuery.Append("&& t.Members.Any(m => m.Employee.Person.Name.ToLower().Contains(" + '"' +
+                            search + '"' + ")) || t.Members.Any(m => m.Employee.Person.Surname.ToLower().Contains(" + '"' +
+                            search + '"' + ")) ");
+                        break;
                 }
-                else
-                    whereQuery.Append("&& e.Person.Name.ToLower().Contains(" +
-                        '"' + search + '"' + ") || e.Person.Surname.ToLower().Contains(" +
-                         '"' + search + '"' + ") ");
             }
 
             var query = fullTeamQuery()
             .Where(whereQuery.ToString());
 
             return query;
-        }        
+        }
+        
+
 
         private IQueryable<Team> fullTeamQuery() {
             return _mDBContext.Teams

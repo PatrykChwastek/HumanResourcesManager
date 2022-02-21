@@ -30,12 +30,12 @@ namespace HumanResourcesManager.Controllers
         // GET: api/Teams
         [HttpGet]
         public async Task<ActionResult<Pagination>> GetTeams(
-            int page, int size)
+            int page, int size, string searchby, string search)
         {
 
-                var teams = _teamRepository.GetTeams();
+                var teams = _teamRepository.GetTeams(searchby, search);
                 var mappedTeams = _mapper.Map<List<TeamDTO>>(teams);
-                var totalTeams = await _teamRepository.TeamsCount();
+                var totalTeams = await _teamRepository.TeamsCount(teams);
 
                 var pageOfTeams = new Pagination(page, size, totalTeams);
                 return Ok(await pageOfTeams.InitPagination(mappedTeams.AsQueryable()));

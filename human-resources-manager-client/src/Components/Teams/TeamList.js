@@ -106,15 +106,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const searchMode = [
-    { id: 0, name: 'Team Name' },
-    { id: 1, name: 'Team Leader Name' },
-    { id: 2, name: 'Member Name' },]
+    { id: 'teamName', name: 'Team Name' },
+    { id: 'leaderName', name: 'Team Leader Name' },
+    { id: 'memberName', name: 'Member Name' },]
 
 const TeamList = () => {
     const classes = useStyles();
     const history = useHistory();
     const [teams, setTeams] = useState([]);
-    const [searchParams, setSearchParams] = useState({ searchBy: searchMode[0].name, search: '' });
+    const [searchParams, setSearchParams] = useState({ searchBy: searchMode[0].id, search: '' });
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [menuAnchorEl, setMenuAnchorEl] = useState({ team: null, member: null, id: 0 });
     const [pagination, setPagination] = useState({
