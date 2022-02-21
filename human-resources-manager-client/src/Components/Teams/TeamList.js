@@ -4,8 +4,6 @@ import APIURL from '../../Services/Globals';
 import { Link, useHistory } from "react-router-dom";
 import { DarkTextField, DarkSelect } from '../GlobalComponents';
 
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -27,6 +25,17 @@ import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
 const useStyles = makeStyles((theme) => ({
+    filterBox: {
+        padding: ".1rem",
+        paddingLeft: "1.1rem",
+        paddingRight: "1.1rem",
+        borderRadius: '4px',
+        marginLeft: '8px',
+        width: "max-content",
+        background: theme.palette.grey[800],
+        boxShadow:
+            "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)",
+    },
     whiteText: {
         color: "white",
         margin: "0px",
@@ -95,10 +104,17 @@ const useStyles = makeStyles((theme) => ({
         }
     }
 }));
+
+const searchMode = [
+    { id: 0, name: 'Team Name' },
+    { id: 1, name: 'Team Leader Name' },
+    { id: 2, name: 'Member Name' },]
+
 const TeamList = () => {
     const classes = useStyles();
     const history = useHistory();
     const [teams, setTeams] = useState([]);
+    const [searchParams, setSearchParams] = useState({ searchBy: searchMode[0].name, search: '' });
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [menuAnchorEl, setMenuAnchorEl] = useState({ team: null, member: null, id: 0 });
     const [pagination, setPagination] = useState({
@@ -132,6 +148,14 @@ const TeamList = () => {
                 setSelectedIndex(0);
                 setTeams(data.items);
             });
+    };
+
+    const handleChangeSearchParams = () => {
+
+    };
+
+    const handleSearchTeam = () => {
+
     };
 
     const handleListItemClick = (event, index) => {
@@ -173,6 +197,27 @@ const TeamList = () => {
 
     return (
         <div>
+            <Toolbar className={classes.filterBox}>
+                <h3 className={classes.whiteText}>Search Team: </h3>
+                <DarkSelect
+                    label="Search by:"
+                    name="searchBySel"
+                    collection={searchMode}
+                    defaultValue={searchMode[0]}
+                    onChange={handleChangeSearchParams}
+                />
+                <DarkTextField
+                    onChange={handleChangeSearchParams}
+                    label='Search...'
+                    name='searchTF'
+                />
+                <Button
+                    style={{ marginLeft: '15px' }}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSearchTeam}
+                >Search</Button>
+            </Toolbar>
             {teams.length === 0 ? null :
                 <div className={classes.teamsContainer}>
                     <List component="nav" className={classes.listComponent}>

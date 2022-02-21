@@ -160,7 +160,7 @@ export const DarkTextField = ({ onChange, label, name, type, maxRows, value }) =
     );
 };
 
-export const DarkSelect = ({ onChange, label, name, value, firstVal, collection }) => {
+export const DarkSelect = ({ onChange, label, name, value, firstVal, collection, defaultValue }) => {
     const classes = useStyles();
     return (
         <StyledSelectFC className={classes.formControl}>
@@ -171,6 +171,7 @@ export const DarkSelect = ({ onChange, label, name, value, firstVal, collection 
                 name={name}
                 onChange={onChange}
                 value={value}
+                defaultValue={defaultValue === undefined ? '' : defaultValue}
             >
                 {
                     firstVal === undefined ? null :
