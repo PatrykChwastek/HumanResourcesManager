@@ -146,7 +146,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const DarkTextField = ({ onChange, label, name, type, maxRows, value }) => {
+export const DarkTextField = ({ onChange, label, name, type, maxRows, value, disabled }) => {
     return (
         <StyledTextField
             onChange={onChange}
@@ -156,6 +156,7 @@ export const DarkTextField = ({ onChange, label, name, type, maxRows, value }) =
             name={name}
             type={type}
             value={value}
+            disabled={disabled}
         />
     );
 };

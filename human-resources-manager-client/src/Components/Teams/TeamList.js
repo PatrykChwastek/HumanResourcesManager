@@ -106,6 +106,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const searchMode = [
+    { id: 'all', name: 'Show All' },
     { id: 'teamName', name: 'Team Name' },
     { id: 'leaderName', name: 'Team Leader Name' },
     { id: 'memberName', name: 'Member Name' },]
@@ -135,9 +136,15 @@ const TeamList = () => {
             method: 'Get',
             headers: { 'Content-Type': 'application/json' }
         };
-        await fetch(APIURL + `teams?page=${page}&size=${size}`,
-            requestOptions
-        )
+        let requestUrl = `teams?page=${page}&size=${size}`;
+
+        if (searchParams.searchBy !== 'all') {
+            requestUrl =
+                `teams?page=${page}&size=${size}` +
+                `&searchby=${searchParams.searchBy}&search=${searchParams.search}`;
+        }
+
+        await fetch(APIURL + requestUrl, requestOptions)
             .then(response => response.json())
             .then((data) => {
                 setPagination({
@@ -150,12 +157,23 @@ const TeamList = () => {
             });
     };
 
-    const handleChangeSearchParams = () => {
+    const handleChangeSearchParams = e => {
+        if (e.target.name === 'searchBySel') {
+            setSearchParams({
+                ...searchParams,
+                searchBy: e.target.value.id
+            })
+            return;
+        }
 
+        setSearchParams({
+            ...searchParams,
+            search: e.target.value
+        })
     };
 
     const handleSearchTeam = () => {
-
+        loadTeams(1, pagination.size);
     };
 
     const handleListItemClick = (event, index) => {
@@ -208,6 +226,7 @@ const TeamList = () => {
                 />
                 <DarkTextField
                     onChange={handleChangeSearchParams}
+                    disabled={searchParams.searchBy === 'all'}
                     label='Search...'
                     name='searchTF'
                 />
