@@ -12,6 +12,7 @@ import TasksColumns from './Tasks/TasksColumns';
 import TasksList from "./Tasks/TasksList";
 import CreateTask from "./Tasks/CreateTask";
 import TeamList from "./Teams/TeamList"
+import AddTeamMembers from "./Teams/AddTeamMembers"
 import { getUserAccess, logout, getCurrentUser } from '../Services/AuthService';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -177,6 +178,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/team-manager">
                             <Team_Dashboard />
+                        </Route>
+                        <Route path="/main/add-team-members">
+                            <AddTeamMembers />
                         </Route>
                         <Route path="/main/team-tasks">
                             <TeamTasks />

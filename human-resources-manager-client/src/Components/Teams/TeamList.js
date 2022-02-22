@@ -322,13 +322,16 @@ const TeamList = () => {
                             <Typography variant="h6" style={{ marginLeft: '16px' }}>
                                 Team Members:
                             </Typography>
-                            <Link className={classes.linkButton} to="/main/create-task">
+                            <Link className={classes.linkButton} to={{
+                                pathname: "/main/add-team-members",
+                                members: teams[selectedIndex].members
+                            }}>
                                 <Button
                                     size="small"
                                     variant="contained"
                                     color="secondary"
                                     endIcon={<AddCircleIcon />}
-                                >Add Member</Button>
+                                >Add Members</Button>
                             </Link>
                         </div>
                         {teams[selectedIndex].members.length <= 0 ? <p>No Members</p> :
