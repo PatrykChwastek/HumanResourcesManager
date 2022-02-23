@@ -94,6 +94,14 @@ namespace HumanResourcesManager.Controllers
             return NoContent();
         }
 
+        // PUT: api/Teams/add-members/5
+        [HttpPut("members/{id}")]
+        public async Task<IActionResult> SetTeamMembers(long id, [FromBody] long[] employeesId)
+        {
+            await _teamRepository.SetTeamMembers(id,employeesId);
+            return NoContent();
+        }
+
         // POST: api/Teams
         [HttpPost]
         public async Task<ActionResult<TeamDTO>> PostTeam([FromBody]TeamDTO teamFromReqest)

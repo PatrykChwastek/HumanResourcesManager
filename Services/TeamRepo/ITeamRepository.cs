@@ -18,6 +18,7 @@ namespace HumanResourcesManager.Services.TeamRepo
         Task<Team> GetTeam(long id);
         Task<Team> CreateTeam(Team teamEntity);
         Task<Team> PutTeam(long id, Team teamEntity);
+        Task<Team> SetTeamMembers(long teamID, long[] employeesID);
         Task<bool> DeleteTeam(long id);
     }
 }

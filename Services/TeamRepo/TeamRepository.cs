@@ -3,6 +3,7 @@ using HumanResourcesManager.Models;
 using HumanResourcesManager.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Text;
@@ -13,11 +14,13 @@ namespace HumanResourcesManager.Services.TeamRepo
     public class TeamRepository : ITeamRepository
     {
         private readonly MDBContext _mDBContext;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<TeamRepository> _logger;
 
-        public TeamRepository(MDBContext mDBContext, ILogger<TeamRepository> logger)
+        public TeamRepository(MDBContext mDBContext, IEmployeeRepository employeeRepository, ILogger<TeamRepository> logger)
         {
             _mDBContext = mDBContext;
+            _employeeRepository = employeeRepository;
             _logger = logger;
         }
 
@@ -96,6 +99,30 @@ namespace HumanResourcesManager.Services.TeamRepo
             return await GetTeam(id);
         }
 
+        public async Task<Team> SetTeamMembers(long teamID, long[] employeesID)
+        {
+            var team = await GetTeam(teamID);
+            var members = new List<TeamEmployees>();
+
+            foreach (var memberId in employeesID)
+            {
+                var employee = await _employeeRepository.GetEmployee(memberId);
+                
+                if (employee != null)
+                {
+                    var teamEmployees = new TeamEmployees() {
+                        TeamId = teamID,
+                        Team = team,
+                        EmployeeId = memberId,
+                        Employee = employee
+                    };
+                    members.Add(teamEmployees);
+                }              
+            }
+            team.Members = members;
+            return await PutTeam(teamID, team);
+        }
+
         public async Task<bool> Save()
         {
             _logger.LogInformation("Saving changes...");
@@ -114,7 +141,7 @@ namespace HumanResourcesManager.Services.TeamRepo
 
         private bool TeamExists(long id)
         {
-            return _mDBContext.Permissions.Any(p => p.Id == id);
+            return _mDBContext.Teams.Any(p => p.Id == id);
         }
         // need test
         private IQueryable<Team> FilterTeam(string searchBy, string search)
