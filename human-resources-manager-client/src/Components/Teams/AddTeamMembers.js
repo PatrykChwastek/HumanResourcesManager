@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { DarkTextField, DarkSelect, ConfirmDialog } from '../GlobalComponents';
 import APIURL from '../../Services/Globals'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 import Paper from '@material-ui/core/Paper';
@@ -22,6 +21,12 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import Checkbox from '@material-ui/core/Checkbox';
 import CloseIcon from '@material-ui/icons/Close';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -135,6 +140,13 @@ const AddTeamMembers = () => {
         orderBy: orderOptions[4],
         isRemote: remoteOptions[0]
     });
+
+    const [allertProps, setAllertProps] = useState({
+        text: '',
+        open: false,
+        type: 'success'
+    });
+
     useEffect(() => {
         getEmploees(page + 1, rowsPerPage);
     }, [page, rowsPerPage]);
@@ -203,8 +215,36 @@ const AddTeamMembers = () => {
         getEmploees(1, rowsPerPage);
     };
 
-    const hendleAddMembers = () => {
+    const hendleAddMembers = async () => {
+        let membersID = [];
+        selEmployees.forEach(employee => {
+            membersID.push(employee.id);
+        });
 
+        if (location.teamid !== undefined) {
+            const requestOptions = {
+                method: 'Put',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(membersID)
+            };
+            await fetch(APIURL + `teams/members/${location.teamid}`,
+                requestOptions
+            ).then(data => {
+                console.log(data);
+                setAllertProps({
+                    text: "Team Members Set",
+                    open: true,
+                    type: "success"
+                });
+            }, (err) => {
+                console.log(err)
+                setAllertProps({
+                    text: "Set Team Members Error!",
+                    open: true,
+                    type: "error"
+                })
+            });
+        }
     }
 
     const handleRowClick = (event, employee) => {
@@ -224,8 +264,20 @@ const AddTeamMembers = () => {
 
     const isSelected = (id) => selEmployees.findIndex(e => e.id == id) !== -1;
 
+    const handleAllertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAllertProps({ ...allertProps, open: false });
+    };
+
     return (
         <div>
+            <Snackbar open={allertProps.open} autoHideDuration={4000} onClose={handleAllertClose}>
+                <Alert onClose={handleAllertClose} severity={allertProps.type}>
+                    {allertProps.text}
+                </Alert>
+            </Snackbar>
             <Toolbar className={classes.searchBox}>
                 <h3 className={classes.whiteText}>Search:</h3>
                 <DarkTextField

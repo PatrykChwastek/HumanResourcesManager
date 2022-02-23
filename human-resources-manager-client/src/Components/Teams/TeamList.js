@@ -50,7 +50,8 @@ const useStyles = makeStyles((theme) => ({
     listComponent: {
         margin: '8px',
         width: '100%',
-        minHeight: '550px',
+        minHeight: '700px',
+        maxHeight: '700px',
         paddingTop: 0,
         backgroundColor: theme.palette.background.paper,
         color: 'white',
@@ -120,7 +121,7 @@ const TeamList = () => {
     const [menuAnchorEl, setMenuAnchorEl] = useState({ team: null, member: null, id: 0 });
     const [pagination, setPagination] = useState({
         page: 1,
-        size: 10,
+        size: 9,
         totalPages: 1
     });
 
@@ -324,18 +325,19 @@ const TeamList = () => {
                             </Typography>
                             <Link className={classes.linkButton} to={{
                                 pathname: "/main/add-team-members",
-                                members: teams[selectedIndex].members
+                                members: teams[selectedIndex].members,
+                                teamid: teams[selectedIndex].id
                             }}>
                                 <Button
                                     size="small"
                                     variant="contained"
                                     color="secondary"
-                                    endIcon={<AddCircleIcon />}
-                                >Add Members</Button>
+                                    endIcon={<EditIcon />}
+                                >Set Members</Button>
                             </Link>
                         </div>
                         {teams[selectedIndex].members.length <= 0 ? <p>No Members</p> :
-                            <React.Fragment>
+                            <div style={{ overflow: 'auto', }}>
                                 {teams[selectedIndex].members.map((member, index) => (
                                     <div key={"member" + member.id}>
                                         <ListItem>
@@ -384,7 +386,7 @@ const TeamList = () => {
                                         <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
                                     </div>
                                 ))}
-                            </React.Fragment>
+                            </div>
                         }
                     </List>
                 </div>
