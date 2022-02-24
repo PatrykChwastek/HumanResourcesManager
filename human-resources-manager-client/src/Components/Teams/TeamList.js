@@ -245,7 +245,7 @@ const TeamList = () => {
                             <Typography variant="h6" style={{ marginLeft: '16px' }}>
                                 Team List:
                             </Typography>
-                            <Link className={classes.linkButton} to="/main/create-task">
+                            <Link className={classes.linkButton} to="/main/create-team">
                                 <Button
                                     size="small"
                                     variant="contained"

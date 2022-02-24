@@ -12,6 +12,7 @@ import TasksColumns from './Tasks/TasksColumns';
 import TasksList from "./Tasks/TasksList";
 import CreateTask from "./Tasks/CreateTask";
 import TeamList from "./Teams/TeamList"
+import CreateTeam from "./Teams/CreateTeam";
 import AddTeamMembers from "./Teams/AddTeamMembers"
 import { getUserAccess, logout, getCurrentUser } from '../Services/AuthService';
 
@@ -178,6 +179,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/team-manager">
                             <Team_Dashboard />
+                        </Route>
+                        <Route path="/main/create-team">
+                            <CreateTeam />
                         </Route>
                         <Route path="/main/add-team-members">
                             <AddTeamMembers />

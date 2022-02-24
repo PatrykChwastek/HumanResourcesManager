@@ -57,7 +57,8 @@ const useStyles = makeStyles((theme) => ({
 
     tabTop: {
         display: 'flex',
-        padding: '9px',
+        padding: '8px',
+        paddingLeft: '17px',
         justifyContent: 'space-between',
         "& h2": {
             margin: '2px',
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     container: {
-        maxHeight: 550,
+        maxHeight: '52vh',
     },
     pagination: {
         background: theme.palette.grey[800],
@@ -87,13 +88,9 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: '8px',
     },
     searchBox: {
-        padding: ".1rem",
-        paddingLeft: "1.8rem",
-        paddingRight: "1.8rem",
-        width: "max-content",
-        background: theme.palette.grey[800],
-        boxShadow:
-            "0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%)",
+        padding: "1px 8px 0 0",
+        display: "flex",
+        justifyContent: "space-between",
     },
     whiteText: {
         color: "white",
@@ -102,15 +99,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const AddTeamMembers = () => {
+const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
     const classes = useStyles();
     const location = useLocation();
     const [employees, setEmployees] = useState([]);
-    const [selEmployees, setSelEmployees] = useState(location.members !== undefined ? location.members : []);
+    const [selEmployees, setSelEmployees] = useState(
+        location.members !== undefined ?
+            location.members :
+            selected !== undefined ? selected : []
+    );
     const [departments, setDepartments] = useState([]);
     const [positions, setPositions] = useState([]);
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(9);
     const [totalItems, setTotalItems] = useState(1);
     const firstRecord = { id: 0, name: "All" };
     const [orderOptions] = useState([
@@ -216,12 +217,12 @@ const AddTeamMembers = () => {
     };
 
     const hendleAddMembers = async () => {
-        let membersID = [];
-        selEmployees.forEach(employee => {
-            membersID.push(employee.id);
-        });
-
         if (location.teamid !== undefined) {
+
+            let membersID = [];
+            selEmployees.forEach(employee => {
+                membersID.push(employee.id);
+            });
             const requestOptions = {
                 method: 'Put',
                 headers: { 'Content-Type': 'application/json' },
@@ -244,7 +245,15 @@ const AddTeamMembers = () => {
                     type: "error"
                 })
             });
+        } else {
+            onSelectionConfirm(selEmployees)
+            setAllertProps({
+                text: isSingle ? "Team Leader Set" : "Team Members Set",
+                open: true,
+                type: "success"
+            })
         }
+
     }
 
     const handleRowClick = (event, employee) => {
@@ -252,7 +261,10 @@ const AddTeamMembers = () => {
         let newSelected = [];
 
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selEmployees, employee);
+            if (isSingle) {
+                newSelected = [employee];
+            } else
+                newSelected = newSelected.concat(selEmployees, employee);
         }
 
         if (selectedIndex >= 0) {
@@ -278,55 +290,14 @@ const AddTeamMembers = () => {
                     {allertProps.text}
                 </Alert>
             </Snackbar>
-            <Toolbar className={classes.searchBox}>
-                <h3 className={classes.whiteText}>Search:</h3>
-                <DarkTextField
-                    onChange={handleChangeSearchParams}
-                    label='Search...'
-                    name='searchInput'
-                />
-                <DarkSelect
-                    label="Department"
-                    name="departmentSelect"
-                    collection={departments}
-                    value={searchParams.department}
-                    onChange={handleChangeSearchParams}
-                />
-                <DarkSelect
-                    label="Position"
-                    name="positionSelect"
-                    collection={positions}
-                    value={searchParams.position}
-                    onChange={handleChangeSearchParams}
-                />
-                <DarkSelect
-                    label="Seniority"
-                    name="senioritySelect"
-                    collection={seniorityLvs}
-                    value={searchParams.seniority}
-                    onChange={handleChangeSearchParams}
-                />
-                <DarkSelect
-                    label="Order by"
-                    name="orderBy"
-                    collection={orderOptions}
-                    value={searchParams.orderBy}
-                    onChange={handleChangeSearchParams}
-                />
-                <DarkSelect
-                    label="Work Type"
-                    name="isRemote"
-                    collection={remoteOptions}
-                    value={searchParams.isRemote}
-                    onChange={handleChangeSearchParams}
-                />
-                <Button variant="contained" color="primary" onClick={handleSearch}>Search</Button>
-            </Toolbar>
 
             {employees === undefined ? <div></div> :
                 <Paper className={classes.root}>
                     <div className={classes.tabTop}>
-                        <h2 >Select Team Members:</h2>
+                        {isSingle === undefined ?
+                            <h2 >Select Team Members:</h2> :
+                            <h2 >Select Team Leader:</h2>
+                        }
                         <Button
                             disabled={selEmployees.length <= 0}
                             variant="contained" color="primary"
@@ -336,8 +307,52 @@ const AddTeamMembers = () => {
                         </Button>
                     </div>
                     <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
+                    <Toolbar className={classes.searchBox}>
+                        <DarkTextField
+                            onChange={handleChangeSearchParams}
+                            label='Search...'
+                            name='searchInput'
+                        />
+                        <DarkSelect
+                            label="Order by"
+                            name="orderBy"
+                            collection={orderOptions}
+                            value={searchParams.orderBy}
+                            onChange={handleChangeSearchParams}
+                        />
+                        <DarkSelect
+                            label="Position"
+                            name="positionSelect"
+                            collection={positions}
+                            value={searchParams.position}
+                            onChange={handleChangeSearchParams}
+                        />
+                        <DarkSelect
+                            label="Seniority"
+                            name="senioritySelect"
+                            collection={seniorityLvs}
+                            value={searchParams.seniority}
+                            onChange={handleChangeSearchParams}
+                        />
+                        <DarkSelect
+                            label="Department"
+                            name="departmentSelect"
+                            collection={departments}
+                            value={searchParams.department}
+                            onChange={handleChangeSearchParams}
+                        />
+                        <DarkSelect
+                            label="Work Type"
+                            name="isRemote"
+                            collection={remoteOptions}
+                            value={searchParams.isRemote}
+                            onChange={handleChangeSearchParams}
+                        />
+                        <Button variant="contained" color="primary" onClick={handleSearch}>Search</Button>
+                    </Toolbar>
+                    <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
                     <TableContainer className={classes.container}>
-                        <Table stickyHeader >
+                        <Table stickyHeader size="small">
                             <TableHead className={classes.tabHead}>
                                 <TableRow >
                                     <StyledTableCell align="center">
@@ -427,7 +442,7 @@ const AddTeamMembers = () => {
                         }
                         <TablePagination
                             className={classes.pagination}
-                            rowsPerPageOptions={[10, 25, 35]}
+                            rowsPerPageOptions={[9, 18, 25, 32]}
                             component="div"
                             count={totalItems}
                             rowsPerPage={rowsPerPage}
