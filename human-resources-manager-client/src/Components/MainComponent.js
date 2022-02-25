@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link, useHistory } from "react-router-dom";
 import EmployeeList from './Employees/EmployeeList';
 import HR_Dashboard from './Employees/HR_Dashboard';
+import HR_Manager from './Employees/HR_Manager';
 import CreateJobApplication from './JobApplication/CreateJobApplication';
 import EmployeeForm from './Employees/EmployeeForm';
 import { EmployeeDetails } from './Employees/EmployeeDetails';
@@ -111,44 +112,44 @@ const MainComponent = () => {
                     <Toolbar />
                     <div className={classes.drawerContainer}>
                         <TreeView
-                            defaultExpanded={['2']}
+                            defaultExpanded={['7']}
                             defaultSelected={currentLocation()}
                             defaultCollapseIcon={<ExpandMoreIcon />}
                             defaultExpandIcon={<ChevronRightIcon />}
                         >
                             {userAccess.humanResources === false ? null :
-                                <Link className={classes.linkButtons} to="/main/dashboard">
-                                    <TreeItem nodeId="1" label="Dashboard" />
-                                </Link>
-                            }
-                            <TreeItem nodeId="2" label="My Tasks:">
-                                <Link className={classes.linkButtons} to="/main/tasks-columns">
-                                    <TreeItem nodeId="3" label="Columns" />
-                                </Link>
-                                <Link className={classes.linkButtons} to="/main/tasks-list" >
-                                    <TreeItem nodeId="4" label="List" />
-                                </Link>
-                            </TreeItem>
-                            {userAccess.humanResources === false ? null :
                                 <React.Fragment>
+                                    <Link className={classes.linkButtons} to="/main/dashboard">
+                                        <TreeItem nodeId="1" label="Dashboard" />
+                                    </Link>
+                                    <Link className={classes.linkButtons} to="/main/hr-manager">
+                                        <TreeItem nodeId="2" label="HR-Manager" />
+                                    </Link>
                                     <Link className={classes.linkButtons} to="/main/employees">
-                                        <TreeItem nodeId="5" label="Employees" />
+                                        <TreeItem nodeId="3" label="Employees" />
                                     </Link>
                                     <Link className={classes.linkButtons} to="/main/team-list">
-                                        <TreeItem nodeId="6" label="Team List" />
+                                        <TreeItem nodeId="4" label="Team List" />
                                     </Link>
                                     <Link className={classes.linkButtons} to="/main/applications">
-                                        <TreeItem nodeId="7" label="Job Applications" />
+                                        <TreeItem nodeId="5" label="Job Applications" />
                                     </Link>
                                 </React.Fragment>
                             }
-
-                            <TreeItem nodeId="8" label="Team Manager">
+                            <TreeItem nodeId="6" label="My Tasks:">
+                                <Link className={classes.linkButtons} to="/main/tasks-columns">
+                                    <TreeItem nodeId="7" label="Columns" />
+                                </Link>
+                                <Link className={classes.linkButtons} to="/main/tasks-list" >
+                                    <TreeItem nodeId="8" label="List" />
+                                </Link>
+                            </TreeItem>
+                            <TreeItem nodeId="9" label="Team Manager">
                                 <Link className={classes.linkButtons} to="/main/team-manager">
-                                    <TreeItem nodeId="9" label="Team Dashboard" />
+                                    <TreeItem nodeId="10" label="Team Dashboard" />
                                 </Link>
                                 <Link className={classes.linkButtons} to="/main/team-tasks">
-                                    <TreeItem nodeId="10" label="Team Tasks" />
+                                    <TreeItem nodeId="11" label="Team Tasks" />
                                 </Link>
                             </TreeItem >
                         </TreeView>
@@ -158,6 +159,9 @@ const MainComponent = () => {
                     <Switch>
                         <Route path="/main/dashboard">
                             <HR_Dashboard />
+                        </Route>
+                        <Route path="/main/hr-manager">
+                            <HR_Manager />
                         </Route>
                         <Route path="/main/tasks-columns">
                             <TasksColumns />
