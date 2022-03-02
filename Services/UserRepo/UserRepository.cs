@@ -104,9 +104,26 @@ namespace HumanResourcesManager.Services.UserRepo
             return await FullUserQuery().FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public IQueryable<User> GetUsers()
+        public IQueryable<User> GetUsers(IQueryable<Employee> employees)
         {
-            return FullUserQuery();
+            if (employees == null)
+            {
+                return FullUserQuery();
+            }
+            IQueryable<User> res = null;
+            foreach (var employee in employees)
+            {
+                var temp = FullUserQuery().Where(u => u.Employee.Id == employee.Id);
+
+                if (temp != null)
+                {
+                    if (res == null)
+                        res = temp;
+                    else
+                        res = res.Concat(temp);
+                }
+            }
+            return res;
         }
 
         private IQueryable<User> FullUserQuery()
@@ -153,10 +170,16 @@ namespace HumanResourcesManager.Services.UserRepo
             return (await _mDBContext.SaveChangesAsync()) >= 0;
         }
 
-        public async Task<int> UsersCount()
+        public async Task<int> AllUsersCount()
         {
             return await _mDBContext.User.CountAsync();
         }
+
+        public async Task<int> UsersCount(IQueryable<User> users)
+        {
+            return await users.CountAsync();
+        }
+        
 
         private bool UserExists(long id)
         {

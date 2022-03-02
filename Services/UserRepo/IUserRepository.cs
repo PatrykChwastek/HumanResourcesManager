@@ -8,8 +8,9 @@ namespace HumanResourcesManager.Services.UserRepo
     public interface IUserRepository
     {
         Task<bool> Save();
-        Task<int> UsersCount();
-        IQueryable<User> GetUsers();
+        Task<int> AllUsersCount();
+        Task<int> UsersCount(IQueryable<User> users);
+        IQueryable<User> GetUsers(IQueryable<Employee> employees);
         Task<User> GetUser(long id);
         Task<User> Authenticate(string username, string password);
         Task<User> CreateUser(User userEntity);

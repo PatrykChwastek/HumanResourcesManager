@@ -68,21 +68,11 @@ export const getUserAccess = () => {
     return allowedViews;
 }
 
-const testRoles = () => {
-    const requestOptions = {
-        method: 'GET',
-        headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
-    };
-    fetch(APIURL + 'users?page=1&size=4', requestOptions)
-        .then(response => response.json())
-        .then(data => console.log(data))
-}
 // eslint-disable-next-line
 export default {
     login,
     logout,
     getCurrentUser,
     authHeader,
-    getUserAccess,
-    testRoles
+    getUserAccess
 };

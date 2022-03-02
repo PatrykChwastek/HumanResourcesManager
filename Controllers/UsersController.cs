@@ -19,6 +19,7 @@ using Microsoft.Extensions.Options;
 using HumanResourcesManager.Services.UserRepo;
 using AutoMapper;
 using HumanResourcesManager.Models;
+using HumanResourcesManager.Services;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -28,12 +29,18 @@ namespace HumanResourcesManager.Controllers
     {
         private readonly AppConfiguration _appConfiguration;
         private readonly IUserRepository _userRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
 
-        public UsersController(IOptions<AppConfiguration> appConfiguration, IUserRepository userRepository, IMapper mapper)
+        public UsersController(
+            IOptions<AppConfiguration> appConfiguration, 
+            IUserRepository userRepository,
+            IEmployeeRepository employeeRepository, 
+            IMapper mapper)
         {
             _appConfiguration = appConfiguration.Value;
             _userRepository = userRepository;
+            _employeeRepository = employeeRepository;
             _mapper = mapper;
         }
 
@@ -58,11 +65,13 @@ namespace HumanResourcesManager.Controllers
         // GET: api/Users
         [Authorize(Roles = "Team-Manager")]
         [HttpGet]
-        public async Task<ActionResult<Pagination>> GetUser(int page, int size)
-        {  
-            var users = _userRepository.GetUsers();
+        public async Task<ActionResult<Pagination>> GetUser(
+            int page,int size, string order, string search, string seniority, long department, long position, bool? isremote)
+        {
+            var emps = _employeeRepository.GetEmployees(order, search, seniority, department, position, isremote);
+            var users = _userRepository.GetUsers(emps);
             var mappedUsers = _mapper.Map<List<UserDTO>>(users);    
-            var totalUsers = await _userRepository.UsersCount();
+            var totalUsers = await _userRepository.UsersCount(users);
 
             var pageOfUsers = new Pagination(page, size, totalUsers);
             return Ok(await pageOfUsers.InitPagination(mappedUsers.AsQueryable()));
