@@ -7,6 +7,7 @@ import CreateJobApplication from './JobApplication/CreateJobApplication';
 import EmployeeForm from './Employees/EmployeeForm';
 import { EmployeeDetails } from './Employees/EmployeeDetails';
 import LoginUser from './Users/LoginUser';
+import UsersList from "./Users/UsersList";
 import Team_Dashboard from './Teams/Team_Dashboard';
 import TeamTasks from "./Teams/TeamTasks";
 import TasksColumns from './Tasks/TasksColumns';
@@ -152,6 +153,9 @@ const MainComponent = () => {
                                     <TreeItem nodeId="11" label="Team Tasks" />
                                 </Link>
                             </TreeItem >
+                            <Link className={classes.linkButtons} to="/main/users-list" >
+                                <TreeItem nodeId="12" label="Users List" />
+                            </Link>
                         </TreeView>
                     </div>
                 </Drawer>
@@ -195,6 +199,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/create-task">
                             <CreateTask />
+                        </Route>
+                        <Route path="/main/users-list">
+                            <UsersList />
                         </Route>
                     </Switch>
                 </main>
