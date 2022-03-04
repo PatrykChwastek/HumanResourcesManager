@@ -255,7 +255,7 @@ const UsersList = () => {
                 <Paper className={classes.root}>
                     <div className={classes.tabTop}>
                         <h2 >Users List:</h2>
-                        <Link to="/main/employee-form">
+                        <Link to="/main/user-form">
                             <Button
                                 variant="contained"
                                 color="secondary"
@@ -334,7 +334,7 @@ const UsersList = () => {
                                                     <VisibilityIcon />
                                                 </IconButton>
                                             </Link>
-                                            <Link to={{ pathname: `/main/employee-form` }}>
+                                            <Link to={{ pathname: `/main/user-form`, user: { user } }}>
                                                 <IconButton className={classes.button} size="small" aria-label="edit">
                                                     <EditIcon />
                                                 </IconButton>

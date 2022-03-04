@@ -8,6 +8,7 @@ import EmployeeForm from './Employees/EmployeeForm';
 import { EmployeeDetails } from './Employees/EmployeeDetails';
 import LoginUser from './Users/LoginUser';
 import UsersList from "./Users/UsersList";
+import UserForm from './Users/UserForm';
 import Team_Dashboard from './Teams/Team_Dashboard';
 import TeamTasks from "./Teams/TeamTasks";
 import TasksColumns from './Tasks/TasksColumns';
@@ -202,6 +203,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/users-list">
                             <UsersList />
+                        </Route>
+                        <Route path="/main/user-form">
+                            <UserForm />
                         </Route>
                     </Switch>
                 </main>

@@ -59,7 +59,7 @@ namespace HumanResourcesManager.Services.UserRepo
         {
             _logger.LogInformation($"Creating new User: {userEntity.Username}");
             userEntity.Password = HashUserPassword(userEntity);
-            _mDBContext.Attach(userEntity);
+            _mDBContext.Add(userEntity);
 
             await Save();
             await _mDBContext.Entry(userEntity).GetDatabaseValuesAsync();

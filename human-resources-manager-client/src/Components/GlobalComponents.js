@@ -41,6 +41,9 @@ const StyledTextField = withStyles({
         '& .MuiInput-underline:before': {
             borderBottomColor: '#999999',
         },
+        '& input[type="password" i]': {
+            webkitTextSecurity: 'disc !important'
+        }
     },
 })(TextField);
 
@@ -150,7 +153,7 @@ export const DarkTextField = ({ onChange, label, name, type, maxRows, value, def
     return (
         <StyledTextField
             onChange={onChange}
-            multiline
+            multiline={maxRows !== undefined ? true : false}
             maxRows={maxRows}
             label={label}
             name={name}

@@ -36,28 +36,13 @@ namespace HumanResourcesManager.MapperConf.Profiles
                     TeamId = dto.Id,
                     EmployeeId  = e.Id
                 })));
-            //.AfterMap((DTO, t) =>
-            //{
-            //    if (DTO.Members != null)
-            //    {
-            //        t.Members = new List<TeamEmployees>();
-            //        foreach (var item in DTO.Members)
-            //        {
-            //            t.Members.Add(new TeamEmployees
-            //            {
-            //                TeamId = DTO.Id,
-            //                EmployeeId = item.Id                               
-            //            });
-            //        }
-            //    }
-            //});
             CreateMap<EmployeeTaskDTO, EmployeeTask>().PreserveReferences();
             CreateMap<PersonDTO, Person >();
             CreateMap<EmployeeAddressDTO, EmployeeAddress >();
             CreateMap<PositionDTO, Position >();
             CreateMap<DepartmentDTO, Department>();
             CreateMap<PermissionDTO, Permission>();
-            CreateMap<UserDTO, User>();
+            CreateMap<UserDTO, User>().ForMember(u => u.Employee, dto => dto.MapFrom(x => x.EmployeeDTO));
 
         }
     }

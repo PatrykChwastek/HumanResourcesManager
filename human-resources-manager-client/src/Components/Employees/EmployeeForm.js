@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const EmployeeForm = () => {
+const EmployeeForm = ({ createdEmployee, employeeToEdit }) => {
     const classes = useStyles();
     const location = useLocation();
     const [seniorityLvs] = useState([
@@ -55,34 +55,35 @@ const EmployeeForm = () => {
     ]);
     const [employee, setEmployee] = useState(
         location.employee !== undefined ? location.employee.employee :
-            {
-                id: 0,
-                employmentDate: format(new Date(), "yyy-MM-dd"),
-                remoteWork: false,
-                person: {
+            employeeToEdit !== undefined ? employeeToEdit :
+                {
                     id: 0,
-                    name: "",
-                    surname: "",
-                    phoneNumber: "",
-                    email: "",
-                    employeeAddress: {
+                    employmentDate: format(new Date(), "yyy-MM-dd"),
+                    remoteWork: false,
+                    person: {
                         id: 0,
-                        city: "",
-                        postCode: "",
-                        street: ""
-                    }
-                },
-                position: {
-                    id: 0,
-                    name: "",
-                },
-                department: {
-                    id: 0,
-                    name: "",
-                },
-                seniority: "",
-                permissions: []
-            });
+                        name: "",
+                        surname: "",
+                        phoneNumber: "",
+                        email: "",
+                        employeeAddress: {
+                            id: 0,
+                            city: "",
+                            postCode: "",
+                            street: ""
+                        }
+                    },
+                    position: {
+                        id: 0,
+                        name: "",
+                    },
+                    department: {
+                        id: 0,
+                        name: "",
+                    },
+                    seniority: "",
+                    permissions: []
+                });
     const [departments, setDepartments] = useState([]);
     const [positions, setPositions] = useState([]);
     const remoteWork = [
@@ -91,7 +92,8 @@ const EmployeeForm = () => {
     ];
     const [allPermissions, setAllPermissions] = useState([]);
     const [employeePermissions, setEmployeePermissions] = useState(
-        location.employee !== undefined ? location.employee.employee.permissions : []
+        location.employee !== undefined ? location.employee.employee.permissions :
+            employeeToEdit !== undefined ? employeeToEdit.permissions : []
     );
     const [allertProps, setAllertProps] = useState({
         text: '',
@@ -230,7 +232,11 @@ const EmployeeForm = () => {
     }
 
     const hendleSubmitEmployee = () => {
-        console.log(employee);
+        if (createdEmployee !== undefined) {
+            createdEmployee(employee);
+            return;
+        }
+
         if (location.employee !== undefined) {
             PutEmployee(employee.id, employee)
             return;
