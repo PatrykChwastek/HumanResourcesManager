@@ -87,25 +87,43 @@ namespace HumanResourcesManager.Services.EmployeeRepo
 
         public async Task<Employee> PutEmployee(long id, Employee employeeEntity)
         {
-            _mDBContext.Entry(employeeEntity).State = EntityState.Modified;
-            _mDBContext.Entry(employeeEntity.Person).State = EntityState.Modified;
-            _mDBContext.Entry(employeeEntity.Person.EmployeeAddress).State = EntityState.Modified;
-            try
+            var employeeToEdit = await GetEmployee(id);
+
+            if (employeeToEdit == null)
             {
+                _logger.LogError($"Employee with ID: {id} not exists");
+                return null;
+            }
+
+            employeeToEdit.Person.Name = employeeEntity.Person.Name;
+            employeeToEdit.Person.Surname = employeeEntity.Person.Surname;
+            employeeToEdit.Person.Email = employeeEntity.Person.Email;
+            employeeToEdit.Person.PhoneNumber = employeeEntity.Person.PhoneNumber;
+            employeeToEdit.Person.EmployeeAddress.City = employeeEntity.Person.EmployeeAddress.City;
+            employeeToEdit.Person.EmployeeAddress.Street = employeeEntity.Person.EmployeeAddress.Street;
+            employeeToEdit.Person.EmployeeAddress.PostCode = employeeEntity.Person.EmployeeAddress.PostCode;
+            employeeToEdit.Seniority = employeeEntity.Seniority;
+            employeeToEdit.RemoteWork = employeeEntity.RemoteWork;
+            employeeToEdit.EmploymentDate = employeeEntity.EmploymentDate;
+            employeeToEdit.DepartmentId = employeeEntity.DepartmentId;
+            employeeToEdit.PositionId = employeeEntity.PositionId;
+
+            if (employeeToEdit.EmployeePermissions.Any())
+            {
+                _mDBContext.EmployeePermissions.RemoveRange(employeeToEdit.EmployeePermissions);
                 await Save();
             }
-            catch (DbUpdateConcurrencyException)
+
+            foreach (var per in employeeEntity.EmployeePermissions)
             {
-                if (!EmployeeExists(id))
+                employeeToEdit.EmployeePermissions.Add(new EmployeePermissions()
                 {
-                    _logger.LogError($"Employee with ID: {id} not exists");
-                    return null;
-                }
-                else
-                {
-                    throw;
-                }
+                    EmployeeId = per.EmployeeId,
+                    PermissionId = per.PermissionId,
+                });
             }
+
+            await Save();
             _logger.LogInformation($"Employee with ID: {id} edited");
             return await GetEmployee(id);
         }
@@ -187,11 +205,6 @@ namespace HumanResourcesManager.Services.EmployeeRepo
                 };
                return query = query.OrderBy("e => e." + order);
             }
-        }
-
-        private bool EmployeeExists(long id)
-        {
-            return _mDBContext.Employee.Any(e => e.Id == id);
         }
     }
 }

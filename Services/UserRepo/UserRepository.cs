@@ -1,4 +1,6 @@
-﻿using HumanResourcesManager.Context;
+﻿using AutoMapper;
+using HumanResourcesManager.Context;
+using HumanResourcesManager.MapperConf;
 using HumanResourcesManager.Models;
 using HumanResourcesManager.Models.Entity;
 using Microsoft.AspNetCore.Identity;
@@ -53,7 +55,6 @@ namespace HumanResourcesManager.Services.UserRepo
             PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
             return passwordHasher.HashPassword(user, password);
         }
-
 
         public async Task<User> CreateUser(User userEntity)
         {
@@ -126,6 +127,62 @@ namespace HumanResourcesManager.Services.UserRepo
             return res;
         }
 
+        public async Task<User> PutUser(long id, User userEntity)
+        {
+            _logger.LogInformation($"Edit user with ID: {id}");
+
+            if (!UserExists(id))
+            {
+                _logger.LogError($"User with ID: {id} not exists");
+                return null;
+            }
+
+            var userToEdit = await GetUser(id);
+
+            if (userToEdit.Password != userEntity.Password)
+            {
+                userEntity.Password = HashUserPassword(userEntity);
+                _logger.LogInformation($"User: {id} "+"password changed");
+
+            }
+
+            userToEdit.Username = userEntity.Username;
+            userToEdit.Password = userEntity.Password;
+
+            userToEdit.Employee.Person.Name = userEntity.Employee.Person.Name;
+            userToEdit.Employee.Person.Surname = userEntity.Employee.Person.Surname;
+            userToEdit.Employee.Person.Email = userEntity.Employee.Person.Email;
+            userToEdit.Employee.Person.PhoneNumber = userEntity.Employee.Person.PhoneNumber;
+            userToEdit.Employee.Person.EmployeeAddress.City = userEntity.Employee.Person.EmployeeAddress.City;
+            userToEdit.Employee.Person.EmployeeAddress.Street = userEntity.Employee.Person.EmployeeAddress.Street;
+            userToEdit.Employee.Person.EmployeeAddress.PostCode = userEntity.Employee.Person.EmployeeAddress.PostCode;
+            userToEdit.Employee.Seniority = userEntity.Employee.Seniority;
+            userToEdit.Employee.RemoteWork = userEntity.Employee.RemoteWork;
+            userToEdit.Employee.EmploymentDate = userEntity.Employee.EmploymentDate;
+            userToEdit.Employee.DepartmentId = userEntity.Employee.DepartmentId;
+            userToEdit.Employee.PositionId = userEntity.Employee.PositionId;
+
+            if (userToEdit.Employee.EmployeePermissions.Any())
+            {
+                _mDBContext.EmployeePermissions.RemoveRange(userToEdit.Employee.EmployeePermissions);
+                await Save();
+            }
+
+            foreach (var per in userEntity.Employee.EmployeePermissions)
+            {
+                userToEdit.Employee.EmployeePermissions.Add(new EmployeePermissions()
+                {
+                    EmployeeId = per.EmployeeId,
+                    PermissionId = per.PermissionId,
+                });
+            }
+            
+            await Save();
+
+            _logger.LogInformation($"User with ID: {id} edited");
+            return await GetUser(id);
+        }
+
         private IQueryable<User> FullUserQuery()
         {
             return _mDBContext.User
@@ -138,30 +195,10 @@ namespace HumanResourcesManager.Services.UserRepo
                 .ThenInclude(e => e.Department)
                 .Include(e => e.Employee)
                 .ThenInclude(e => e.EmployeePermissions)
-                .ThenInclude(ep => ep.Permission);
-        }
-
-        public async Task<User> PutUser(long id, User userEntity)
-        {
-            _mDBContext.Entry(userEntity).State = EntityState.Modified;
-            try
-            {
-                await Save();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    _logger.LogError($"User with ID: {id} not exists");
-                    return null;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            _logger.LogInformation($"User with ID: {id} edited");
-            return await GetUser(id);
+                .ThenInclude(ep => ep.Permission)
+                .Include(e => e.Employee)
+                .ThenInclude(e => e.EmployeePermissions)
+                .ThenInclude(e => e.Employee);
         }
 
         public async Task<bool> Save()

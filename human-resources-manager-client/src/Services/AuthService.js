@@ -52,7 +52,7 @@ export const getUserAccess = () => {
         return isPermit;
     }
 
-    const allowedViews = {
+    let allowedViews = {
         humanResources: isUsserPermit("Human-Resources"),
         admin: isUsserPermit('Admin'),
         teamManager: isUsserPermit('Team-Manager')

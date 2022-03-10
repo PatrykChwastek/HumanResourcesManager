@@ -63,7 +63,7 @@ namespace HumanResourcesManager.Controllers
     }
 
         // GET: api/Users
-        [Authorize(Roles = "Team-Manager")]
+       // [Authorize(Roles = "Team-Manager")]
         [HttpGet]
         public async Task<ActionResult<Pagination>> GetUser(
             int page,int size, string order, string search, string seniority, long department, long position, bool? isremote)
@@ -101,6 +101,21 @@ namespace HumanResourcesManager.Controllers
             var userDTO = _mapper.Map<UserDTO>(user);
 
             return Created("get", userDTO);
+        }
+
+        [HttpPut("{id}")]
+        [ActionName("put")]
+        public async Task<IActionResult> PutUser(long id, [FromBody] UserDTO user)
+        {
+            if (id != user.Id)
+            {
+                return BadRequest();
+            }
+
+            var mappedUser = _mapper.Map<User>(user);
+            await _userRepository.PutUser(id, mappedUser);
+
+            return NoContent();
         }
 
         // DELETE: api/Users/5

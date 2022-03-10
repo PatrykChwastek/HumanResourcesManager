@@ -74,7 +74,40 @@ const UserForm = () => {
                 });
     }
 
+    const PutUser = (employee) => {
+        const requestOptions = {
+            method: 'Put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: user.id,
+                username: user.username,
+                password: user.password,
+                employeeDTO: employee
+            }),
+        };
+        fetch(APIURL + 'users/' + user.id, requestOptions)
+            .then(() => {
+                setAllertProps({
+                    text: "User Edited",
+                    open: true,
+                    type: "success"
+                })
+            }
+                , (err) => {
+                    console.log(err)
+                    setAllertProps({
+                        text: "User Edit Error!",
+                        open: true,
+                        type: "error"
+                    })
+                });
+    }
+
     const hendleEmployeeCreations = (employee) => {
+        if (location.user !== undefined) {
+            PutUser(employee);
+            return;
+        }
         PostUser(employee);
     }
 
