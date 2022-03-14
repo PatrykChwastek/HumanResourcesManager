@@ -40,7 +40,6 @@ namespace HumanResourcesManager.Services.UserRepo
 
         private bool ValidatePassword(User user, string password, IPasswordHasher<User> passwordHasher)
         {
-            var passwordHash = passwordHasher.HashPassword(user, password);
             return passwordHasher.VerifyHashedPassword(user, user.Password, password) != PasswordVerificationResult.Failed; 
         }
 
