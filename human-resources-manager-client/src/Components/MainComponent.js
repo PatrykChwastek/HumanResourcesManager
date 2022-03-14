@@ -6,7 +6,7 @@ import HR_Manager from './Employees/HR_Manager';
 import CreateJobApplication from './JobApplication/CreateJobApplication';
 import EmployeeForm from './Employees/EmployeeForm';
 import { EmployeeDetails } from './Employees/EmployeeDetails';
-import LoginUser from './Users/LoginUser';
+import Profile from './Users/Profile'
 import UsersList from "./Users/UsersList";
 import UserForm from './Users/UserForm';
 import Team_Dashboard from './Teams/Team_Dashboard';
@@ -25,9 +25,11 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import TreeView from '@material-ui/lab/TreeView';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import TreeItem from '@material-ui/lab/TreeItem';
 
 const drawerWidth = 240;
@@ -101,6 +103,12 @@ const MainComponent = () => {
                         <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
                             Human Resources Manager
                         </Typography>
+                        <Link className={classes.linkButtons} to="/main/profile">
+                            <IconButton size='small' aria-label="delete">
+                                <AccountCircleIcon />
+                            </IconButton>
+                        </Link>
+
                         <Button onClick={handleLogout}>Logout</Button>
                     </Toolbar>
                 </AppBar>
@@ -200,6 +208,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/create-task">
                             <CreateTask />
+                        </Route>
+                        <Route path="/main/profile">
+                            <Profile />
                         </Route>
                         <Route path="/main/users-list">
                             <UsersList />

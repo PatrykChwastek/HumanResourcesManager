@@ -143,7 +143,6 @@ const UserForm = () => {
                             onChange={(e) => setUser({ ...user, password: e.target.value })}
                         />
                     </div>
-
                 </form>
             </div>
             {location.user !== undefined ?

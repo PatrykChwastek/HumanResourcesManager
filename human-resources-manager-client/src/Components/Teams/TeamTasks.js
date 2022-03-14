@@ -9,9 +9,10 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const leaderID = getCurrentUser().userDetails.employeeDTO.id;
+
 const TeamTasks = () => {
     const classes = useStyles();
+    const leaderID = getCurrentUser().userDetails.employeeDTO.id;
     const [team, setTeam] = useState({});
 
     useEffect(() => {

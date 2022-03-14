@@ -120,9 +120,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const leaderID = getCurrentUser().userDetails.employeeDTO.id;
 const CreateTask = () => {
     const classes = useStyles();
+    const leaderID = getCurrentUser().userDetails.employeeDTO.id;
     const [task, setTask] = useState({})
     const [subtasks, setSubtasks] = useState([])
     const [newSubtask, setNewSubtask] = useState({})

@@ -20,6 +20,7 @@ using HumanResourcesManager.Services.UserRepo;
 using AutoMapper;
 using HumanResourcesManager.Models;
 using HumanResourcesManager.Services;
+using HumanResourcesManager.Models.Request;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -59,8 +60,8 @@ namespace HumanResourcesManager.Controllers
                     userDetails = _mapper.Map<UserDTO>(user),
                 });
             }
-        return response;      
-    }
+            return response;      
+        }
 
         // GET: api/Users
        // [Authorize(Roles = "Team-Manager")]
@@ -101,6 +102,23 @@ namespace HumanResourcesManager.Controllers
             var userDTO = _mapper.Map<UserDTO>(user);
 
             return Created("get", userDTO);
+        }
+
+        [HttpPost("change-pass")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel changePasswordModel)
+        {
+            var isChaanged = await 
+                _userRepository.ChangePassword(
+                    changePasswordModel.UserId,
+                    changePasswordModel.OldPassword,
+                    changePasswordModel.NewPassword
+                );
+
+            if (isChaanged)
+            {
+                return Ok("Password Changed");
+            }
+            return BadRequest();
         }
 
         [HttpPut("{id}")]

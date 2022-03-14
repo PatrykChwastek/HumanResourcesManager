@@ -16,6 +16,7 @@ namespace HumanResourcesManager.Services.UserRepo
         Task<User> CreateUser(User userEntity);
         Task<User> CreateUser(Employee employeeEntity);
         Task<User> PutUser(long id, User userEntity);
+        Task<bool> ChangePassword(long id, string oldPass, string newPass);
         Task<bool> DeleteUser(long id);
     }
 }

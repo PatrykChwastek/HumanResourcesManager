@@ -93,10 +93,10 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: theme.shadows[2],
     }
 }));
-const leaderID = getCurrentUser().userDetails.employeeDTO.id;
+
 const Team_Dashboard = () => {
     const classes = useStyles();
-
+    const leaderID = getCurrentUser().userDetails.employeeDTO.id;
     const [team, setTeam] = useState({});
     const [idleMembers, setIdleMembers] = useState(0);
     const [tasksStats, setTasksStats] = useState({});

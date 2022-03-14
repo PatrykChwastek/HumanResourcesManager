@@ -68,6 +68,7 @@ const LoginUser = () => {
                     <DarkTextField
                         label="Password"
                         name="password"
+                        type="password"
                         onChange={headleFormChange}
                     />
                 </div>

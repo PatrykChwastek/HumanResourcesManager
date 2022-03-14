@@ -29,8 +29,7 @@ namespace HumanResourcesManager.Services.UserRepo
             var user = await _mDBContext.User.SingleOrDefaultAsync(x => x.Username == username);
             if (user != null)
             {
-                PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
-                if (ValidatePassword(user, password, passwordHasher))
+                if (ValidatePassword(user, password))
                 {
                     return await GetUser(user.Id);
                 }
@@ -38,8 +37,9 @@ namespace HumanResourcesManager.Services.UserRepo
             return null;
         }
 
-        private bool ValidatePassword(User user, string password, IPasswordHasher<User> passwordHasher)
+        private bool ValidatePassword(User user, string password)
         {
+            PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
             return passwordHasher.VerifyHashedPassword(user, user.Password, password) != PasswordVerificationResult.Failed; 
         }
 
@@ -53,6 +53,21 @@ namespace HumanResourcesManager.Services.UserRepo
         {
             PasswordHasher<User> passwordHasher = new PasswordHasher<User>();
             return passwordHasher.HashPassword(user, password);
+        }
+
+        public async Task<bool> ChangePassword(long id, string oldPass, string newPass)
+        {
+            var user = await GetUser(id);
+            if (user == null)
+                return false;
+            if (!ValidatePassword(user, oldPass))
+                return false;
+            user.Password = HashUserPassword(user, newPass);
+
+            await Save();
+
+            _logger.LogInformation($"User: {id} password changed");
+            return true;
         }
 
         public async Task<User> CreateUser(User userEntity)
