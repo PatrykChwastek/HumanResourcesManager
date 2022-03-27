@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link, useHistory } from "react-router-dom";
+import { getUserAccess, logout, getCurrentUser } from '../Services/AuthService';
+import { makeStyles } from '@material-ui/core/styles';
 import EmployeeList from './Employees/EmployeeList';
 import HR_Dashboard from './Employees/HR_Dashboard';
 import HR_Manager from './Employees/HR_Manager';
@@ -17,20 +19,31 @@ import CreateTask from "./Tasks/CreateTask";
 import TeamList from "./Teams/TeamList"
 import CreateTeam from "./Teams/CreateTeam";
 import AddTeamMembers from "./Teams/AddTeamMembers"
-import { getUserAccess, logout, getCurrentUser } from '../Services/AuthService';
 
-import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import EventNoteIcon from '@material-ui/icons/EventNote';
+import PollIcon from '@material-ui/icons/Poll';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import DateRangeIcon from '@material-ui/icons/DateRange';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import TreeItem from '@material-ui/lab/TreeItem';
 
 const drawerWidth = 240;
 
@@ -39,36 +52,68 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
     },
     appBar: {
-        zIndex: theme.zIndex.drawer + 1,
+        zIndex: theme.zIndex.drawer + 1
+    },
+    menuButton: {
+        marginRight: 36,
+    },
+    hide: {
+        display: 'none',
     },
     drawer: {
         width: drawerWidth,
         flexShrink: 0,
+        whiteSpace: 'nowrap',
+        marginTop: '123px'
     },
-    drawerPaper: {
+    drawerOpen: {
         width: drawerWidth,
-        background: theme.palette.grey[800],
-        color: theme.palette.common.white,
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    drawerClose: {
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        overflowX: 'hidden',
+        width: theme.spacing(7) + 1,
+        [theme.breakpoints.up('sm')]: {
+            width: theme.spacing(9) + 1,
+        },
     },
     drawerContainer: {
-        overflow: 'auto',
-        '& .MuiTypography-body1': {
-            fontSize: '19px'
-        },
-        '& .MuiTreeItem-root.Mui-selected > .MuiTreeItem-content .MuiTreeItem-label': {
-            backgroundColor: "#3f51b5",
-            color: 'white',
-            marginRight: '12px',
-            padding: '2px 6px',
-            paddingRight: '0',
-            borderRadius: '4px',
-            boxShadow: theme.shadows[2],
-        },
+        marginTop: '65px',
     },
     content: {
         flexGrow: 1,
         padding: '1.5rem',
         paddingTop: '5rem',
+        padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: -drawerWidth + 73,
+    },
+    contentShift: {
+        flexGrow: 1,
+        padding: '1.5rem',
+        paddingTop: '5rem',
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+    },
+    navList: {
+        '& .MuiSvgIcon-root': {
+            marginLeft: '4px',
+            width: '32px',
+            height: '32px',
+        },
     },
     linkButtons: {
         textDecoration: "none",
@@ -77,18 +122,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MainComponent = () => {
-    const [userAccess] = useState(getUserAccess());
     const history = useHistory();
+    const [userAccess] = useState(getUserAccess());
+    const [navIsOpen, setNavIsOpen] = useState(false);
+    const [currentLocation, setCurrentLocation] = useState(
+        history.location.pathname.substr(history.location.pathname.lastIndexOf('/') + 1));
 
-    const currentLocation = () => {
-        switch (history.location.pathname) {
-            case '/main/dashboard':
-                return ['1'];
-            case '/main/tasks-columns':
-                return ['3'];
-            case '/main/tasks-list':
-                return ['4'];
+
+    const isNavItemmSelected = (name) => {
+        console.log(name);
+        if (name === currentLocation) {
+            return true;
         }
+        return false;
     }
     const handleLogout = () => {
         logout();
@@ -98,8 +144,28 @@ const MainComponent = () => {
     return (
         <Router>
             <div className={classes.root}>
-                <AppBar position="fixed" className={classes.appBar}>
+                <AppBar
+                    position="fixed"
+                    className={classes.appBar}
+                >
                     <Toolbar>
+                        {navIsOpen ?
+                            <IconButton
+                                onClick={() => setNavIsOpen(false)}
+                                edge="start"
+                                className={classes.menuButton}
+                            >
+                                <ChevronLeftIcon />
+                            </IconButton> :
+                            <IconButton
+                                color="inherit"
+                                onClick={() => setNavIsOpen(true)}
+                                edge="start"
+                                className={classes.menuButton}
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                        }
                         <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
                             Human Resources Manager
                         </Typography>
@@ -113,62 +179,118 @@ const MainComponent = () => {
                     </Toolbar>
                 </AppBar>
                 <Drawer
-                    className={classes.drawer}
+                    className={
+                        classes.drawer +
+                            navIsOpen ? classes.drawerOpen :
+                            classes.drawerClose
+                    }
                     variant="permanent"
                     classes={{
-                        paper: classes.drawerPaper,
+                        paper: navIsOpen ? classes.drawerOpen :
+                            classes.drawerClose
                     }}
                 >
-                    <Toolbar />
                     <div className={classes.drawerContainer}>
-                        <TreeView
-                            defaultExpanded={['7']}
-                            defaultSelected={currentLocation()}
-                            defaultCollapseIcon={<ExpandMoreIcon />}
-                            defaultExpandIcon={<ChevronRightIcon />}
-                        >
+
+                        <List component="nav" className={classes.navList}>
                             {userAccess.humanResources === false ? null :
                                 <React.Fragment>
                                     <Link className={classes.linkButtons} to="/main/dashboard">
-                                        <TreeItem nodeId="1" label="Dashboard" />
+                                        <ListItem button
+                                            selected={isNavItemmSelected('dashboard')}
+                                            onClick={() => setCurrentLocation('dashboard')}
+                                        >
+                                            <ListItemIcon><PollIcon /></ListItemIcon>
+                                            <ListItemText primary={<Typography noWrap>Dashboard</Typography>} />
+                                        </ListItem>
                                     </Link>
                                     <Link className={classes.linkButtons} to="/main/hr-manager">
-                                        <TreeItem nodeId="2" label="HR-Manager" />
+                                        <ListItem button
+                                            selected={isNavItemmSelected('hr-manager')}
+                                            onClick={() => setCurrentLocation('hr-manager')}
+                                        >
+                                            <ListItemIcon><AssignmentIndIcon /></ListItemIcon>
+                                            <ListItemText primary={<Typography noWrap>HR-Manager</Typography>} />
+                                        </ListItem>
                                     </Link>
                                     <Link className={classes.linkButtons} to="/main/employees">
-                                        <TreeItem nodeId="3" label="Employees" />
-                                    </Link>
-                                    <Link className={classes.linkButtons} to="/main/team-list">
-                                        <TreeItem nodeId="4" label="Team List" />
+                                        <ListItem button
+                                            selected={isNavItemmSelected('employees')}
+                                            onClick={() => setCurrentLocation('employees')}
+                                        >
+                                            <ListItemIcon><PeopleAltIcon /></ListItemIcon>
+                                            <ListItemText primary={<Typography noWrap>Employees</Typography>} />
+                                        </ListItem>
                                     </Link>
                                     <Link className={classes.linkButtons} to="/main/applications">
-                                        <TreeItem nodeId="5" label="Job Applications" />
+                                        <ListItem button
+                                            selected={isNavItemmSelected('applications')}
+                                            onClick={() => setCurrentLocation('applications')}
+                                        >
+                                            <ListItemIcon><AssignmentIcon /></ListItemIcon>
+                                            <ListItemText primary={<Typography noWrap>Job Applications</Typography>} />
+                                        </ListItem>
                                     </Link>
-                                </React.Fragment>
-                            }
-                            <TreeItem nodeId="6" label="My Tasks:">
-                                <Link className={classes.linkButtons} to="/main/tasks-columns">
-                                    <TreeItem nodeId="7" label="Columns" />
-                                </Link>
-                                <Link className={classes.linkButtons} to="/main/tasks-list" >
-                                    <TreeItem nodeId="8" label="List" />
-                                </Link>
-                            </TreeItem>
-                            <TreeItem nodeId="9" label="Team Manager">
-                                <Link className={classes.linkButtons} to="/main/team-manager">
-                                    <TreeItem nodeId="10" label="Team Dashboard" />
-                                </Link>
-                                <Link className={classes.linkButtons} to="/main/team-tasks">
-                                    <TreeItem nodeId="11" label="Team Tasks" />
-                                </Link>
-                            </TreeItem >
-                            <Link className={classes.linkButtons} to="/main/users-list" >
-                                <TreeItem nodeId="12" label="Users List" />
+                                    <Divider />
+                                </React.Fragment>}
+                            <Link className={classes.linkButtons} to="/main/tasks-columns">
+                                <ListItem button
+                                    selected={isNavItemmSelected('tasks-columns')}
+                                    onClick={() => setCurrentLocation('tasks-columns')}
+                                >
+                                    <ListItemIcon><DateRangeIcon /></ListItemIcon>
+                                    <ListItemText primary={<Typography noWrap>Tasks</Typography>} />
+                                </ListItem>
                             </Link>
-                        </TreeView>
+                            <Link className={classes.linkButtons} to="/main/tasks-list">
+                                <ListItem button
+                                    selected={isNavItemmSelected('tasks-list')}
+                                    onClick={() => setCurrentLocation('tasks-list')}
+                                >
+                                    <ListItemIcon><FormatListBulletedIcon /></ListItemIcon>
+                                    <ListItemText primary={<Typography noWrap>Task List</Typography>} />
+                                </ListItem>
+                            </Link>
+                            <Divider />
+                            {userAccess.teamManager === false ? null :
+                                <React.Fragment>
+                                    <Link className={classes.linkButtons} to="/main/team-manager">
+                                        <ListItem button
+                                            selected={isNavItemmSelected('team-manager')}
+                                            onClick={() => setCurrentLocation('team-manager')}
+                                        >
+                                            <ListItemIcon><DeveloperBoardIcon /></ListItemIcon>
+                                            <ListItemText primary={<Typography noWrap>Team Manager</Typography>} />
+                                        </ListItem>
+                                    </Link>
+                                    <Link className={classes.linkButtons} to="/main/team-tasks">
+                                        <ListItem button
+                                            selected={isNavItemmSelected('team-tasks')}
+                                            onClick={() => setCurrentLocation('team-tasks')}
+                                        >
+                                            <ListItemIcon><EventNoteIcon /></ListItemIcon>
+                                            <ListItemText primary={<Typography noWrap>Team Tasks</Typography>} />
+                                        </ListItem>
+                                    </Link>
+                                    <Divider />
+                                </React.Fragment>}
+                            {userAccess.admin === false ? null :
+                                <React.Fragment>
+                                    <Link className={classes.linkButtons} to="/main/users-list">
+                                        <ListItem button
+                                            selected={isNavItemmSelected('users-list')}
+                                            onClick={() => setCurrentLocation('users-list')}
+                                        >
+                                            <ListItemIcon><RecentActorsIcon /></ListItemIcon>
+                                            <ListItemText primary={<Typography noWrap>Users</Typography>} />
+                                        </ListItem>
+                                    </Link>
+                                    <Divider />
+                                </React.Fragment>}
+                        </List>
                     </div>
                 </Drawer>
-                <main className={classes.content}>
+                <main className={navIsOpen ? classes.contentShift : classes.content}>
                     <Switch>
                         <Route path="/main/dashboard">
                             <HR_Dashboard />
