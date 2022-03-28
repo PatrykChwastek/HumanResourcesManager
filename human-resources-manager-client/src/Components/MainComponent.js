@@ -44,6 +44,7 @@ import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import GroupWorkIcon from '@material-ui/icons/GroupWork';
 
 const drawerWidth = 240;
 
@@ -130,7 +131,6 @@ const MainComponent = () => {
 
 
     const isNavItemmSelected = (name) => {
-        console.log(name);
         if (name === currentLocation) {
             return true;
         }
@@ -222,6 +222,15 @@ const MainComponent = () => {
                                             <ListItemText primary={<Typography noWrap>Employees</Typography>} />
                                         </ListItem>
                                     </Link>
+                                    <Link className={classes.linkButtons} to="/main/team-list">
+                                        <ListItem button
+                                            selected={isNavItemmSelected('team-list')}
+                                            onClick={() => setCurrentLocation('team-list')}
+                                        >
+                                            <ListItemIcon><GroupWorkIcon /></ListItemIcon>
+                                            <ListItemText primary={<Typography noWrap>Team List</Typography>} />
+                                        </ListItem>
+                                    </Link>
                                     <Link className={classes.linkButtons} to="/main/applications">
                                         <ListItem button
                                             selected={isNavItemmSelected('applications')}
@@ -232,7 +241,8 @@ const MainComponent = () => {
                                         </ListItem>
                                     </Link>
                                     <Divider />
-                                </React.Fragment>}
+                                </React.Fragment>
+                            }
                             <Link className={classes.linkButtons} to="/main/tasks-columns">
                                 <ListItem button
                                     selected={isNavItemmSelected('tasks-columns')}

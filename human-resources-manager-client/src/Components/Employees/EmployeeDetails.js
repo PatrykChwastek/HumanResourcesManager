@@ -56,7 +56,7 @@ export const EmployeeDetails = () => {
 
     useEffect(() => {
         getEmploee(params.id);
-    }, [])
+    })
 
     const getEmploee = async (empID) => {
         const requestOptions = {

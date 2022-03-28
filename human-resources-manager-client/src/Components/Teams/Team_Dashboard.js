@@ -101,9 +101,11 @@ const Team_Dashboard = () => {
     const [idleMembers, setIdleMembers] = useState(0);
     const [tasksStats, setTasksStats] = useState({});
     const [currentTasks, setCurrentTasks] = useState([]);
+
     useEffect(() => {
         getData();
     }, []);
+
     useEffect(() => {
         if (team.members !== undefined && currentTasks.length === team.members.length) {
             let couter = 0;
@@ -115,6 +117,7 @@ const Team_Dashboard = () => {
             setIdleMembers(couter)
         }
     }, [currentTasks]);
+
     const getData = () => {
         const requestOptions = {
             method: 'Get',

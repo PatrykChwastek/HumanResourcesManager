@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import APIURL from '../../Services/Globals'
 import { Link } from "react-router-dom";
+import { StatBar } from "../GlobalComponents"
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -64,15 +65,14 @@ const useStyles = makeStyles((theme) => ({
         color: "white",
     },
     remoteWorkBox: {
-        marginTop: '1.5rem',
-        width: "307px",
+        marginTop: '1.2rem 0',
+        width: "calc(366px - 1.2rem)",
         padding: "10px",
         background: theme.palette.grey[800],
         color: "white",
     },
     statsBox: {
-        marginTop: '1.5rem',
-        marginLeft: '1.5rem',
+        margin: '0 0 1.2rem 1.2rem',
         width: "120px",
         height: "60px",
         padding: "12px",
@@ -87,6 +87,30 @@ const useStyles = makeStyles((theme) => ({
     container: {
         maxHeight: 540,
     },
+    title: {
+        color: theme.palette.text.primary,
+        textAlign: 'center',
+        padding: '2px 6px 2px',
+        marginBottom: '5px',
+        backgroundColor: theme.palette.primary.main,
+        boxShadow: theme.shadows[2],
+        width: '100%',
+    },
+    barBox: {
+        width: 'max-content',
+        marginRight: '1rem',
+        marginBottom: '1rem',
+        minWidth: '366px',
+    },
+    statsMain: {
+        display: 'flex',
+        flexWrap: 'wrap'
+    },
+    statsContainer: {
+        display: 'flex',
+        padding: '0 4px 4px',
+        justifyContent: 'space-around'
+    },
     button: {
         background: theme.palette.grey[300],
         padding: ".4rem",
@@ -99,6 +123,7 @@ const useStyles = makeStyles((theme) => ({
 const HR_Dashboard = () => {
     const classes = useStyles();
     const [employees, setEmployees] = useState([]);
+    const [tasksStats, setTasksStats] = useState({});
     const [stats, setStats] = useState();
     const [progress, setProgress] = React.useState(0);
 
@@ -118,7 +143,19 @@ const HR_Dashboard = () => {
     useEffect(() => {
         getEmploees(1, 5);
         getStats();
+        getTasksStats();
     }, []);
+
+    const getTasksStats = () => {
+        const requestOptions = {
+            method: 'Get',
+            headers: { 'Content-Type': 'application/json' }
+        };
+        fetch(APIURL + `tasks/stats`, requestOptions)
+            .then(response => response.json())
+            .then(data => (setTasksStats(data)));
+
+    }
 
     const getEmploees = async (page, size) => {
         const requestOptions = {
@@ -128,7 +165,7 @@ const HR_Dashboard = () => {
         await fetch(APIURL +
             `employee/all?page=${page}&size=${size}&order=date-desc`, requestOptions)
             .then(response => response.json())
-            .then(data => (setEmployees(data.items), console.log(data.items)));
+            .then(data => (setEmployees(data.items)));
     }
 
     const getStats = async () => {
@@ -143,7 +180,7 @@ const HR_Dashboard = () => {
     return (
         <div>
             {stats === undefined ? <div></div> :
-                <Grid container>
+                <Grid container style={{ marginBottom: '1.2rem' }}>
                     <Card className={classes.remoteWorkBox}>
                         <Grid container item spacing={4}>
                             <Grid item xs={7} >
@@ -163,7 +200,92 @@ const HR_Dashboard = () => {
                         <Typography noWrap variant="h5">{stats.totalJobApplications}</Typography>
                         <Typography noWrap variant="subtitle1">Job Applicatios</Typography>
                     </Card>
+                    {tasksStats.totalDelayedTasks === undefined || 0 ? null :
+                        <Card className={classes.statsBox}>
+                            <Typography noWrap variant="h5">{tasksStats.totalDelayedTasks}</Typography>
+                            <Typography noWrap variant="subtitle1">Delayed Tasks</Typography>
+                        </Card>
+                    }
                 </Grid>
+            }
+            {tasksStats.monthTotal === undefined ? null :
+                <div className={classes.statsMain}>
+                    <Card className={classes.barBox}>
+                        <div className={classes.title}>
+                            <Typography variant="h6">Today Tasks: {tasksStats.todayTotal}</Typography>
+                        </div>
+                        <div className={classes.statsContainer}>
+                            <StatBar
+                                valueMax={tasksStats.todayTotal}
+                                valueCurrent={tasksStats.todayRequested}
+                                text={"Requested: " + tasksStats.todayRequested}
+                                bcolor='rgb(231, 170, 35)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.todayTotal}
+                                valueCurrent={tasksStats.todayProgress}
+                                text={"In-Progress: " + tasksStats.todayProgress}
+                                bcolor='rgb(56, 81, 216)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.todayTotal}
+                                valueCurrent={tasksStats.todayCompleted}
+                                text={"Completed: " + tasksStats.todayCompleted}
+                                bcolor='rgb(0, 158, 7)'
+                            />
+                        </div>
+                    </Card>
+                    <Card className={classes.barBox}>
+                        <div className={classes.title}>
+                            <Typography variant="h6">This Week Tasks: {tasksStats.weekTotal}</Typography>
+                        </div>
+                        <div className={classes.statsContainer}>
+                            <StatBar
+                                valueMax={tasksStats.weekTotal}
+                                valueCurrent={tasksStats.weekRequested}
+                                text={"Requested: " + tasksStats.weekRequested}
+                                bcolor='rgb(231, 170, 35)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.weekTotal}
+                                valueCurrent={tasksStats.weekProgress}
+                                text={"In-Progress: " + tasksStats.weekProgress}
+                                bcolor='rgb(56, 81, 216)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.weekTotal}
+                                valueCurrent={tasksStats.weekCompleted}
+                                text={"Completed: " + tasksStats.weekCompleted}
+                                bcolor='rgb(0, 158, 7)'
+                            />
+                        </div>
+                    </Card>
+                    <Card className={classes.barBox}>
+                        <div className={classes.title}>
+                            <Typography variant="h6">This Month Tasks: {tasksStats.monthTotal}</Typography>
+                        </div>
+                        <div className={classes.statsContainer}>
+                            <StatBar
+                                valueMax={tasksStats.monthTotal}
+                                valueCurrent={tasksStats.monthRequested}
+                                text={"Requested: " + tasksStats.monthRequested}
+                                bcolor='rgb(231, 170, 35)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.monthTotal}
+                                valueCurrent={tasksStats.monthProgress}
+                                text={"In-Progress: " + tasksStats.monthProgress}
+                                bcolor='rgb(56, 81, 216)'
+                            />
+                            <StatBar
+                                valueMax={tasksStats.monthTotal}
+                                valueCurrent={tasksStats.monthCompleted}
+                                text={"Completed: " + tasksStats.monthCompleted}
+                                bcolor='rgb(0, 158, 7)'
+                            />
+                        </div>
+                    </Card>
+                </div>
             }
             {employees === undefined ? <div></div> :
                 <Card className={classes.root}>
