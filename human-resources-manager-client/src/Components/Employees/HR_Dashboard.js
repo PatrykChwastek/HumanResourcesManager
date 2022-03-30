@@ -4,6 +4,7 @@ import APIURL from '../../Services/Globals'
 import { Link } from "react-router-dom";
 import { StatBar } from "../GlobalComponents"
 
+import Skeleton from '@material-ui/lab/Skeleton';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -118,6 +119,17 @@ const useStyles = makeStyles((theme) => ({
         "margin-right": ".2rem",
         color: theme.palette.grey[800]
     },
+    skeleton: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: 'space-between',
+        margin: '4px',
+        '& .MuiSkeleton-root': {
+            transform: 'none',
+            visibility: 'visible !important'
+        }
+    }
 }));
 
 const HR_Dashboard = () => {
@@ -176,10 +188,82 @@ const HR_Dashboard = () => {
             .then(response => response.json())
             .then(data => (setStats(data)));
     }
+    const generalStatsSkeleton = () => {
+        return (
+            <Grid container style={{ marginBottom: '1.2rem' }}>
+                <Card className={classes.remoteWorkBox}>
+                    <Grid container item spacing={4}>
+                        <Grid item xs={7} >
+                            <Typography variant="h5"> <Skeleton animation="wave" width="95%" /></Typography>
+                            <Typography variant="subtitle1"><Skeleton animation="wave" width="90%" /></Typography>
+                        </Grid>
+                        <Grid item xs={5}>
+                            <Skeleton variant="circle" animation="wave" width={125} height={125} />
+                        </Grid>
+                    </Grid>
+                </Card>
+                {[1, 2, 3].map((n, index) => (
+                    <Card key={index + 'ss'} className={classes.statsBox}>
+                        <Typography variant="h5"><Skeleton animation="wave" width="42px" /></Typography>
+                        <Typography variant="subtitle1"><Skeleton animation="wave" width="95%" /></Typography>
+                    </Card>
+                ))}
+            </Grid>);
+    }
+
+    const tasksStatSkeleton = () => {
+        return (
+            <div className={classes.statsMain}>
+                {[1, 2, 3].map((n, index) => (
+                    <Card key={index + "skiel"} className={classes.barBox}>
+                        <div className={classes.title}>
+                            <Typography variant="h6">
+                                <Skeleton animation="wave" width="95%" />
+                            </Typography>
+
+                        </div>
+                        <div className={classes.statsContainer}>
+                            <Skeleton className={classes.skeleton} animation="wave" variant="rect" width="102px" height="160px" >
+                                <Skeleton animation="wave" width="100%" />
+                                <Skeleton width="32px" height="102px" />
+                                <Skeleton animation="wave" width="17px" height="15px" style={{ marginBottom: '5px' }} />
+                            </Skeleton>
+                            <Skeleton className={classes.skeleton} animation="wave" variant="rect" width="102px" height="160px" >
+                                <Skeleton animation="wave" width="100%" />
+                                <Skeleton width="32px" height="102px" />
+                                <Skeleton animation="wave" width="17px" height="15px" style={{ marginBottom: '5px' }} />
+                            </Skeleton>
+                            <Skeleton className={classes.skeleton} animation="wave" variant="rect" width="102px" height="160px" >
+                                <Skeleton animation="wave" width="100%" />
+                                <Skeleton width="32px" height="102px" />
+                                <Skeleton animation="wave" width="17px" height="15px" style={{ marginBottom: '5px' }} />
+                            </Skeleton>
+                        </div>
+                    </Card>
+                ))}
+
+            </div>
+        );
+    }
+
+    const tabSkeleton = () => {
+        return (
+            <Card>
+                <Typography style={{ marginLeft: '18px' }} variant="h3"><Skeleton animation="wave" width="21%" /></Typography>
+                <Typography style={{ marginLeft: '18px', marginBottom: '12px' }} variant="h6"><Skeleton animation="wave" width="98%" /></Typography>
+                <div style={{ padding: '4px', backgroundColor: '#bdbdbd' }}>
+                    <Typography style={{ marginLeft: '18px' }} variant="h4"><Skeleton width="98%" /></Typography>
+                    <Typography style={{ marginLeft: '18px' }} variant="h4"><Skeleton width="98%" /></Typography>
+                    <Typography style={{ marginLeft: '18px' }} variant="h4"><Skeleton width="98%" /></Typography>
+                    <Typography style={{ marginLeft: '18px' }} variant="h4"><Skeleton width="98%" /></Typography>
+                </div>
+            </Card>
+        )
+    }
 
     return (
         <div>
-            {stats === undefined ? <div></div> :
+            {stats === undefined ? generalStatsSkeleton() :
                 <Grid container style={{ marginBottom: '1.2rem' }}>
                     <Card className={classes.remoteWorkBox}>
                         <Grid container item spacing={4}>
@@ -208,7 +292,7 @@ const HR_Dashboard = () => {
                     }
                 </Grid>
             }
-            {tasksStats.monthTotal === undefined ? null :
+            {tasksStats.monthTotal === undefined ? tasksStatSkeleton() :
                 <div className={classes.statsMain}>
                     <Card className={classes.barBox}>
                         <div className={classes.title}>
@@ -287,7 +371,7 @@ const HR_Dashboard = () => {
                     </Card>
                 </div>
             }
-            {employees === undefined ? <div></div> :
+            {employees === undefined ? tabSkeleton() :
                 <Card className={classes.root}>
                     <CardHeader
                         title="Newly Hired Employees:"

@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { getTasks } from "../../Services/TasksService";
 import { StatBar } from "../GlobalComponents"
 
+import Skeleton from '@material-ui/lab/Skeleton';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Paper from '@material-ui/core/Paper';
@@ -45,9 +46,16 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexWrap: 'wrap'
     },
+    barBox: {
+        width: 'max-content',
+        marginRight: '1rem',
+        marginBottom: '1rem',
+        minWidth: '366px',
+    },
     statsContainer: {
         display: 'flex',
-        padding: '0 6px 4px',
+        padding: '0 4px 4px',
+        justifyContent: 'space-around'
     },
     title: {
         color: theme.palette.text.primary,
@@ -59,11 +67,10 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
     statsBox: {
+        margin: '0 1rem 1rem 0',
         width: "120px",
         height: "60px",
         padding: "12px",
-        marginRight: '22px',
-        marginBottom: '22px',
         position: "relative",
         background: theme.palette.grey[800],
         color: "white",
@@ -91,6 +98,17 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#bd0000",
         color: "white",
         boxShadow: theme.shadows[2],
+    },
+    skeleton: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: 'space-between',
+        margin: '4px',
+        '& .MuiSkeleton-root': {
+            transform: 'none',
+            visibility: 'visible !important'
+        }
     }
 }));
 
@@ -173,11 +191,70 @@ const Team_Dashboard = () => {
         });
         return currTask;
     }
+    const tasksStatSkeleton = () => {
+        return (
+            <div className={classes.statsMain}>
+                {[1, 2, 3].map((n, index) => (
+                    <Card key={index + "skiel"} className={classes.barBox}>
+                        <div className={classes.title}>
+                            <Typography variant="h6">
+                                <Skeleton animation="wave" width="95%" />
+                            </Typography>
+
+                        </div>
+                        <div className={classes.statsContainer}>
+                            <Skeleton className={classes.skeleton} animation="wave" variant="rect" width="102px" height="160px" >
+                                <Skeleton animation="wave" width="100%" />
+                                <Skeleton width="32px" height="102px" />
+                                <Skeleton animation="wave" width="17px" height="15px" style={{ marginBottom: '5px' }} />
+                            </Skeleton>
+                            <Skeleton className={classes.skeleton} animation="wave" variant="rect" width="102px" height="160px" >
+                                <Skeleton animation="wave" width="100%" />
+                                <Skeleton width="32px" height="102px" />
+                                <Skeleton animation="wave" width="17px" height="15px" style={{ marginBottom: '5px' }} />
+                            </Skeleton>
+                            <Skeleton className={classes.skeleton} animation="wave" variant="rect" width="102px" height="160px" >
+                                <Skeleton animation="wave" width="100%" />
+                                <Skeleton width="32px" height="102px" />
+                                <Skeleton animation="wave" width="17px" height="15px" style={{ marginBottom: '5px' }} />
+                            </Skeleton>
+                        </div>
+                    </Card>
+                ))}
+                <Card className={classes.statsBox}>
+                    <Typography variant="h5"><Skeleton animation="wave" width="42px" /></Typography>
+                    <Typography variant="subtitle1"><Skeleton animation="wave" width="95%" /></Typography>
+                </Card>
+                <Card className={classes.statsBox}>
+                    <Typography variant="h5"><Skeleton animation="wave" width="42px" /></Typography>
+                    <Typography variant="subtitle1"><Skeleton animation="wave" width="95%" /></Typography>
+                </Card>
+            </div>
+        );
+    }
+
+    const tabSkeleton = () => {
+        return (
+            <Card>
+                <Typography style={{ marginLeft: '18px' }} variant="h3"><Skeleton animation="wave" width="21%" /></Typography>
+                <Typography style={{ marginLeft: '18px', marginBottom: '12px' }} variant="h6"><Skeleton animation="wave" width="98%" /></Typography>
+                <div style={{ padding: '4px', backgroundColor: '#bdbdbd' }}>
+                    <Typography style={{ marginLeft: '18px' }} variant="h4"><Skeleton width="98%" /></Typography>
+                    <Typography style={{ marginLeft: '18px' }} variant="h4"><Skeleton width="98%" /></Typography>
+                    <Typography style={{ marginLeft: '18px' }} variant="h4"><Skeleton width="98%" /></Typography>
+                    <Typography style={{ marginLeft: '18px' }} variant="h4"><Skeleton width="98%" /></Typography>
+
+                </div>
+            </Card>
+        )
+
+    }
+
     return (
         <div>
-            {tasksStats.monthTotal === undefined ? null :
+            {tasksStats.monthTotal === undefined ? tasksStatSkeleton() :
                 <div className={classes.statsMain}>
-                    <Card style={{ width: 'max-content', marginRight: '22px', marginBottom: '22px' }}>
+                    <Card className={classes.barBox}>
                         <div className={classes.title}>
                             <Typography variant="h6">Today Tasks: {tasksStats.todayTotal}</Typography>
                         </div>
@@ -202,7 +279,7 @@ const Team_Dashboard = () => {
                             />
                         </div>
                     </Card>
-                    <Card style={{ width: 'max-content', marginRight: '22px', marginBottom: '22px' }}>
+                    <Card className={classes.barBox}>
                         <div className={classes.title}>
                             <Typography variant="h6">This Week Tasks: {tasksStats.weekTotal}</Typography>
                         </div>
@@ -227,7 +304,7 @@ const Team_Dashboard = () => {
                             />
                         </div>
                     </Card>
-                    <Card style={{ width: 'max-content', marginRight: '22px', marginBottom: '22px' }}>
+                    <Card className={classes.barBox}>
                         <div className={classes.title}>
                             <Typography variant="h6">This Month Tasks: {tasksStats.monthTotal}</Typography>
                         </div>
@@ -262,7 +339,7 @@ const Team_Dashboard = () => {
                     </Card>
                 </div>
             }
-            {team.members === undefined ? <div></div> :
+            {team.members === undefined ? tabSkeleton() :
                 <Card className={classes.root}>
                     <CardHeader
                         title={'"' + team.name + '"' + " Team Members:"}
@@ -326,7 +403,8 @@ const Team_Dashboard = () => {
                                                 <CheckCircleIcon /> : <CloseIcon />}
                                         </StyledTableCell>
                                         <StyledTableCell align="center">
-                                            {currentTasks.length !== team.members.length ? null :
+                                            {currentTasks.length !== team.members.length ?
+                                                <Typography variant="h6"><Skeleton width="99%" /></Typography> :
                                                 currentTaskBar(employee.id)
                                             }
                                         </StyledTableCell>

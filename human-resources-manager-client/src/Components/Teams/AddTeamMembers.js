@@ -4,6 +4,7 @@ import APIURL from '../../Services/Globals'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useLocation } from "react-router-dom";
 
+import Skeleton from '@material-ui/lab/Skeleton';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -257,7 +258,7 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
     }
 
     const handleRowClick = (event, employee) => {
-        const selectedIndex = selEmployees.findIndex(e => e.id == employee.id);
+        const selectedIndex = selEmployees.findIndex(e => e.id == employee.id);// error on create team back button
         let newSelected = [];
 
         if (selectedIndex === -1) {
@@ -283,6 +284,24 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
         setAllertProps({ ...allertProps, open: false });
     };
 
+    const tabSkeleton = () => {
+        return (
+            <Paper className={classes.root}>
+                <Skeleton style={{ marginLeft: '8px', marginTop: '16px' }} animation="wave" width="21%" height="50px" />
+                <Skeleton style={{ margin: '8px 8px 20px' }} animation="wave" width="98%" height="36px" />
+                <div style={{ padding: '4px', backgroundColor: '#bdbdbd' }}>
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                </div>
+            </Paper>
+        )
+    }
+
     return (
         <div>
             <Snackbar open={allertProps.open} autoHideDuration={4000} onClose={handleAllertClose}>
@@ -291,7 +310,7 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
                 </Alert>
             </Snackbar>
 
-            {employees === undefined ? <div></div> :
+            {employees.length === 0 ? tabSkeleton() :
                 <Paper className={classes.root}>
                     <div className={classes.tabTop}>
                         {isSingle === undefined ?

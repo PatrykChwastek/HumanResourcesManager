@@ -4,6 +4,7 @@ import APIURL from '../../Services/Globals';
 import { Link, useHistory } from "react-router-dom";
 import { DarkTextField, DarkSelect } from '../GlobalComponents';
 
+import Skeleton from '@material-ui/lab/Skeleton';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -214,6 +215,33 @@ const TeamList = () => {
         console.log(' to-do');
     };
 
+    const listSkeleton = () => {
+        return (
+            <React.Fragment>
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+            </React.Fragment>
+        );
+    }
+
+    const membersSkeleton = () => {
+        return (
+            <List component="nav" className={classes.listComponent}>
+                <div className={classes.title}>
+                    <Typography variant="h6" style={{ marginLeft: '16px' }}>
+                        Team Members:
+                    </Typography>
+                    <a className={classes.linkButton}></a>
+                </div>
+                {listSkeleton()}
+            </List>
+        );
+    }
+
     return (
         <div>
             <Toolbar className={classes.filterBox}>
@@ -238,91 +266,96 @@ const TeamList = () => {
                     onClick={handleSearchTeam}
                 >Search</Button>
             </Toolbar>
-            {teams.length === 0 ? null :
-                <div className={classes.teamsContainer}>
-                    <List component="nav" className={classes.listComponent}>
-                        <div className={classes.title}>
-                            <Typography variant="h6" style={{ marginLeft: '16px' }}>
-                                Team List:
-                            </Typography>
-                            <Link className={classes.linkButton} to="/main/create-team">
-                                <Button
-                                    size="small"
-                                    variant="contained"
-                                    color="secondary"
-                                    endIcon={<AddCircleIcon />}
-                                >NEW Team</Button>
-                            </Link>
-                        </div>
-                        {teams.map((team, index) => (
-                            <div key={team.id}>
-                                <ListItem
-                                    button
-                                    selected={selectedIndex === index}
-                                    onClick={(event) => handleListItemClick(event, index)}
-                                >
-                                    <ListItemText
-                                        primary={'Team Name: ' + team.name}
-                                        secondary={
-                                            <React.Fragment>
-                                                <Typography
-                                                    component="span"
-                                                    variant="body2"
-                                                    color="textPrimary"
-                                                >
-                                                    {'Team Leader: '}
-                                                </Typography>
-                                                {team.teamLeader.person.name + ' ' +
-                                                    team.teamLeader.person.surname}
 
-                                            </React.Fragment>
-                                        }
-                                    />
+            <div className={classes.teamsContainer}>
+                <List component="nav" className={classes.listComponent}>
+                    <div className={classes.title}>
+                        <Typography variant="h6" style={{ marginLeft: '16px' }}>
+                            Team List:
+                        </Typography>
+                        <Link className={classes.linkButton} to="/main/create-team">
+                            <Button
+                                size="small"
+                                variant="contained"
+                                color="secondary"
+                                endIcon={<AddCircleIcon />}
+                            >NEW Team</Button>
+                        </Link>
+                    </div>
+                    {teams.length === 0 ? listSkeleton() :
+                        <React.Fragment>
+                            {teams.map((team, index) => (
+                                <div key={team.id}>
+                                    <ListItem
+                                        button
+                                        selected={selectedIndex === index}
+                                        onClick={(event) => handleListItemClick(event, index)}
+                                    >
+                                        <ListItemText
+                                            primary={'Team Name: ' + team.name}
+                                            secondary={
+                                                <React.Fragment>
+                                                    <Typography
+                                                        component="span"
+                                                        variant="body2"
+                                                        color="textPrimary"
+                                                    >
+                                                        {'Team Leader: '}
+                                                    </Typography>
+                                                    {team.teamLeader.person.name + ' ' +
+                                                        team.teamLeader.person.surname}
 
-                                    <p style={{ marginRight: '15px' }}>{'Members: ' + team.members.length}</p>
-                                    <ListItemSecondaryAction>
-                                        <IconButton edge="end" onClick={(e) => { handleOptinsClick(e, 'team', team.id) }}>
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                        <Menu
-                                            id="team-menu"
-                                            anchorEl={menuAnchorEl.team}
-                                            keepMounted
-                                            open={Boolean(menuAnchorEl.team)}
-                                            onClose={handleMenuClose}
-                                        >
-                                            <MenuItem className={classes.menuItem} onClick={handleEditTeam}>
-                                                <ListItemIcon>
-                                                    <EditIcon fontSize="small" />
-                                                </ListItemIcon>
-                                                Edit Team
-                                            </MenuItem>
-                                            <MenuItem className={classes.menuItem} onClick={handleDeleteTeam}>
-                                                <ListItemIcon>
-                                                    <DeleteIcon fontSize="small" />
-                                                </ListItemIcon>
-                                                Delete Team
-                                            </MenuItem>
-                                        </Menu>
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                                <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
-                            </div>
-                        ))
-                        }
-                        <Pagination
-                            className={classes.pagination}
-                            count={pagination.totalPages}
-                            page={pagination.page}
-                            onChange={handlePageChange}
-                            variant="outlined"
-                        />
-                    </List>
+                                                </React.Fragment>
+                                            }
+                                        />
+
+                                        <p style={{ marginRight: '15px' }}>{'Members: ' + team.members.length}</p>
+                                        <ListItemSecondaryAction>
+                                            <IconButton edge="end" onClick={(e) => { handleOptinsClick(e, 'team', team.id) }}>
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                            <Menu
+                                                id="team-menu"
+                                                anchorEl={menuAnchorEl.team}
+                                                keepMounted
+                                                open={Boolean(menuAnchorEl.team)}
+                                                onClose={handleMenuClose}
+                                            >
+                                                <MenuItem className={classes.menuItem} onClick={handleEditTeam}>
+                                                    <ListItemIcon>
+                                                        <EditIcon fontSize="small" />
+                                                    </ListItemIcon>
+                                                    Edit Team
+                                                </MenuItem>
+                                                <MenuItem className={classes.menuItem} onClick={handleDeleteTeam}>
+                                                    <ListItemIcon>
+                                                        <DeleteIcon fontSize="small" />
+                                                    </ListItemIcon>
+                                                    Delete Team
+                                                </MenuItem>
+                                            </Menu>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                    <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
+                                </div>
+                            ))}
+                            <Pagination
+                                className={classes.pagination}
+                                count={pagination.totalPages}
+                                page={pagination.page}
+                                onChange={handlePageChange}
+                                variant="outlined"
+                            />
+                        </React.Fragment>
+                    }
+                </List>
+                {teams.length === 0 ? membersSkeleton() :
                     <List component="nav" className={classes.listComponent}>
                         <div className={classes.title}>
                             <Typography variant="h6" style={{ marginLeft: '16px' }}>
                                 Team Members:
                             </Typography>
+
                             <Link className={classes.linkButton} to={{
                                 pathname: "/main/add-team-members",
                                 members: teams[selectedIndex].members,
@@ -335,6 +368,7 @@ const TeamList = () => {
                                     endIcon={<EditIcon />}
                                 >Set Members</Button>
                             </Link>
+
                         </div>
                         {teams[selectedIndex].members.length <= 0 ? <p>No Members</p> :
                             <div style={{ overflow: 'auto', }}>
@@ -388,9 +422,8 @@ const TeamList = () => {
                                 ))}
                             </div>
                         }
-                    </List>
-                </div>
-            }
+                    </List>}
+            </div>
         </div>
     )
 }

@@ -20,8 +20,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import CloseIcon from '@material-ui/icons/Close';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -204,6 +203,24 @@ const UsersList = () => {
         getUsers(0, pagination.size)
     };
 
+    const tabSkeleton = () => {
+        return (
+            <Paper className={classes.root}>
+                <Skeleton style={{ marginLeft: '8px', marginTop: '16px' }} animation="wave" width="21%" height="50px" />
+                <Skeleton style={{ margin: '8px 8px 20px' }} animation="wave" width="98%" height="36px" />
+                <div style={{ padding: '4px', backgroundColor: '#bdbdbd' }}>
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                    <Skeleton style={{ marginLeft: '8px' }} width="98%" height="75px" />
+                </div>
+            </Paper>
+        )
+    }
+
     return (
         <div>
             <Toolbar className={classes.searchBox}>
@@ -251,7 +268,7 @@ const UsersList = () => {
                 <Button variant="contained" color="primary" onClick={handleSearch}>Search</Button>
             </Toolbar>
 
-            {users === undefined ? <div></div> :
+            {users.length === 0 ? tabSkeleton() :
                 <Paper className={classes.root}>
                     <div className={classes.tabTop}>
                         <h2 >Users List:</h2>

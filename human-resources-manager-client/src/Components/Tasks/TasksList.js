@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import APIURL from '../../Services/Globals';
 import { Link, useLocation } from "react-router-dom";
-import { getCurrentUser } from '../../Services/AuthService';
 import moment from "moment";
 import { makeStyles } from '@material-ui/core/styles';
 import { getTasks, changeTaskStatus, getTeamTasks } from "../../Services/TasksService";
 import { DarkTextField, DarkSelect } from '../GlobalComponents';
 
+import Skeleton from '@material-ui/lab/Skeleton';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
@@ -402,6 +402,31 @@ const TasksList = (props) => {
                         "rgb(0 158 7)",
         }
     }
+
+    const listSkeleton = () => {
+        return (
+            <React.Fragment>
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+            </React.Fragment>
+        );
+    }
+
+    const taskDetailsSkeleton = () => {
+        return (
+            <React.Fragment>
+                <Skeleton style={{ marginLeft: '8px' }} width="95%" height="55px" />
+                <Skeleton style={{ marginLeft: '8px' }} width="95%" height="210px" />
+                <Skeleton style={{ marginLeft: '8px' }} width="95%" height="70px" />
+                <Skeleton style={{ marginLeft: '8px' }} width="95%" height="70px" />
+            </React.Fragment>
+        );
+    }
+
     return (
         <div >
             <Toolbar className={classes.filterBox}>
@@ -556,176 +581,191 @@ const TasksList = (props) => {
                     onClick={handleApplyFilters}
                 >Submit</Button>
             </Toolbar>
-            {tasks.length === 0 ? null :
-                <div className={classes.tasksContainer}>
-                    <List component="nav" className={classes.listComponent}>
-                        <div className={classes.title}>
-                            <Typography variant="h6" style={{ marginLeft: '16px' }}>
-                                List of Tasks:
-                            </Typography>
-                            {props.teamId === undefined ? null :
-                                <Link className={classes.linkButton} to="/main/create-task">
-                                    <Button
-                                        size="small"
-                                        variant="contained"
-                                        color="secondary"
-                                        endIcon={<AddCircleIcon />}
-                                    >NEW Task</Button>
-                                </Link>
-                            }
-                        </div>
-                        {tasks.map((task, index) => (
-                            <div key={task.id}>
-                                <ListItem
-
-                                    button
-                                    selected={selectedIndex === index}
-                                    onClick={(event) => handleListItemClick(event, index)}
-                                >
-                                    <ListItemText primary={task.name} />
-                                    <Chip
-                                        label={task.status}
-                                        style={changeCipColor(task.status)}
-                                    />
-
-                                </ListItem>
-                                <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
-                            </div>
-                        ))
+            <div className={classes.tasksContainer}>
+                <List component="nav" className={classes.listComponent}>
+                    <div className={classes.title}>
+                        <Typography variant="h6" style={{ marginLeft: '16px' }}>
+                            List of Tasks:
+                        </Typography>
+                        {props.teamId === undefined ? null :
+                            <Link className={classes.linkButton} to="/main/create-task">
+                                <Button
+                                    size="small"
+                                    variant="contained"
+                                    color="secondary"
+                                    endIcon={<AddCircleIcon />}
+                                >NEW Task</Button>
+                            </Link>
                         }
-                        <Pagination
-                            className={classes.pagination}
-                            count={pagination.totalPages}
-                            page={pagination.page}
-                            onChange={handlePageChange}
-                            variant="outlined"
-                        />
-                    </List>
-                    <Card className={classes.tasksDetailsCol}>
-                        <div className={classes.detailsTitle}>
-                            <Typography noWrap variant="h5">
-                                {tasks[selectedIndex].name}
-                            </Typography>
-                            <div style={{ display: "flex", alignItems: "center" }}>
-                                <Typography variant="subtitle1" style={{ marginRight: "6px" }}>
-                                    {"Status: "}
+                    </div>
+                    {tasks.length === 0 ? listSkeleton() :
+                        <React.Fragment>
+                            {tasks.map((task, index) => (
+                                <div key={task.id}>
+                                    <ListItem
+
+                                        button
+                                        selected={selectedIndex === index}
+                                        onClick={(event) => handleListItemClick(event, index)}
+                                    >
+                                        <ListItemText primary={task.name} />
+                                        <Chip
+                                            label={task.status}
+                                            style={changeCipColor(task.status)}
+                                        />
+
+                                    </ListItem>
+                                    <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
+                                </div>
+                            ))
+                            }
+                            <Pagination
+                                className={classes.pagination}
+                                count={pagination.totalPages}
+                                page={pagination.page}
+                                onChange={handlePageChange}
+                                variant="outlined"
+                            />
+                        </React.Fragment>
+                    }
+                </List>
+                <Card className={classes.tasksDetailsCol}>
+                    <div className={classes.detailsTitle}>
+                        {tasks.length === 0 ?
+                            <React.Fragment>
+                                <Typography noWrap variant="h5">
+                                    <Skeleton animation='wave' width='38%' />
                                 </Typography>
                                 <Typography variant="subtitle1">
-                                    {tasks[selectedIndex].status}
+                                    <Skeleton animation='wave' width='20%' />
                                 </Typography>
-                            </div>
+                            </React.Fragment> :
+                            <React.Fragment>
+                                <Typography noWrap variant="h5">
+                                    {tasks[selectedIndex].name}
+                                </Typography>
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                    <Typography variant="subtitle1" style={{ marginRight: "6px" }}>
+                                        {"Status: "}
+                                    </Typography>
+                                    <Typography variant="subtitle1">
+                                        {tasks[selectedIndex].status}
+                                    </Typography>
+                                </div>
+                            </React.Fragment>
+                        }
+                    </div>
+                    {selTaskEmployee.id === undefined ? null :
+                        <div className={classes.statusContainer}>
+                            <Typography noWrap variant="h6">
+                                {"Assigned Employee: " +
+                                    selTaskEmployee.person.name + " " +
+                                    selTaskEmployee.person.surname
+                                }
+                            </Typography>
+                        </div>
+
+                    }
+                    <CardContent style={{ paddingTop: 0 }}>
+                        {tasks.length === 0 ? taskDetailsSkeleton() :
+                            <React.Fragment>
+                                <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0", marginTop: '2px' }} />
+                                <div className={classes.chipContainer}>
+                                    <Chip
+                                        className={classes.timeChip}
+                                        label={"Start: " + moment(tasks[selectedIndex].startTime).format("YYYY-MM-DD")}
+                                        color="primary"
+                                    />
+                                    <Chip
+                                        className={classes.timeChip}
+                                        label={"Deadline: " + moment(tasks[selectedIndex].deadline).format("YYYY-MM-DD")}
+                                        color="primary"
+                                    />
+                                </div>
+                                <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
+
+                                <Typography variant="subtitle1">
+                                    {tasks[selectedIndex].description}
+                                </Typography>
+                                {tasks[selectedIndex].subtasks.length < 1 ? null :
+                                    <div>
+                                        <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
+                                        <Typography noWrap variant="subtitle1">
+                                            Subtasks:
+                                        </Typography>
+                                        {tasks[selectedIndex].subtasks.map((subtask, index) => (
+                                            <Accordion
+                                                expanded={expandedSubTask === subtask.id}
+                                                onChange={handleSubTaskExpand(subtask.id)}
+                                                key={subtask.id}
+                                                className={classes.subtaskAccordion}
+                                            >
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
+                                                >
+                                                    <Typography>
+                                                        {subtask.name}
+                                                    </Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                    {subtask.description}
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        ))}
+                                    </div>
+                                }
+                            </React.Fragment>
+                        }
+                    </CardContent>
+                    {props.type === 'view' ? null :
+                        <div className={classes.buttonSection}>
+                            <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
+                            <ButtonGroup variant="contained" color="primary" ref={anchorRef}>
+                                <Button onClick={hendleChangeStatus}>{allowedStatuses[statusSelIndex].name}</Button>
+                                <Button
+                                    color="primary"
+                                    size="small"
+                                    aria-controls={openStatusSel ? 'split-button-menu' : undefined}
+                                    aria-expanded={openStatusSel ? 'true' : undefined}
+                                    aria-label="select merge strategy"
+                                    aria-haspopup="menu"
+                                    onClick={handleStatSellToggle}
+                                >
+                                    <ArrowDropDownIcon />
+                                </Button>
+                            </ButtonGroup>
+                            <Popper open={openStatusSel} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                                {({ TransitionProps, placement }) => (
+                                    <Grow
+                                        {...TransitionProps}
+                                        style={{
+                                            transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                                        }}
+                                    >
+                                        <Paper>
+                                            <ClickAwayListener onClickAway={handleStatSellClose}>
+                                                <MenuList id="split-button-menu">
+                                                    {allowedStatuses.map((option, index) => (
+                                                        <MenuItem
+                                                            key={option.name}
+                                                            //  disabled={index === 2}
+                                                            selected={index === statusSelIndex}
+                                                            onClick={(event) => handleMenuItemClick(event, index)}
+                                                        >
+                                                            {option.name}
+                                                        </MenuItem>
+                                                    ))}
+                                                </MenuList>
+                                            </ClickAwayListener>
+                                        </Paper>
+                                    </Grow>
+                                )}
+                            </Popper>
 
                         </div>
-                        {selTaskEmployee.id === undefined ? null :
-                            <div className={classes.statusContainer}>
-                                <Typography noWrap variant="h6">
-                                    {"Assigned Employee: " +
-                                        selTaskEmployee.person.name + " " +
-                                        selTaskEmployee.person.surname
-                                    }
-                                </Typography>
-                            </div>
-
-                        }
-                        <CardContent style={{ paddingTop: 0 }}>
-                            <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0", marginTop: '2px' }} />
-                            <div className={classes.chipContainer}>
-                                <Chip
-                                    className={classes.timeChip}
-                                    label={"Start: " + moment(tasks[selectedIndex].startTime).format("YYYY-MM-DD")}
-                                    color="primary"
-                                />
-                                <Chip
-                                    className={classes.timeChip}
-                                    label={"Deadline: " + moment(tasks[selectedIndex].deadline).format("YYYY-MM-DD")}
-                                    color="primary"
-                                />
-                            </div>
-                            <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
-
-                            <Typography variant="subtitle1">
-                                {tasks[selectedIndex].description}
-                            </Typography>
-                            {tasks[selectedIndex].subtasks.length < 1 ? null :
-                                <div>
-                                    <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
-                                    <Typography noWrap variant="subtitle1">
-                                        Subtasks:
-                                    </Typography>
-                                    {tasks[selectedIndex].subtasks.map((subtask, index) => (
-                                        <Accordion
-                                            expanded={expandedSubTask === subtask.id}
-                                            onChange={handleSubTaskExpand(subtask.id)}
-                                            key={subtask.id}
-                                            className={classes.subtaskAccordion}
-                                        >
-                                            <AccordionSummary
-                                                expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
-                                            >
-                                                <Typography>
-                                                    {subtask.name}
-                                                </Typography>
-                                            </AccordionSummary>
-                                            <AccordionDetails>
-                                                {subtask.description}
-                                            </AccordionDetails>
-                                        </Accordion>
-                                    ))}
-                                </div>
-                            }
-
-
-                        </CardContent>
-                        {props.type === 'view' ? null :
-                            <div className={classes.buttonSection}>
-                                <Divider variant="inset" style={{ width: "100%", margin: "12px", marginLeft: "0" }} />
-                                <ButtonGroup variant="contained" color="primary" ref={anchorRef}>
-                                    <Button onClick={hendleChangeStatus}>{allowedStatuses[statusSelIndex].name}</Button>
-                                    <Button
-                                        color="primary"
-                                        size="small"
-                                        aria-controls={openStatusSel ? 'split-button-menu' : undefined}
-                                        aria-expanded={openStatusSel ? 'true' : undefined}
-                                        aria-label="select merge strategy"
-                                        aria-haspopup="menu"
-                                        onClick={handleStatSellToggle}
-                                    >
-                                        <ArrowDropDownIcon />
-                                    </Button>
-                                </ButtonGroup>
-                                <Popper open={openStatusSel} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-                                    {({ TransitionProps, placement }) => (
-                                        <Grow
-                                            {...TransitionProps}
-                                            style={{
-                                                transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-                                            }}
-                                        >
-                                            <Paper>
-                                                <ClickAwayListener onClickAway={handleStatSellClose}>
-                                                    <MenuList id="split-button-menu">
-                                                        {allowedStatuses.map((option, index) => (
-                                                            <MenuItem
-                                                                key={option.name}
-                                                                //  disabled={index === 2}
-                                                                selected={index === statusSelIndex}
-                                                                onClick={(event) => handleMenuItemClick(event, index)}
-                                                            >
-                                                                {option.name}
-                                                            </MenuItem>
-                                                        ))}
-                                                    </MenuList>
-                                                </ClickAwayListener>
-                                            </Paper>
-                                        </Grow>
-                                    )}
-                                </Popper>
-
-                            </div>
-                        }
-                    </Card>
-                </div>
-            }
+                    }
+                </Card>
+            </div>
         </div >
     );
 }

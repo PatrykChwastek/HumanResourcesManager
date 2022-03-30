@@ -6,7 +6,7 @@ import APIURL from '../../Services/Globals';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import Skeleton from '@material-ui/lab/Skeleton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -156,6 +156,19 @@ const HR_Manager = () => {
         setDelDialogProps({ ...delDialogProps, open: !delDialogProps.open })
     }
 
+    const listSkeleton = () => {
+        return (
+            <React.Fragment>
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+                <Skeleton style={{ marginLeft: '15px' }} width="95%" height="75px" />
+            </React.Fragment>
+        );
+    }
+
     return (
         <div className={classes.mainConteiner}>
             <ConfirmDialog
@@ -186,7 +199,7 @@ const HR_Manager = () => {
                     >Create</Button>
                 </div>
                 <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
-                {departments.length <= 0 ? null :
+                {departments.length <= 0 ? listSkeleton() :
                     <div style={{ overflow: 'auto', }}>
                         {departments.map((item, index) => (
                             <div key={"position" + item.id}>
@@ -286,7 +299,7 @@ const HR_Manager = () => {
                     >Create</Button>
                 </div>
                 <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
-                {positions.length <= 0 ? null :
+                {positions.length <= 0 ? listSkeleton() :
                     <div style={{ overflow: 'auto', }}>
                         {positions.map((item, index) => (
                             <div key={"position" + item.id}>
