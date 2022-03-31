@@ -107,7 +107,7 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
     const [selEmployees, setSelEmployees] = useState(
         location.members !== undefined ?
             location.members :
-            selected !== undefined ? selected : []
+            selected[0] !== undefined ? selected : []
     );
     const [departments, setDepartments] = useState([]);
     const [positions, setPositions] = useState([]);
@@ -154,6 +154,9 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
     }, [page, rowsPerPage]);
 
     useEffect(() => {
+        console.log(selected);
+        console.log(location.members);
+        console.log(selEmployees);
         getSearchProps()
     }, []);
 
@@ -258,7 +261,8 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
     }
 
     const handleRowClick = (event, employee) => {
-        const selectedIndex = selEmployees.findIndex(e => e.id == employee.id);// error on create team back button
+        const selectedIndex = selEmployees.findIndex(e => e.id == employee.id);
+
         let newSelected = [];
 
         if (selectedIndex === -1) {
@@ -273,6 +277,13 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
         }
 
         setSelEmployees(newSelected);
+    }
+
+    const handleUnselectAll = () => {
+        if (selEmployees.length === employees.length) {
+            getEmploees(1, rowsPerPage);
+        }
+        setSelEmployees([]);
     }
 
     const isSelected = (id) => selEmployees.findIndex(e => e.id == id) !== -1;
@@ -455,7 +466,7 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
                             <div style={{ display: 'flex', marginTop: '8px' }}>
                                 <h3 style={{ margin: '6px 0 6px 10px' }}>{'Selected: ' + selEmployees.length}</h3>
                                 <Fab className={classes.selButton} color="primary" onClick={() => setEmployees(selEmployees)}><VisibilityIcon /></Fab>
-                                <Fab className={classes.selButton} color="primary" onClick={() => setSelEmployees([])}><ClearIcon /></Fab>
+                                <Fab className={classes.selButton} color="primary" onClick={handleUnselectAll}><ClearIcon /></Fab>
                             </div>
 
                         }

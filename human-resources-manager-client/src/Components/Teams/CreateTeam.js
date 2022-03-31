@@ -64,7 +64,7 @@ const CreateTeam = () => {
                 return (
                     <AddTeamMembers
                         isSingle={true}
-                        selected={team.teamLeader}
+                        selected={[team.teamLeader]}
                         onSelectionConfirm={onTeamLeaderSelected}
                     />);
             case 1:
