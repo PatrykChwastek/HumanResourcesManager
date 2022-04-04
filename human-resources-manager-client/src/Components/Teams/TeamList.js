@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import APIURL from '../../Services/Globals';
 import { Link, useHistory } from "react-router-dom";
-import { DarkTextField, DarkSelect } from '../GlobalComponents';
+import { DarkTextField, DarkSelect, ConfirmDialog } from '../GlobalComponents';
 
 import Skeleton from '@material-ui/lab/Skeleton';
 import Typography from '@material-ui/core/Typography';
@@ -19,11 +19,16 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
     filterBox: {
@@ -125,6 +130,17 @@ const TeamList = () => {
         size: 9,
         totalPages: 1
     });
+    const [allertProps, setAllertProps] = useState({
+        text: '',
+        open: false,
+        type: 'success'
+    });
+    const [delDialogProps, setDelDialogProps] = useState({
+        open: false,
+        type: '',
+        title: '',
+        text: ''
+    });
 
     useEffect(() => {
         loadTeams(
@@ -133,7 +149,7 @@ const TeamList = () => {
         );
     }, []);
 
-    const loadTeams = async (page, size) => {
+    const loadTeams = async (page, size, selTeam) => {
         const requestOptions = {
             method: 'Get',
             headers: { 'Content-Type': 'application/json' }
@@ -154,7 +170,7 @@ const TeamList = () => {
                     size: size,
                     totalPages: data.totalPages,
                 })
-                setSelectedIndex(0);
+                setSelectedIndex(selTeam === undefined ? 0 : selTeam);
                 setTeams(data.items);
             });
     };
@@ -202,8 +218,34 @@ const TeamList = () => {
 
     }
 
-    const handleDeleteTeam = () => {
-        console.log(' to-do');
+    const handleDeleteTeam = (teamId) => {
+        const requestOptions = {
+            method: 'Delete',
+            headers: { 'Content-Type': 'application/json' }
+        };
+
+        fetch(APIURL + 'teams/' + teamId, requestOptions)
+            .then((data) => {
+                console.log(data);
+                handleMenuClose();
+                loadTeams(
+                    pagination.page,
+                    pagination.size,
+                    selectedIndex
+                );
+                setAllertProps({
+                    text: "Team Removed",
+                    open: true,
+                    type: "success"
+                });
+            }, (err) => {
+                console.log(err)
+                setAllertProps({
+                    text: "Team Remove Error!",
+                    open: true,
+                    type: "error"
+                })
+            });
 
     };
 
@@ -211,8 +253,61 @@ const TeamList = () => {
         history.push(`/main/employee-details/${menuAnchorEl.id}`)
     };
 
-    const handleRemoveMember = () => {
-        console.log(' to-do');
+    const handleRemoveMember = async () => {
+        const teamMembers = teams[selectedIndex].members.filter((e) => e.id !== menuAnchorEl.id)
+        let membersID = [];
+
+        teamMembers.forEach(member => {
+            membersID.push(member.id);
+        });
+        const requestOptions = {
+            method: 'Put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(membersID)
+        };
+        await fetch(APIURL + `teams/members/${teams[selectedIndex].id}`,
+            requestOptions
+        ).then(data => {
+            console.log(data);
+            handleMenuClose();
+            loadTeams(
+                pagination.page,
+                pagination.size,
+                selectedIndex
+            );
+            setAllertProps({
+                text: "Member Removed",
+                open: true,
+                type: "success"
+            });
+        }, (err) => {
+            console.log(err)
+            setAllertProps({
+                text: "Member Remove Error!",
+                open: true,
+                type: "error"
+            })
+        });
+    };
+
+    const delDialogOpen = () => {
+        setDelDialogProps({ ...delDialogProps, open: !delDialogProps.open })
+    }
+    const onDialogConfirm = () => {
+        switch (delDialogProps.type) {
+            case 'memberRemove':
+                handleRemoveMember(delDialogProps.data);
+                break;
+            case 'teamRemove':
+                handleDeleteTeam(menuAnchorEl.id)
+                break;
+        }
+    }
+    const handleAllertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAllertProps({ ...allertProps, open: false });
     };
 
     const listSkeleton = () => {
@@ -244,6 +339,19 @@ const TeamList = () => {
 
     return (
         <div>
+            <ConfirmDialog
+                title={delDialogProps.title}
+                open={delDialogProps.open}
+                setOpen={delDialogOpen}
+                onConfirm={onDialogConfirm}
+            >
+                {delDialogProps.text}
+            </ConfirmDialog>
+            <Snackbar open={allertProps.open} autoHideDuration={4000} onClose={handleAllertClose}>
+                <Alert onClose={handleAllertClose} severity={allertProps.type}>
+                    {allertProps.text}
+                </Alert>
+            </Snackbar>
             <Toolbar className={classes.filterBox}>
                 <h3 className={classes.whiteText}>Search Team: </h3>
                 <DarkSelect
@@ -327,7 +435,13 @@ const TeamList = () => {
                                                     </ListItemIcon>
                                                     Edit Team
                                                 </MenuItem>
-                                                <MenuItem className={classes.menuItem} onClick={handleDeleteTeam}>
+                                                <MenuItem className={classes.menuItem} onClick={(e) =>
+                                                    setDelDialogProps({
+                                                        open: true,
+                                                        type: 'teamRemove',
+                                                        title: `Remove Team : ${team.name}`,
+                                                        text: 'Are you sure you want to remove this team?'
+                                                    })}>
                                                     <ListItemIcon>
                                                         <DeleteIcon fontSize="small" />
                                                     </ListItemIcon>
@@ -370,7 +484,7 @@ const TeamList = () => {
                             </Link>
 
                         </div>
-                        {teams[selectedIndex].members.length <= 0 ? <p>No Members</p> :
+                        {teams[selectedIndex].members.length <= 0 ? <p style={{ marginLeft: '12px' }}>No Members</p> :
                             <div style={{ overflow: 'auto', }}>
                                 {teams[selectedIndex].members.map((member, index) => (
                                     <div key={"member" + member.id}>
@@ -393,7 +507,7 @@ const TeamList = () => {
                                             <p>Email:</p>
                                             <p style={{ marginRight: '9px', marginLeft: '5px', color: 'rgba(255, 255, 255, 0.7)' }}>{member.person.email}</p>
                                             <ListItemSecondaryAction>
-                                                <IconButton edge="end" aria-label="comments" onClick={(e) => handleOptinsClick(e, 'member', member.id)}>
+                                                <IconButton edge="end" onClick={(e) => handleOptinsClick(e, 'member', member.id)}>
                                                     <MoreVertIcon />
                                                 </IconButton>
                                                 <Menu
@@ -408,7 +522,13 @@ const TeamList = () => {
                                                         </ListItemIcon>
                                                         Employee Details
                                                     </MenuItem>
-                                                    <MenuItem className={classes.menuItem} onClick={handleRemoveMember}>
+                                                    <MenuItem className={classes.menuItem} onClick={(e) =>
+                                                        setDelDialogProps({
+                                                            open: true,
+                                                            type: 'memberRemove',
+                                                            title: `Remove Team Member: ${member.person.name} ${member.person.surname}`,
+                                                            text: 'Are you sure you want to remove this employee from team?'
+                                                        })}>
                                                         <ListItemIcon>
                                                             <DeleteIcon fontSize="small" />
                                                         </ListItemIcon>
