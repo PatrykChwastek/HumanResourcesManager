@@ -71,9 +71,9 @@ namespace HumanResourcesManager
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
-                    builder => builder.AllowAnyOrigin()
+                    builder => builder.WithOrigins("http://localhost:3000").SetIsOriginAllowedToAllowWildcardSubdomains()
                         .AllowAnyMethod()
-                        .AllowAnyHeader());
+                        .AllowAnyHeader().AllowCredentials());
             });
         }
 
@@ -83,10 +83,10 @@ namespace HumanResourcesManager
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors("CorsPolicy");
+
 
             app.UseRouting();
-
+            app.UseCors("CorsPolicy");
             app.UseAuthentication();
 
             app.UseAuthorization();

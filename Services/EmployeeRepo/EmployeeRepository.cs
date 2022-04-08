@@ -77,9 +77,10 @@ namespace HumanResourcesManager.Services.EmployeeRepo
                 return employee;
         }
 
-        public IQueryable<Employee> GetEmployees(string order, string search, string seniority, long department, long position, bool? isremote)
+        public IQueryable<Employee> GetEmployees(
+            string order, string search, string seniority, long department, long position, bool? isremote,  bool? leaderFilter, bool? teamMembersFilter)
         {
-            var employees = FilterEmployees(search, seniority, department, position, isremote);
+            var employees = FilterEmployees(search, seniority, department, position, isremote, leaderFilter, teamMembersFilter);
             employees = orderEmployees(employees, order);
 
             return employees;
@@ -134,7 +135,7 @@ namespace HumanResourcesManager.Services.EmployeeRepo
             return (await _mDBContext.SaveChangesAsync()) >= 0;
         }
 
-        private IQueryable<Employee> FilterEmployees(string search,string seniority , long department, long position, bool? isremote)
+        private IQueryable<Employee> FilterEmployees(string search,string seniority , long department, long position, bool? isremote, bool? leaderFilter, bool? teamMembersFilter)
         {
             StringBuilder whereQuery = new StringBuilder("e => e.Id != 0 ");
 
@@ -169,6 +170,12 @@ namespace HumanResourcesManager.Services.EmployeeRepo
                          '"' + search + '"' + ") ");
             }
 
+            if (leaderFilter != null || leaderFilter == true)
+                whereQuery.Append("&& e.Team.TeamLeader.Id != e.Id ");
+
+            if (teamMembersFilter != null || teamMembersFilter == true)
+                whereQuery.Append("&& e.TeamEmployees.Count == 0 ");
+
             var query =  _mDBContext.Employee
             .Include(e => e.Person)
             .ThenInclude(e => e.EmployeeAddress)
@@ -176,6 +183,8 @@ namespace HumanResourcesManager.Services.EmployeeRepo
             .Include(e => e.Department)
             .Include(e => e.EmployeePermissions)
             .ThenInclude(ep => ep.Permission)
+            .Include(e=> e.TeamEmployees)
+            .ThenInclude(te => te.Team)
             .Where(whereQuery.ToString());
 
             return query;

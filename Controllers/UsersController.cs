@@ -69,7 +69,7 @@ namespace HumanResourcesManager.Controllers
         public async Task<ActionResult<Pagination>> GetUser(
             int page,int size, string order, string search, string seniority, long department, long position, bool? isremote)
         {
-            var emps = _employeeRepository.GetEmployees(order, search, seniority, department, position, isremote);
+            var emps = _employeeRepository.GetEmployees(order, search, seniority, department, position, isremote,null,null);
             var users = _userRepository.GetUsers(emps);
             var mappedUsers = _mapper.Map<List<UserDTO>>(users);    
             var totalUsers = await _userRepository.UsersCount(users);

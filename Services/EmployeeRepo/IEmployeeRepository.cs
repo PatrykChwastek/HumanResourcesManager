@@ -15,7 +15,9 @@ namespace HumanResourcesManager.Services
             string seniority,
             long department, 
             long position, 
-            bool? isremote
+            bool? isremote,
+            bool? leaderFilter, 
+            bool? teamMembersFilter
         );
         Task<Employee> GetEmployee(long id);
         Task<Employee> CreateEmployee(Employee employeeEntity);

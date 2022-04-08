@@ -154,9 +154,6 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
     }, [page, rowsPerPage]);
 
     useEffect(() => {
-        console.log(selected);
-        console.log(location.members);
-        console.log(selEmployees);
         getSearchProps()
     }, []);
 
@@ -165,15 +162,17 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
             method: 'Get',
             headers: { 'Content-Type': 'application/json' }
         };
-        await fetch(APIURL +
-            `employee/all?page=${page}&size=${size}&order=${searchParams.orderBy.id}` +
+        let urlQuery = `employee/all?page=${page}&size=${size}&order=${searchParams.orderBy.id}` +
             `&search=${searchParams.searchString}` +
             `&department=${searchParams.department.id}` +
             `&position=${searchParams.position.id}` +
             `&seniority=${searchParams.seniority.id === 0 ? '' : searchParams.seniority.name}` +
-            `&isremote=${searchParams.isRemote.id}`,
-            requestOptions
-        )
+            `&isremote=${searchParams.isRemote.id}`
+
+        urlQuery += isSingle === true ? `&leaderfilter=true` : '';
+        urlQuery += location.members === undefined & !isSingle ? `&teamMembersFilter=true` : '';
+
+        await fetch(APIURL + urlQuery, requestOptions)
             .then(response => response.json())
             .then(data => (setEmployees(data.items), setTotalItems(data.totalItems)));
     }
