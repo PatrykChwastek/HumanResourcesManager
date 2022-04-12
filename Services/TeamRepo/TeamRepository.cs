@@ -28,11 +28,24 @@ namespace HumanResourcesManager.Services.TeamRepo
         {
             if (teamEntity.TeamLeader == null && teamEntity.Members.Count == 0)
                 return null;
-            _logger.LogInformation($"Creating new Team: {teamEntity.Name}");
-            _mDBContext.Attach(teamEntity);
 
+            var teamLeaderPerm = await _mDBContext.Permissions.Where(p => p.Name == "Team-Manager").FirstOrDefaultAsync();
+
+            if (!teamEntity.TeamLeader.EmployeePermissions.Any(e => e.Permission == teamLeaderPerm))
+            {
+                var ep = new EmployeePermissions
+                {
+                    EmployeeId = teamEntity.TeamLeader.Id,
+                    PermissionId = teamLeaderPerm.Id
+                };
+                _mDBContext.Add(ep);
+
+            }
+
+            _logger.LogInformation($"Creating new Team: {teamEntity.Name}");
+            _mDBContext.Teams.Attach(teamEntity);
             await Save();
-            await _mDBContext.Entry(teamEntity).GetDatabaseValuesAsync();
+
             return await GetTeam(teamEntity.Id);
         }
 
