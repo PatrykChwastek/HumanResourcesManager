@@ -4,12 +4,18 @@ import { useHistory } from "react-router-dom";
 import { DarkTextField } from '../GlobalComponents';
 import AuthService from '../../Services/AuthService'
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
     mainConteiner: {
         margin: "0 auto",
-        marginTop: "28px",
-        width: "22rem",
+        marginTop: "38px",
+        width: "32rem",
         background: theme.palette.grey[800],
         paddingBottom: '25px',
     },
@@ -26,19 +32,26 @@ const useStyles = makeStyles((theme) => ({
         gridGap: "1.2rem",
     },
     createButton: {
-        margin: '0 auto',
+        margin: '8px auto',
+        fontSize: '16px',
+        fontWeight: 550,
         display: 'block',
-        width: "18rem",
+        width: "22rem",
     }
 }));
 
 const LoginUser = () => {
     const classes = useStyles();
+    const history = useHistory();
     const [loginData, setLoginData] = useState({
         username: "",
         password: "",
     });
-    const history = useHistory();
+    const [allertProps, setAllertProps] = useState({
+        text: '',
+        open: false,
+        type: 'success'
+    });
 
     const headleFormChange = e => {
         setLoginData({
@@ -47,18 +60,38 @@ const LoginUser = () => {
         })
     }
 
-    const hendleLogin = () => {
+    const hendleLogin = (event) => {
+        event.preventDefault()
         AuthService.login(loginData).then((data) => {
             history.push("/main/tasks-columns");
-        }, e => { console.log("login error") });
+        }, e => {
+            setAllertProps({
+                text: 'Login Error!',
+                open: true,
+                type: 'error'
+            })
+        });
     }
+
+
+    const handleAllertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAllertProps({ ...allertProps, open: false });
+    };
 
     return (
         <div className={classes.mainConteiner}>
+            <Snackbar open={allertProps.open} autoHideDuration={4000} onClose={handleAllertClose}>
+                <Alert onClose={handleAllertClose} severity={allertProps.type}>
+                    {allertProps.text}
+                </Alert>
+            </Snackbar>
             <div boxshadow={2} className={classes.title}>
-                <h2 >Login</h2>
+                <h2>User Credentials:</h2>
             </div>
-            <form className={classes.root} noValidate autoComplete="off">
+            <form onSubmit={hendleLogin} className={classes.root} noValidate autoComplete="off">
                 <div className={classes.formGrid}>
                     <DarkTextField
                         label="Username"
@@ -76,7 +109,7 @@ const LoginUser = () => {
                     className={classes.createButton}
                     variant="contained"
                     color="primary"
-                    onClick={hendleLogin}
+                    type="submit"
                 >Login</Button>
             </form>
         </div>
