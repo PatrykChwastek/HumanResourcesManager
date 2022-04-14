@@ -17,8 +17,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 
 const useStyles = makeStyles((theme) => ({
     taskTabContainer: {
-        margin: '0 auto',
-        width: 'max-content'
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start'
     },
     topBar: {
         display: 'flex',
@@ -53,11 +54,19 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: "0px",
         marginRight: "8px",
     },
+    columsContainer: {
+        display: "flex",
+        justifyContent: "space-between",
+        height: "100%",
+        width: "100%",
+    },
     column: {
         margin: "8px",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center"
+        alignItems: "center",
+        width: "100%",
+        height: '70vh'
     },
     title: {
         color: theme.palette.text.primary,
@@ -68,13 +77,19 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: theme.shadows[2],
         width: '100%',
     },
+    accordionSummary: {
+        '& .MuiAccordionSummary-content': {
+            margin: 0,
+        }
+    },
     chipContainer: {
         display: "flex",
         flexDirection: "row",
         alignContent: 'space-around',
         alignItems: 'stretch',
         flexwrap: 'nowrap',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
+        marginBottom: '6px'
     },
     timeChip: {
         margin: "2px",
@@ -288,7 +303,7 @@ const TasksColumns = () => {
                 }
 
             </div>
-            <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
+            <div className={classes.columsContainer}>
                 <DragDropContext
                     onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
                 >
@@ -312,10 +327,8 @@ const TasksColumns = () => {
                                                         : "#424242",
                                                     padding: "10px",
                                                     paddingBottom: "0",
-                                                    width: "400px",
-                                                    hight: "410px",
-                                                    maxHeight: "410px",
-                                                    minHeight: "410px",
+                                                    minWidth: "300px",
+                                                    height: "100%",
                                                     overflowY: 'auto',
                                                     WebkitScrollbarButton: {
                                                         height: '100%'
@@ -346,6 +359,7 @@ const TasksColumns = () => {
                                                                                         ? "rgb(231 170 35)"
                                                                                         : "rgb(0 158 7)",
                                                                             color: item.status === "In-Progress" ? "white" : "black",
+                                                                            textAlign: 'justify',
                                                                             borderRadius: '4px',
                                                                             marginBottom: '4px',
                                                                             ...provided.draggableProps.style
@@ -353,8 +367,9 @@ const TasksColumns = () => {
                                                                     >
 
                                                                         <AccordionSummary
+                                                                            className={classes.accordionSummary}
                                                                             expandIcon={<ExpandMoreIcon style={{ color: "black" }} />}
-                                                                            style={{ padding: '8px' }}
+                                                                            style={{ paddingLeft: '8px', minHeight: '25px' }}
                                                                         >
                                                                             <Typography variant="subtitle1">{item.name}</Typography>
                                                                         </AccordionSummary>
@@ -379,17 +394,17 @@ const TasksColumns = () => {
                                                                             </div>
                                                                             <Typography
                                                                                 variant="body1"
-                                                                                style={{ marginLeft: '5px', marginBottom: '5px' }}
+                                                                                style={{ margin: '8px' }}
                                                                             >
                                                                                 {item.description}
                                                                             </Typography>
                                                                             {item.subtasks.length === 0 ? null :
                                                                                 <div style={{
                                                                                     paddingLeft: '8px',
-                                                                                    paddingRight: '8px',
-                                                                                    backgroundColor: "rgb(0 0 0 / 26%)"
+                                                                                    paddingRight: '8px'
+
                                                                                 }}>
-                                                                                    <Typography>
+                                                                                    <Typography variant="h6">
                                                                                         Subtasks:
                                                                                     </Typography>
                                                                                     {item.subtasks.map((subtask) => {
@@ -399,14 +414,9 @@ const TasksColumns = () => {
                                                                                                 onChange={handleSubTaskExpand(subtask.id)}
                                                                                                 key={subtask.id}
                                                                                                 style={{
-                                                                                                    backgroundColor:
-                                                                                                        item.status === "In-Progress"
-                                                                                                            ? "rgb(93 135 230)"
-                                                                                                            : item.status === "Requested"
-                                                                                                                ? "rgb(255 234 144)"
-                                                                                                                : "rgb(3 189 0)",
-                                                                                                    color: item.status === "In-Progress" ? "white" : "black",
-                                                                                                    marginBottom: '4px',
+                                                                                                    backgroundColor: '#bdbdbd',
+                                                                                                    color: "black",
+                                                                                                    marginBottom: '8px',
                                                                                                     borderRadius: '4px',
                                                                                                     padding: '0px'
 

@@ -33,6 +33,7 @@ namespace HumanResourcesManager.Services.TeamRepo
 
             if (!teamEntity.TeamLeader.EmployeePermissions.Any(e => e.Permission == teamLeaderPerm))
             {
+                _logger.LogInformation($"Add Team-Manager permission to employee: {teamEntity.TeamLeader.Id}");
                 var ep = new EmployeePermissions
                 {
                     EmployeeId = teamEntity.TeamLeader.Id,
