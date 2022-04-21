@@ -78,9 +78,9 @@ namespace HumanResourcesManager.Services.EmployeeRepo
         }
 
         public IQueryable<Employee> GetEmployees(
-            string order, string search, string seniority, long department, long position, bool? isremote,  bool? leaderFilter, bool? teamMembersFilter)
+            string order, string search, string seniority, long department, long position, bool? isremote, bool? leaderFilter)
         {
-            var employees = FilterEmployees(search, seniority, department, position, isremote, leaderFilter, teamMembersFilter);
+            var employees = FilterEmployees(search, seniority, department, position, isremote, leaderFilter);
             employees = orderEmployees(employees, order);
 
             return employees;
@@ -135,7 +135,7 @@ namespace HumanResourcesManager.Services.EmployeeRepo
             return (await _mDBContext.SaveChangesAsync()) >= 0;
         }
 
-        private IQueryable<Employee> FilterEmployees(string search,string seniority , long department, long position, bool? isremote, bool? leaderFilter, bool? teamMembersFilter)
+        private IQueryable<Employee> FilterEmployees(string search,string seniority , long department, long position, bool? isremote, bool? leaderFilter)
         {
             StringBuilder whereQuery = new StringBuilder("e => e.Id != 0 ");
 
@@ -170,11 +170,11 @@ namespace HumanResourcesManager.Services.EmployeeRepo
                          '"' + search + '"' + ") ");
             }
 
-            if (leaderFilter != null || leaderFilter == true)
-                whereQuery.Append("&& e.Team.TeamLeader.Id != e.Id ");
-
-            if (teamMembersFilter != null || teamMembersFilter == true)
-                whereQuery.Append("&& e.TeamEmployees.Count == 0 ");
+            if (leaderFilter != null || leaderFilter == false)
+            {
+              whereQuery.Append("&& e.Team.TeamLeader.Id != e.Id ");
+            }
+  
 
             var query =  _mDBContext.Employee
             .Include(e => e.Person)

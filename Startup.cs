@@ -71,9 +71,9 @@ namespace HumanResourcesManager
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
-                    builder => builder.WithOrigins("http://localhost:3000").SetIsOriginAllowedToAllowWildcardSubdomains()
+                    builder => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader().AllowCredentials());
+                        .AllowAnyHeader());
             });
         }
 

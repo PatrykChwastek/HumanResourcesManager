@@ -18,6 +18,7 @@ import Pagination from '@material-ui/lab/Pagination';
 import Toolbar from '@material-ui/core/Toolbar';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -124,7 +125,7 @@ const TeamList = () => {
     const [teams, setTeams] = useState([]);
     const [searchParams, setSearchParams] = useState({ searchBy: searchMode[0].id, search: '' });
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [menuAnchorEl, setMenuAnchorEl] = useState({ team: null, member: null, id: 0 });
+    const [menuAnchorEl, setMenuAnchorEl] = useState({ team: null, member: null, id: 0, });
     const [pagination, setPagination] = useState({
         page: 1,
         size: 9,
@@ -137,6 +138,7 @@ const TeamList = () => {
     });
     const [delDialogProps, setDelDialogProps] = useState({
         open: false,
+        data: null,
         type: '',
         title: '',
         text: ''
@@ -214,7 +216,7 @@ const TeamList = () => {
     };
 
     const handleEditTeam = () => {
-        console.log(' to-do');
+        console.log(' to-o');
 
     }
 
@@ -249,12 +251,12 @@ const TeamList = () => {
 
     };
 
-    const handleViewMember = () => {
-        history.push(`/main/employee-details/${menuAnchorEl.id}`)
+    const handleViewMember = (id) => {
+        history.push(`/main/employee-details/${id}`)
     };
 
-    const handleRemoveMember = async () => {
-        const teamMembers = teams[selectedIndex].members.filter((e) => e.id !== menuAnchorEl.id)
+    const handleRemoveMember = async (id) => {
+        const teamMembers = teams[selectedIndex].members.filter((e) => e.id !== id)
         let membersID = [];
 
         teamMembers.forEach(member => {
@@ -299,7 +301,7 @@ const TeamList = () => {
                 handleRemoveMember(delDialogProps.data);
                 break;
             case 'teamRemove':
-                handleDeleteTeam(menuAnchorEl.id)
+                handleDeleteTeam(delDialogProps.data)
                 break;
         }
     }
@@ -419,35 +421,38 @@ const TeamList = () => {
 
                                         <p style={{ marginRight: '15px' }}>{'Members: ' + team.members.length}</p>
                                         <ListItemSecondaryAction>
-                                            <IconButton edge="end" onClick={(e) => { handleOptinsClick(e, 'team', team.id) }}>
-                                                <MoreVertIcon />
-                                            </IconButton>
-                                            <Menu
-                                                id="team-menu"
-                                                anchorEl={menuAnchorEl.team}
-                                                keepMounted
-                                                open={Boolean(menuAnchorEl.team)}
-                                                onClose={handleMenuClose}
-                                            >
-                                                <MenuItem className={classes.menuItem} onClick={handleEditTeam}>
-                                                    <ListItemIcon>
-                                                        <EditIcon fontSize="small" />
-                                                    </ListItemIcon>
-                                                    Edit Team
-                                                </MenuItem>
-                                                <MenuItem className={classes.menuItem} onClick={(e) =>
-                                                    setDelDialogProps({
-                                                        open: true,
-                                                        type: 'teamRemove',
-                                                        title: `Remove Team : ${team.name}`,
-                                                        text: 'Are you sure you want to remove this team?'
-                                                    })}>
-                                                    <ListItemIcon>
-                                                        <DeleteIcon fontSize="small" />
-                                                    </ListItemIcon>
-                                                    Delete Team
-                                                </MenuItem>
-                                            </Menu>
+                                            <PopupState variant="popover" popupId="team-menu">
+                                                {(popupState) => (
+                                                    <React.Fragment>
+                                                        <IconButton edge="end" {...bindTrigger(popupState)}>
+                                                            <MoreVertIcon />
+                                                        </IconButton>
+                                                        <Menu {...bindMenu(popupState)}>
+                                                            <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/create-team`, team: team }}>
+                                                                <MenuItem className={classes.menuItem} onClick={handleEditTeam}>
+                                                                    <ListItemIcon>
+                                                                        <EditIcon fontSize="small" />
+                                                                    </ListItemIcon>
+                                                                    Edit Team
+                                                                </MenuItem>
+                                                            </Link>
+                                                            <MenuItem className={classes.menuItem} onClick={(e) =>
+                                                                setDelDialogProps({
+                                                                    open: true,
+                                                                    data: team.id,
+                                                                    type: 'teamRemove',
+                                                                    title: `Remove Team : ${team.name}`,
+                                                                    text: 'Are you sure you want to remove this team?'
+                                                                })}>
+                                                                <ListItemIcon>
+                                                                    <DeleteIcon fontSize="small" />
+                                                                </ListItemIcon>
+                                                                Delete Team
+                                                            </MenuItem>
+                                                        </Menu>
+                                                    </React.Fragment>
+                                                )}
+                                            </PopupState>
                                         </ListItemSecondaryAction>
                                     </ListItem>
                                     <Divider variant="inset" style={{ width: "100%", margin: "0" }} />
@@ -507,34 +512,36 @@ const TeamList = () => {
                                             <p>Email:</p>
                                             <p style={{ marginRight: '9px', marginLeft: '5px', color: 'rgba(255, 255, 255, 0.7)' }}>{member.person.email}</p>
                                             <ListItemSecondaryAction>
-                                                <IconButton edge="end" onClick={(e) => handleOptinsClick(e, 'member', member.id)}>
-                                                    <MoreVertIcon />
-                                                </IconButton>
-                                                <Menu
-                                                    anchorEl={menuAnchorEl.member}
-                                                    keepMounted
-                                                    open={Boolean(menuAnchorEl.member)}
-                                                    onClose={handleMenuClose}
-                                                >
-                                                    <MenuItem className={classes.menuItem} onClick={handleViewMember}>
-                                                        <ListItemIcon>
-                                                            <VisibilityIcon fontSize="small" />
-                                                        </ListItemIcon>
-                                                        Employee Details
-                                                    </MenuItem>
-                                                    <MenuItem className={classes.menuItem} onClick={(e) =>
-                                                        setDelDialogProps({
-                                                            open: true,
-                                                            type: 'memberRemove',
-                                                            title: `Remove Team Member: ${member.person.name} ${member.person.surname}`,
-                                                            text: 'Are you sure you want to remove this employee from team?'
-                                                        })}>
-                                                        <ListItemIcon>
-                                                            <DeleteIcon fontSize="small" />
-                                                        </ListItemIcon>
-                                                        Remove From Team
-                                                    </MenuItem>
-                                                </Menu>
+                                                <PopupState variant="popover" popupId="member-menu">
+                                                    {(popupState) => (
+                                                        <React.Fragment>
+                                                            <IconButton edge="end" {...bindTrigger(popupState)}>
+                                                                <MoreVertIcon />
+                                                            </IconButton>
+                                                            <Menu {...bindMenu(popupState)}>
+                                                                <MenuItem className={classes.menuItem} onClick={() => handleViewMember(member.id)}>
+                                                                    <ListItemIcon>
+                                                                        <VisibilityIcon fontSize="small" />
+                                                                    </ListItemIcon>
+                                                                    Employee Details
+                                                                </MenuItem>
+                                                                <MenuItem className={classes.menuItem} onClick={(e) =>
+                                                                    setDelDialogProps({
+                                                                        open: true,
+                                                                        data: member.id,
+                                                                        type: 'memberRemove',
+                                                                        title: `Remove Team Member: ${member.person.name} ${member.person.surname}`,
+                                                                        text: 'Are you sure you want to remove this employee from team?'
+                                                                    })}>
+                                                                    <ListItemIcon>
+                                                                        <DeleteIcon fontSize="small" />
+                                                                    </ListItemIcon>
+                                                                    Remove From Team
+                                                                </MenuItem>
+                                                            </Menu>
+                                                        </React.Fragment>
+                                                    )}
+                                                </PopupState>
                                             </ListItemSecondaryAction>
                                         </ListItem>
                                         <Divider variant="inset" style={{ width: "100%", margin: "0" }} />

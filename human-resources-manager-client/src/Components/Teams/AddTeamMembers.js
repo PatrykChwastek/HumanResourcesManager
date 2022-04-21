@@ -169,12 +169,24 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
             `&seniority=${searchParams.seniority.id === 0 ? '' : searchParams.seniority.name}` +
             `&isremote=${searchParams.isRemote.id}`
 
-        urlQuery += isSingle === true ? `&leaderfilter=true` : '';
-        urlQuery += location.members === undefined & !isSingle ? `&teamMembersFilter=true` : '';
-
+        urlQuery += isSingle === true ? `&leaderFilter=true` : '';
         await fetch(APIURL + urlQuery, requestOptions)
             .then(response => response.json())
-            .then(data => (setEmployees(data.items), setTotalItems(data.totalItems)));
+            .then(data => (
+                isNotLeaderSelected() ? null :
+                    data.items.push(selected[0]),
+                setEmployees(data.items),
+                setTotalItems(data.totalItems)));
+    }
+
+    const isNotLeaderSelected = () => {
+        if (selected == undefined)
+            return true
+
+        if (selected[0] == undefined && Boolean(isSingle))
+            return true;
+
+        return false;
     }
 
     const getSearchProps = async () => {
@@ -319,7 +331,6 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
                     {allertProps.text}
                 </Alert>
             </Snackbar>
-
             {employees.length === 0 ? tabSkeleton() :
                 <Paper className={classes.root}>
                     <div className={classes.tabTop}>

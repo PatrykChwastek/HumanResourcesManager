@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { DarkTextField, DarkSelect, DarkChipList } from '../GlobalComponents';
+import { DarkTextField } from '../GlobalComponents';
+import { useLocation } from "react-router-dom";
 import APIURL from '../../Services/Globals';
 import AddTeamMembers from './AddTeamMembers';
 
@@ -53,7 +54,12 @@ const useStyles = makeStyles((theme) => ({
 
 const CreateTeam = () => {
     const classes = useStyles();
-    const [team, setTeam] = useState({ name: '', members: [] });
+    const location = useLocation();
+    const [team, setTeam] = useState(
+        location.team !== undefined ?
+            location.team :
+            { name: '', members: [] }
+    );
     const [activeStep, setActiveStep] = useState(0);
     const steps = ['Select Team Leader', 'Select Team Members', 'Final'];
 
@@ -165,7 +171,6 @@ const CreateTeam = () => {
     return (
         <div>
             <div className={classes.mainConteiner}>
-
                 <div className={classes.box}>
                     <div className={classes.title}>
                         <h3 >Create New Team</h3>
@@ -173,6 +178,7 @@ const CreateTeam = () => {
                     <DarkTextField
                         label="Team Name"
                         name="teamName"
+                        defaultValue={team.name}
                         onChange={(e) => { setTeam({ ...team, name: e.target.value }) }}
                     />
                     <Stepper className={classes.steper} activeStep={activeStep}>
