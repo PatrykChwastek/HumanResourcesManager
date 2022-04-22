@@ -170,6 +170,7 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
             `&isremote=${searchParams.isRemote.id}`
 
         urlQuery += isSingle === true ? `&leaderFilter=true` : '';
+
         await fetch(APIURL + urlQuery, requestOptions)
             .then(response => response.json())
             .then(data => (
@@ -180,7 +181,7 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
     }
 
     const isNotLeaderSelected = () => {
-        if (selected == undefined)
+        if (selected == undefined || isSingle == undefined)
             return true
 
         if (selected[0] == undefined && Boolean(isSingle))
