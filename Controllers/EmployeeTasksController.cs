@@ -9,6 +9,7 @@ using HumanResourcesManager.Models;
 using HumanResourcesManager.Services.EmployeeTaskRepo;
 using HumanResourcesManager.Models.Entity;
 using HumanResourcesManager.MapperConf;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -27,26 +28,29 @@ namespace HumanResourcesManager.Controllers
 
         // GET: api/tasks
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<EmployeeTaskDTO>>> GetEmployeeTasks(
-            int page, int size, string name, long employeeid, string status, 
+            int page, int size, string name, long employeeid, string status,
             DateTime? b_start_time, DateTime? a_start_time, DateTime? b_deadline, DateTime? a_deadline)
         {
 
-                var employeeTasks= _employeeTaskRepository.
-                GetTasks(name, employeeid, status, b_start_time, a_start_time, b_deadline, a_deadline);
-                var mappedEmployeeTasks = _mapper.Map<List<EmployeeTaskDTO>>(employeeTasks);
-                var totalEmployeeTask = await _employeeTaskRepository.TasksCount(employeeTasks);
+            var employeeTasks = _employeeTaskRepository.
+            GetTasks(name, employeeid, status, b_start_time, a_start_time, b_deadline, a_deadline);
+            var mappedEmployeeTasks = _mapper.Map<List<EmployeeTaskDTO>>(employeeTasks);
+            var totalEmployeeTask = await _employeeTaskRepository.TasksCount(employeeTasks);
 
-                var pageOfTasks = new Pagination(page, size, totalEmployeeTask);
-                return Ok(await pageOfTasks.InitPagination(mappedEmployeeTasks.AsQueryable()));
+            var pageOfTasks = new Pagination(page, size, totalEmployeeTask);
+            return Ok(await pageOfTasks.InitPagination(mappedEmployeeTasks.AsQueryable()));
 
         }
 
         [HttpGet("byteam")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Team-Manager")]
         public async Task<ActionResult<IEnumerable<EmployeeTaskDTO>>> GetTeaamMemberseTasks(
             int page, int size, string name, long teamid, string status,
             DateTime? b_start_time, DateTime? a_start_time, DateTime? b_deadline, DateTime? a_deadline)
-         {
+        {
 
             var employeeTasks = _employeeTaskRepository.
             GetTeamMembersTasks(name, teamid, status, b_start_time, a_start_time, b_deadline, a_deadline);
@@ -58,6 +62,7 @@ namespace HumanResourcesManager.Controllers
         }
 
         [HttpGet("stats")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<EmployeeTaskDTO>>> GetTasksStats(long teamid, long employeeid)
         {
             DateTime today = DateTime.Now.Date;
@@ -69,18 +74,18 @@ namespace HumanResourcesManager.Controllers
             DateTime monthEnd = new DateTime(today.Year, today.Month,
                               DateTime.DaysInMonth(today.Year, today.Month));
 
-           var todayCompleted = 0;
-           var todayProgress = 0;
-           var todayRequested = 0;
+            var todayCompleted = 0;
+            var todayProgress = 0;
+            var todayRequested = 0;
 
-           var weekCompleted = 0;
-           var weekProgress = 0;
-           var weekRequested = 0;
+            var weekCompleted = 0;
+            var weekProgress = 0;
+            var weekRequested = 0;
 
-           var monthCompleted = 0;
-           var monthProgress = 0;
-           var monthRequested = 0;
-           var totalDelayedTasks = 0;
+            var monthCompleted = 0;
+            var monthProgress = 0;
+            var monthRequested = 0;
+            var totalDelayedTasks = 0;
 
             var todayTasks = TasksByDate(teamid, employeeid, today, today);
             foreach (var t in todayTasks)
@@ -133,7 +138,7 @@ namespace HumanResourcesManager.Controllers
                 }
             }
 
-            if (teamid==0 && employeeid!= 0)
+            if (teamid == 0 && employeeid != 0)
             {
                 var delayedTasks = _employeeTaskRepository.
                      GetTasks(null, employeeid, "Delayed", null, null, null, null);
@@ -179,6 +184,7 @@ namespace HumanResourcesManager.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<EmployeeTaskDTO>> GetTask(long id)
         {
             var employeeTask = await _employeeTaskRepository.GetTask(id);
@@ -191,7 +197,8 @@ namespace HumanResourcesManager.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTask(long id, [FromBody]EmployeeTaskDTO employeeTask)
+        [Authorize]
+        public async Task<IActionResult> PutTask(long id, [FromBody] EmployeeTaskDTO employeeTask)
         {
             if (id != employeeTask.Id)
                 return BadRequest();
@@ -203,9 +210,10 @@ namespace HumanResourcesManager.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult<EmployeeTaskDTO>> ChangeTaskStatus(long id, string status)
         {
-            var employeeTask = await _employeeTaskRepository.changeTaskStatus(id,status);
+            var employeeTask = await _employeeTaskRepository.changeTaskStatus(id, status);
             if (employeeTask == null)
             {
                 return NotFound();
@@ -215,7 +223,9 @@ namespace HumanResourcesManager.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<EmployeeTaskDTO>> PostTask([FromBody]EmployeeTaskDTO employeeTaskFromReqest)
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Team-Manager")]
+        public async Task<ActionResult<EmployeeTaskDTO>> PostTask([FromBody] EmployeeTaskDTO employeeTaskFromReqest)
         {
             var mappedTask = _mapper.Map<EmployeeTask>(employeeTaskFromReqest);
             var task = await _employeeTaskRepository.CreateTask(mappedTask);
@@ -225,16 +235,19 @@ namespace HumanResourcesManager.Controllers
         }
 
         [HttpPost("multi")]
-        public async Task<ActionResult<EmployeeTaskDTO[]>> PostMultipleTasks([FromBody]EmployeeTasksMultipleDTO employeeTasksMultipleDTO)
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Team-Manager")]
+        public async Task<ActionResult<EmployeeTaskDTO[]>> PostMultipleTasks([FromBody] EmployeeTasksMultipleDTO employeeTasksMultipleDTO)
         {
             var mappedTask = _mapper.Map<EmployeeTask>(employeeTasksMultipleDTO.EmployeeTaskDTO);
             var tasks = await _employeeTaskRepository.CreateMultipleTasks(mappedTask, employeeTasksMultipleDTO.EmployeesID);
-            var tasksDTO=_mapper.Map<EmployeeTaskDTO[]>(tasks);       
+            var tasksDTO = _mapper.Map<EmployeeTaskDTO[]>(tasks);
 
             return Created("get", tasksDTO);
-        }  
+        }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<EmployeeTask>> DeleteTask(long id)
         {
             if (await _employeeTaskRepository.DeleteTask(id))

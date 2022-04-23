@@ -1,4 +1,5 @@
 import APIURL from './Globals'
+import { authHeader } from './AuthService'
 
 export const getTasks = async (page, size, employeeid, taskName, status, bStartTime, aStartTime, bDeadline, aDeadline) => {
     let getTasksUrl = `tasks?page=${page}&size=${size}&employeeid=${employeeid}`;
@@ -30,7 +31,7 @@ export const getTasks = async (page, size, employeeid, taskName, status, bStartT
 
     const requestOptions = {
         method: 'Get',
-        headers: { 'Content-Type': 'application/json' }
+        headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
     };
 
     return await fetch(APIURL + getTasksUrl,
@@ -76,7 +77,7 @@ export const getTeamTasks = async (page, size, teamid, taskName, status, bStartT
 
     const requestOptions = {
         method: 'Get',
-        headers: { 'Content-Type': 'application/json' }
+        headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
     };
 
     return await fetch(APIURL + getTasksUrl,
@@ -95,7 +96,7 @@ export const getTeamTasks = async (page, size, teamid, taskName, status, bStartT
 export const changeTaskStatus = async (taskID, status) => {
     const requestOptions = {
         method: 'Put',
-        headers: { 'Content-Type': 'application/json' }
+        headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
     };
     return await fetch(APIURL +
         `tasks?id=${taskID}&status=${status}`,
@@ -114,7 +115,7 @@ export const changeTaskStatus = async (taskID, status) => {
 export const getUserTasksStats = async (employeeID) => {
     const requestOptions = {
         method: 'Get',
-        headers: { 'Content-Type': 'application/json' }
+        headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
     };
     return await fetch(APIURL +
         `tasks/stats?employeeid=${employeeID}`,

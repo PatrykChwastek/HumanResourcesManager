@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { DarkTextField, ConfirmDialog } from '../GlobalComponents';
 import APIURL from '../../Services/Globals';
+import { authHeader } from '../../Services/AuthService'
 
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -74,7 +75,7 @@ const HR_Manager = () => {
     const getData = async () => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         await fetch(APIURL + `departments`,
             requestOptions
@@ -92,7 +93,7 @@ const HR_Manager = () => {
     const hendleCreate = () => {
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify({ id: 0, name: newItem.text })
         };
 
@@ -110,7 +111,7 @@ const HR_Manager = () => {
     const hendleEdit = () => {
         const requestOptions = {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify({ id: toEdit.id, name: toEdit.text })
         };
 
@@ -136,7 +137,7 @@ const HR_Manager = () => {
     const hendleDelete = async () => {
         const requestOptions = {
             method: 'Delete',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
 
         if (delDialogProps.itemType === 'Department') {

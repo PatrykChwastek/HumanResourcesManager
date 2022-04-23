@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DarkTextField, DarkSelect, ConfirmDialog } from '../GlobalComponents';
 import APIURL from '../../Services/Globals'
+import { authHeader } from '../../Services/AuthService'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useLocation } from "react-router-dom";
 
@@ -160,7 +161,7 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
     const getEmploees = async (page, size) => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         let urlQuery = `employee/all?page=${page}&size=${size}&order=${searchParams.orderBy.id}` +
             `&search=${searchParams.searchString}` +
@@ -193,6 +194,7 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
     const getSearchProps = async () => {
         const requestOptions = {
             method: 'Get',
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         await fetch(APIURL + `departments`,
             requestOptions
@@ -241,7 +243,7 @@ const AddTeamMembers = ({ isSingle, onSelectionConfirm, selected }) => {
             });
             const requestOptions = {
                 method: 'Put',
-                headers: { 'Content-Type': 'application/json' },
+                headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
                 body: JSON.stringify(membersID)
             };
             await fetch(APIURL + `teams/members/${location.teamid}`,

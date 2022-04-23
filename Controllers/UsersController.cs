@@ -64,7 +64,7 @@ namespace HumanResourcesManager.Controllers
         }
 
         // GET: api/Users
-       // [Authorize(Roles = "Team-Manager")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<ActionResult<Pagination>> GetUser(
             int page,int size, string order, string search, string seniority, long department, long position, bool? isremote)
@@ -80,6 +80,7 @@ namespace HumanResourcesManager.Controllers
 
         // GET: api/Users/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<UserDTO>> GetUser(long id)
         {
             var user = await _userRepository.GetUser(id);
@@ -89,12 +90,13 @@ namespace HumanResourcesManager.Controllers
                 return NotFound();
             }
             var mappedUser = _mapper.Map<UserDTO>(user);
-
-            return mappedUser;
+            
+            return Ok(mappedUser);
         }
 
         // POST: api/Users
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<User>> PostUser([FromBody] UserDTO _user)
         {
             var mappedUser = _mapper.Map<User>(_user);
@@ -105,6 +107,7 @@ namespace HumanResourcesManager.Controllers
         }
 
         [HttpPost("change-pass")]
+        [Authorize]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel changePasswordModel)
         {
             var isChaanged = await 
@@ -123,6 +126,7 @@ namespace HumanResourcesManager.Controllers
 
         [HttpPut("{id}")]
         [ActionName("put")]
+        [Authorize]
         public async Task<IActionResult> PutUser(long id, [FromBody] UserDTO user)
         {
             if (id != user.Id)

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import APIURL from '../../Services/Globals';
+import { authHeader } from '../../Services/AuthService'
 import { Link, useHistory } from "react-router-dom";
 import { DarkTextField, DarkSelect, ConfirmDialog } from '../GlobalComponents';
 
@@ -154,7 +155,7 @@ const TeamList = () => {
     const loadTeams = async (page, size, selTeam) => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         let requestUrl = `teams?page=${page}&size=${size}`;
 
@@ -223,7 +224,7 @@ const TeamList = () => {
     const handleDeleteTeam = (teamId) => {
         const requestOptions = {
             method: 'Delete',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
         };
 
         fetch(APIURL + 'teams/' + teamId, requestOptions)
@@ -264,7 +265,7 @@ const TeamList = () => {
         });
         const requestOptions = {
             method: 'Put',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify(membersID)
         };
         await fetch(APIURL + `teams/members/${teams[selectedIndex].id}`,

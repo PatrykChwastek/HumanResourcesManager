@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DarkTextField, DarkSelect, ConfirmDialog } from '../GlobalComponents';
 import APIURL from '../../Services/Globals'
+import { authHeader } from '../../Services/AuthService'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 
@@ -134,7 +135,7 @@ const EmployList = () => {
     const getEmploees = async (page, size) => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         await fetch(APIURL +
             `employee/all?page=${page}&size=${size}&order=${searchParams.orderBy.id}` +
@@ -152,6 +153,7 @@ const EmployList = () => {
     const getSearchProps = async () => {
         const requestOptions = {
             method: 'Get',
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         await fetch(APIURL + `departments`,
             requestOptions
@@ -194,7 +196,7 @@ const EmployList = () => {
     const hendleDeleteEmployee = () => {
         const requestOptions = {
             method: 'Delete',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         fetch(APIURL +
             `employee/delete/${delDialogProps.employeeId}`,

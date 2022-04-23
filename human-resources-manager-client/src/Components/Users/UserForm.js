@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { DarkTextField, DarkSelect } from '../GlobalComponents';
 import EmployeeForm from '../Employees/EmployeeForm'
 import { useLocation } from "react-router-dom";
 import APIURL from '../../Services/Globals'
+import { authHeader } from '../../Services/AuthService'
 
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -47,7 +48,7 @@ const UserForm = () => {
     const PostUser = (employee) => {
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify({
                 username: user.username,
                 password: user.password,
@@ -77,7 +78,7 @@ const UserForm = () => {
     const PutUser = (employee) => {
         const requestOptions = {
             method: 'Put',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify({
                 id: user.id,
                 username: user.username,

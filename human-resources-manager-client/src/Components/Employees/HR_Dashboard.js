@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import APIURL from '../../Services/Globals'
+import { authHeader } from '../../Services/AuthService'
 import { Link } from "react-router-dom";
 import { StatBar } from "../GlobalComponents"
 
@@ -161,7 +162,7 @@ const HR_Dashboard = () => {
     const getTasksStats = () => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
         };
         fetch(APIURL + `tasks/stats`, requestOptions)
             .then(response => response.json())
@@ -172,7 +173,7 @@ const HR_Dashboard = () => {
     const getEmploees = async (page, size) => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
         };
         await fetch(APIURL +
             `employee/all?page=${page}&size=${size}&order=date-desc`, requestOptions)
@@ -182,7 +183,8 @@ const HR_Dashboard = () => {
 
     const getStats = async () => {
         const requestOptions = {
-            method: 'Get'
+            method: 'Get',
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
         };
         await fetch(APIURL + `home/stats`, requestOptions)
             .then(response => response.json())

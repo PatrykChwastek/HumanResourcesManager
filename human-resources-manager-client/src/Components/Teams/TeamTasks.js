@@ -1,17 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from '@material-ui/core/styles';
 import APIURL from '../../Services/Globals';
-import { getTasks, changeTaskStatus } from "../../Services/TasksService";
-import { getCurrentUser } from '../../Services/AuthService';
+import { getCurrentUser, authHeader } from '../../Services/AuthService';
 import TasksList from "../Tasks/TasksList";
 
-const useStyles = makeStyles((theme) => ({
-
-}));
-
-
 const TeamTasks = () => {
-    const classes = useStyles();
     const leaderID = getCurrentUser().userDetails.employeeDTO.id;
     const [team, setTeam] = useState({});
 
@@ -22,7 +14,7 @@ const TeamTasks = () => {
     const getTeam = () => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         fetch(APIURL + `teams/leader/${leaderID}`, requestOptions)
             .then(response => response.json())

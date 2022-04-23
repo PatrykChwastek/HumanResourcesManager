@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { DarkTextField, DarkSelect } from '../GlobalComponents';
 import APIURL from '../../Services/Globals'
-import AuthService, { getCurrentUser } from '../../Services/AuthService';
+import AuthService, { getCurrentUser, authHeader } from '../../Services/AuthService';
 
 import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
@@ -110,7 +110,7 @@ const Profile = () => {
     const putUser = (newUsername) => {
         const requestOptions = {
             method: 'Put',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify({
                 id: user.id,
                 username: newUsername === undefined ?
@@ -162,7 +162,7 @@ const Profile = () => {
         }
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify({
                 userId: user.id,
                 oldPassword: userCredentials.oldPass,

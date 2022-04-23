@@ -11,6 +11,7 @@ using HumanResourcesManager.Services;
 using AutoMapper;
 using HumanResourcesManager.MapperConf;
 using HumanResourcesManager.Services.SIngletonProvider;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -34,6 +35,8 @@ namespace HumanResourcesManager.Controllers
         // GET: employee/all
         [HttpGet]
         [ActionName("all")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles ="Human-Resources")]
         public async Task<ActionResult<Pagination>> GetEmployee(
             int page,int size, string order, string search, string seniority, long department, long position, bool? isremote, bool? leaderFilter)
         {
@@ -55,6 +58,8 @@ namespace HumanResourcesManager.Controllers
 
         [HttpGet("{id}")]
         [ActionName("get")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<EmployeeDTO>> GetEmployee(long id)
         {
             var employee = await _employeeRepository.GetEmployee(id);
@@ -68,6 +73,8 @@ namespace HumanResourcesManager.Controllers
 
         [HttpPut("{id}")]
         [ActionName("put")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<IActionResult> PutEmployee(long id, [FromBody]EmployeeDTO employee)
         {
             if (id != employee.Id)
@@ -82,6 +89,8 @@ namespace HumanResourcesManager.Controllers
        
         [HttpPost]
         [ActionName("create")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<EmployeeDTO>> PostEmployee([FromBody]EmployeeDTO _employee)
         {
             var mappedEmployee = _mapper.Map<Employee>(_employee);
@@ -93,6 +102,8 @@ namespace HumanResourcesManager.Controllers
 
         [HttpDelete("{id}")]
         [ActionName("delete")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<IActionResult> DeleteEmployee(long id)
         {
             if (await _employeeRepository.DeleteEmployee(id))

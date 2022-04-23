@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { DarkTextField } from '../GlobalComponents';
 import { useLocation } from "react-router-dom";
 import APIURL from '../../Services/Globals';
+import { authHeader } from '../../Services/AuthService'
 import AddTeamMembers from './AddTeamMembers';
 
 import Stepper from '@material-ui/core/Stepper';
@@ -229,7 +230,7 @@ const CreateTeam = () => {
     const PostTeam = async () => {
         const requestOptions = {
             method: 'Post',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify(team)
         };
         await fetch(APIURL + `teams`, requestOptions).then(data => {

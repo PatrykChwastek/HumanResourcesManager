@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using HumanResourcesManager.Models;
 using AutoMapper;
 using HumanResourcesManager.Services.PermissionRepo;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -23,6 +24,7 @@ namespace HumanResourcesManager.Controllers
 
         // GET: api/Permissions
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<PermissionDTO>>> GetPermissions()
         {
             var permissions = await _permissionRepository.GetPermissions().ToListAsync();
@@ -32,6 +34,7 @@ namespace HumanResourcesManager.Controllers
 
         // GET: api/Permissions/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<PermissionDTO>> GetPermission(long id)
         {
             var permission = await _permissionRepository.GetPermission(id);
@@ -45,6 +48,8 @@ namespace HumanResourcesManager.Controllers
 
         // PUT: api/Permissions/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<IActionResult> PutPermission(long id, [FromBody]PermissionDTO permission)
         {
             if (id != permission.Id)
@@ -59,6 +64,8 @@ namespace HumanResourcesManager.Controllers
 
         // POST: api/Permissions
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<PermissionDTO>> PostPermission([FromBody]PermissionDTO _permission)
         {
             var mappedPermission = _mapper.Map<Permission>(_permission);
@@ -70,6 +77,8 @@ namespace HumanResourcesManager.Controllers
 
         // DELETE: api/Permissions/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<Permission>> DeletePermission(long id)
         {
             if (await _permissionRepository.DeletePermission(id))

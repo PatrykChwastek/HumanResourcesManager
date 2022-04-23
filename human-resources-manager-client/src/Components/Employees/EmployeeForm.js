@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { DarkTextField, DarkSelect, DarkChipList } from '../GlobalComponents';
 import APIURL from '../../Services/Globals'
+import { authHeader } from '../../Services/AuthService'
 import { useLocation } from "react-router-dom";
 import Button from '@material-ui/core/Button';
 import DateFnsUtils from '@date-io/date-fns';
@@ -115,7 +116,7 @@ const EmployeeForm = ({ createdEmployee, employeeToEdit }) => {
     const PostEmployee = (formData) => {
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify(formData),
         };
         fetch(APIURL + 'employee/create', requestOptions)
@@ -140,7 +141,7 @@ const EmployeeForm = ({ createdEmployee, employeeToEdit }) => {
     const PutEmployee = (id, formData) => {
         const requestOptions = {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify(formData),
         };
         fetch(APIURL + 'employee/put/' + id, requestOptions)
@@ -163,6 +164,7 @@ const EmployeeForm = ({ createdEmployee, employeeToEdit }) => {
     const getEmployeeProps = async () => {
         const requestOptions = {
             method: 'Get',
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         await fetch(APIURL + `departments`,
             requestOptions

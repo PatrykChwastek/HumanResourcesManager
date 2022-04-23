@@ -8,6 +8,7 @@ using HumanResourcesManager.Context;
 using HumanResourcesManager.Models;
 using AutoMapper;
 using HumanResourcesManager.Services.PositionRepo;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -48,6 +49,8 @@ namespace HumanResourcesManager.Controllers
 
         // PUT: api/Positions/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<IActionResult> PutPosition(long id, PositionDTO position)
         {
             if (id != position.Id)
@@ -62,6 +65,8 @@ namespace HumanResourcesManager.Controllers
 
         // POST: api/Positions
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<Position>> PostPosition([FromBody]PositionDTO _position)
         {
             var mappedPosition = _mapper.Map<Position>(_position);
@@ -73,6 +78,8 @@ namespace HumanResourcesManager.Controllers
 
         // DELETE: api/Positions/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<IActionResult> DeletePosition(long id)
         {
             if (await _positionRepository.DeletePosition(id))

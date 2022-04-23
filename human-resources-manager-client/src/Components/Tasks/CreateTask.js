@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { DarkTextField, DarkSelect, DarkChipList } from '../GlobalComponents';
 import APIURL from '../../Services/Globals'
 import { getCurrentUser } from '../../Services/AuthService';
+import { authHeader } from '../../Services/AuthService'
 
 import { Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
@@ -164,7 +165,7 @@ const CreateTask = () => {
     const getMembers = () => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         fetch(APIURL + `teams/leader/${leaderID}`, requestOptions)
             .then(response => response.json())
@@ -181,7 +182,7 @@ const CreateTask = () => {
     const PostTask = (formData) => {
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify(formData),
         };
         fetch(APIURL + 'tasks', requestOptions)
@@ -201,7 +202,7 @@ const CreateTask = () => {
         })
         const requestOptions = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
             body: JSON.stringify({
                 employeeTaskDTO: formData,
                 employeesID: employeesId

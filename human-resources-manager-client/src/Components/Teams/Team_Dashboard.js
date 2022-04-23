@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import APIURL from '../../Services/Globals';
-import { getCurrentUser } from '../../Services/AuthService';
+import { getCurrentUser, authHeader } from '../../Services/AuthService';
 import { Link } from "react-router-dom";
 import { getTasks } from "../../Services/TasksService";
 import { StatBar } from "../GlobalComponents"
@@ -139,7 +139,7 @@ const Team_Dashboard = () => {
     const getData = () => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
         };
         fetch(APIURL + `teams/leader/${leaderID}`, requestOptions)
             .then(response => response.json())
@@ -159,7 +159,7 @@ const Team_Dashboard = () => {
     const getTasksStats = (teamId) => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
         };
         fetch(APIURL + `tasks/stats?teamid=${teamId}`, requestOptions)
             .then(response => response.json())

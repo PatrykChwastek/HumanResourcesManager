@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from "react-router-dom";
 import Chip from '@material-ui/core/Chip';
 import TasksList from "../Tasks/TasksList";
+import { authHeader } from '../../Services/AuthService'
 
 const useStyles = makeStyles((theme) => ({
     detailsConteiner: {
@@ -61,7 +62,7 @@ export const EmployeeDetails = () => {
     const getEmploee = async (empID) => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         await fetch(APIURL + `employee/get/` + empID,
             requestOptions

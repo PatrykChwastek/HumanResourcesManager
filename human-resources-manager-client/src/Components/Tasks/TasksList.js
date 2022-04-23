@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import APIURL from '../../Services/Globals';
 import { Link, useLocation } from "react-router-dom";
+import { authHeader } from '../../Services/AuthService'
 import moment from "moment";
 import { makeStyles } from '@material-ui/core/styles';
 import { getTasks, changeTaskStatus, getTeamTasks } from "../../Services/TasksService";
@@ -240,7 +241,7 @@ const TasksList = (props) => {
     const getAssignedEmployee = async (empID) => {
         const requestOptions = {
             method: 'Get',
-            headers: { 'Content-Type': 'application/json' }
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         await fetch(APIURL + `employee/get/` + empID,
             requestOptions

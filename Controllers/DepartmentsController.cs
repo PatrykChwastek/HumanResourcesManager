@@ -9,6 +9,7 @@ using HumanResourcesManager.Context;
 using HumanResourcesManager.Models;
 using AutoMapper;
 using HumanResourcesManager.Services.DepartmentRepo;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -48,6 +49,8 @@ namespace HumanResourcesManager.Controllers
 
         // PUT: api/Departments/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<IActionResult> PutDepartment(long id, [FromBody]DepartmentDTO department)
         {
             if (id != department.Id)
@@ -62,6 +65,8 @@ namespace HumanResourcesManager.Controllers
 
         // POST: api/Departments
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<DepartmentDTO>> PostDepartment([FromBody]DepartmentDTO _department)
         {
             var mappedDepartment = _mapper.Map<Department>(_department);
@@ -73,6 +78,8 @@ namespace HumanResourcesManager.Controllers
 
         // DELETE: api/Departments/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<IActionResult> DeleteDepartment(long id)
         {
             if (await _departmentRepo.DeleteDepartment(id))

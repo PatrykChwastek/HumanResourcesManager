@@ -9,6 +9,7 @@ using AutoMapper;
 using HumanResourcesManager.Models.DTO;
 using HumanResourcesManager.Models;
 using HumanResourcesManager.MapperConf;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -29,6 +30,8 @@ namespace HumanResourcesManager.Controllers
 
         // GET: api/Teams
         [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<Pagination>> GetTeams(
             int page, int size, string searchby, string search)
         {
@@ -44,6 +47,8 @@ namespace HumanResourcesManager.Controllers
 
         // GET: api/Teams/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<TeamDTO>> GetTeam(long id)
         {
             var team = await _teamRepository.GetTeam(id);
@@ -57,6 +62,8 @@ namespace HumanResourcesManager.Controllers
 
         // GET: api/Teams/leader/1
         [HttpGet("leader/{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<TeamDTO>> GetTeamByLeader(long id)
         {
             var team = await _teamRepository.GetTeamsByLeaderId(id);
@@ -70,6 +77,8 @@ namespace HumanResourcesManager.Controllers
 
         // GET: api/Teams/member/1
         [HttpGet("member/{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<TeamDTO>> GetTeamByMember(long id)
         {
             var team = await _teamRepository.GetTeamsByMemberId(id);
@@ -83,6 +92,8 @@ namespace HumanResourcesManager.Controllers
 
         // PUT: api/Teams/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<IActionResult> PutTeam(long id, [FromBody]TeamDTO team)
         {
             if (id != team.Id)
@@ -96,6 +107,8 @@ namespace HumanResourcesManager.Controllers
 
         // PUT: api/Teams/add-members/5
         [HttpPut("members/{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<IActionResult> SetTeamMembers(long id, [FromBody] long[] employeesId)
         {
             await _teamRepository.SetTeamMembers(id,employeesId);
@@ -115,6 +128,8 @@ namespace HumanResourcesManager.Controllers
 
         // DELETE: api/Teams/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Human-Resources")]
         public async Task<ActionResult<Team>> DeleteTeam(long id)
         {
             if (await _teamRepository.DeleteTeam(id))
