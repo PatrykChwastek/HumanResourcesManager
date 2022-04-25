@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: '32px',
         display: 'block',
         maxWidth: 850,
+        background: '#6a719b',
         "& p": {
             textAlign: 'justify',
             marginBottom: '16px'
