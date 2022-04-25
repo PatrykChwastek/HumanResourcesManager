@@ -24,7 +24,12 @@ import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import CloseIcon from '@material-ui/icons/Close';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import { logDOM } from "@testing-library/react";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -124,6 +129,12 @@ const EmployList = () => {
         orderBy: orderOptions[4],
         isRemote: remoteOptions[0]
     });
+    const [allertProps, setAllertProps] = useState({
+        text: '',
+        open: false,
+        type: 'success'
+    });
+
     useEffect(() => {
         getEmploees(page + 1, rowsPerPage);
     }, [page, rowsPerPage]);
@@ -199,14 +210,35 @@ const EmployList = () => {
             headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() })
         };
         fetch(APIURL +
-            `employee/delete/${delDialogProps.employeeId}`,
-            requestOptions
-        ).then(data => console.log(data), setPage(0));
+            `employee/delete/${delDialogProps.employeeId}`, requestOptions)
+            .then(() => {
+                setPage(0);
+                setAllertProps({
+                    text: "Employee Deleted",
+                    open: true,
+                    type: 'success'
+                });
+            }, (err) => {
+                console.log(err)
+                setAllertProps({
+                    text: "Employee Delate Error!",
+                    open: true,
+                    type: "error"
+                })
+            }
+            );
     };
 
     const delDialogOpen = () => {
         setDelDialogProps({ ...delDialogProps, open: !delDialogProps.open })
     }
+
+    const handleAllertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAllertProps({ ...allertProps, open: false });
+    };
 
     const tabSkeleton = () => {
         return (
@@ -236,6 +268,11 @@ const EmployList = () => {
             >
                 Are you sure you want to delete employee?
             </ConfirmDialog>
+            <Snackbar open={allertProps.open} autoHideDuration={4000} onClose={handleAllertClose}>
+                <Alert onClose={handleAllertClose} severity={allertProps.type}>
+                    {allertProps.text}
+                </Alert>
+            </Snackbar>
             <Toolbar className={classes.searchBox}>
                 <h3 className={classes.whiteText}>Employees</h3>
                 <DarkTextField
