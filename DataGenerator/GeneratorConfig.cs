@@ -11,5 +11,9 @@ namespace HumanResourcesManager.DataGenerator
         public int WeekTasks { get; set; } = 5;
         public int MonthTasks { get; set; } = 4;
         public int Subtasks { get; set; } = 3;
+
+        public int UnassignedEmployees { get; set; } = 6;       
+        public int Teams { get; set; } = 4;
+        public int TeamSize { get; set; } = 6;
     }
 }

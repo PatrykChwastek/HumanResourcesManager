@@ -1,5 +1,7 @@
 ﻿using HumanResourcesManager.Context;
 using HumanResourcesManager.DataGenerator;
+using HumanResourcesManager.DataGenerator.Defaults;
+using HumanResourcesManager.DataGenerator.EntityGenerators;
 using HumanResourcesManager.Models.Entity;
 using HumanResourcesManager.Services.SIngletonProvider;
 using Microsoft.AspNetCore.Mvc;
@@ -26,15 +28,40 @@ namespace HumanResourcesManager.Controllers
         }
 
         [HttpGet]
-        [ActionName("generate")]
+        [ActionName("generate-tasks")]
         public async Task<ActionResult> GenerateData()
         {
             EmployeeTaskGenerator employeeTaskGenerator = new EmployeeTaskGenerator(_context, _singletonProvider);
             employeeTaskGenerator.ClearData();
             await employeeTaskGenerator.Generate();
-          
-
+            
             return Ok(employeeTaskGenerator.data);
+        }
+
+        [HttpGet]
+        [ActionName("generate-employees")]
+        public async Task<ActionResult> GenerateEmployees()
+        {
+            EmployeeGenerator employeeGenerator = new EmployeeGenerator(_context, _singletonProvider);
+            await employeeGenerator.Generate();
+
+            return Ok(employeeGenerator.data);
+        }
+
+        [HttpGet]
+        [ActionName("generate-team")]
+        public async Task<ActionResult> GenerateTeam()
+        {
+
+            return Ok("to do");
+        }
+
+        [HttpGet]
+        [ActionName("create-defaults")]
+        public async Task<ActionResult> CreateDefaults()
+        {
+
+            return Ok("to do");
         }
 
         [HttpGet]

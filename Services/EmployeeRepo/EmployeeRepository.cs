@@ -31,7 +31,10 @@ namespace HumanResourcesManager.Services.EmployeeRepo
         
             await Save();
             await _mDBContext.Entry(employeeEntity).GetDatabaseValuesAsync();
-            await _userRepository.CreateUser(employeeEntity);
+
+            if (employeeEntity.User == null)
+                await _userRepository.CreateUser(employeeEntity);
+
             return await GetEmployee(employeeEntity.Id);
         }
 
