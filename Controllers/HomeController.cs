@@ -49,11 +49,14 @@ namespace HumanResourcesManager.Controllers
         }
 
         [HttpGet]
-        [ActionName("generate-team")]
+        [ActionName("generate-teams")]
         public async Task<ActionResult> GenerateTeam()
         {
+            EmployeeGenerator employeeGenerator = new EmployeeGenerator(_context, _singletonProvider);
+            TeamGenerator teamGenerator = new TeamGenerator(_context, employeeGenerator);
 
-            return Ok("to do");
+
+            return Ok(teamGenerator.test());
         }
 
         [HttpGet]
