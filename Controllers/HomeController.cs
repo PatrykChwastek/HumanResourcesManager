@@ -35,7 +35,7 @@ namespace HumanResourcesManager.Controllers
             employeeTaskGenerator.ClearData();
             await employeeTaskGenerator.Generate();
             
-            return Ok(employeeTaskGenerator.data);
+            return Ok(employeeTaskGenerator.data.ToArray());
         }
 
         [HttpGet]
@@ -45,7 +45,7 @@ namespace HumanResourcesManager.Controllers
             EmployeeGenerator employeeGenerator = new EmployeeGenerator(_context, _singletonProvider);
             await employeeGenerator.Generate();
 
-            return Ok(employeeGenerator.data);
+            return Ok(employeeGenerator.data.ToArray());
         }
 
         [HttpGet]
@@ -54,17 +54,23 @@ namespace HumanResourcesManager.Controllers
         {
             EmployeeGenerator employeeGenerator = new EmployeeGenerator(_context, _singletonProvider);
             TeamGenerator teamGenerator = new TeamGenerator(_context, employeeGenerator);
+            await teamGenerator.Generate();
 
-
-            return Ok(teamGenerator.test());
+            return Ok(teamGenerator.data.ToArray());
         }
 
         [HttpGet]
         [ActionName("create-defaults")]
         public async Task<ActionResult> CreateDefaults()
         {
+            DefaultData defaultData = new DefaultData();
+            defaultData.CreateDefaults(_context);
 
-            return Ok("to do");
+            EmployeeGenerator employeeGenerator = new EmployeeGenerator(_context, _singletonProvider);
+            TeamGenerator teamGenerator = new TeamGenerator(_context, employeeGenerator);
+            Team[] defaultTeams = await teamGenerator.CreateDefaultTeams();
+
+            return Ok(defaultTeams);
         }
 
         [HttpGet]

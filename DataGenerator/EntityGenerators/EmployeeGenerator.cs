@@ -81,6 +81,7 @@ namespace HumanResourcesManager.DataGenerator.EntityGenerators
                 admminEmployee,
                 leaderEmployee,
                 hrEmployee,
+                regularEmployee
             };
 
             for (int i = 0; i < defaultEmployees.Length -1; i++)

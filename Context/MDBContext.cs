@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 namespace HumanResourcesManager.Context
 {
     public class MDBContext : DbContext
-    {
+    {        
+        public DbSet<JobOffer> JobOffers { get; set; }
         public DbSet<JobApplication> JobApplications { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<Employee> Employee { get; set; }
@@ -97,11 +98,18 @@ namespace HumanResourcesManager.Context
                     .HasForeignKey(x => x.ParentTaskId)
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<EmployeeTask>()
                 .HasOne<Employee>(x => x.AssignedEmployee)
                     .WithMany(x => x.Task)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasForeignKey(et => et.AssignedEmployeeId);
+
+            modelBuilder.Entity<JobApplication>()
+                .HasOne<JobOffer>(ja => ja.JobOffer)
+                .WithMany(jo => jo.JobApplications)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasForeignKey(ja => ja.JobOfferId);
 
         }
     }
