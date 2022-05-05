@@ -12,6 +12,8 @@ namespace HumanResourcesManager.Models
         public string Content { get; set; }
         public PositionDTO Position { get; set; }
         public DateTime ApplicationDate { get; set; }
+        public int ExpectedSalary { get; set; }
         public string CVPath { get; set; }
+        public long JobOfferId { get; set; }
     }
 }

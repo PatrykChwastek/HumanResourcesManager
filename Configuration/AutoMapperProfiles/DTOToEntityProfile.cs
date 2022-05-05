@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace HumanResourcesManager.MapperConf.Profiles
 {
-    public class DTOToEmployeeProfile : Profile
+    public class DTOToEntityProfile : Profile
     {
-        public DTOToEmployeeProfile()
+        public DTOToEntityProfile()
         {
             CreateMap<EmployeeDTO, Employee >()
             .AfterMap((DTO, emp) =>
@@ -43,7 +43,8 @@ namespace HumanResourcesManager.MapperConf.Profiles
             CreateMap<DepartmentDTO, Department>();
             CreateMap<PermissionDTO, Permission>();
             CreateMap<UserDTO, User>().ForMember(u => u.Employee, dto => dto.MapFrom(x => x.EmployeeDTO));
-
+            CreateMap<JobApplicationDTO, JobApplication>();
+            CreateMap<JobOfferDTO, JobOffer>();
         }
     }
 }

@@ -10,8 +10,8 @@ namespace HumanResourcesManager.MapperConf
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<EmployeeToDTOProfile>();
-                cfg.AddProfile<DTOToEmployeeProfile>();
+                cfg.AddProfile<EntityToDTOProfile>();
+                cfg.AddProfile<DTOToEntityProfile>();
             });
  
             return config;
