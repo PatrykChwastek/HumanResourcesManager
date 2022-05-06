@@ -31,14 +31,19 @@ namespace HumanResourcesManager.DataGenerator.EntityGenerators
 
         public async override Task Generate()
         {
+            Employee[] employees = new Employee[GeneratorConfig.UnassignedEmployees];
             for (int i = 0; i < GeneratorConfig.UnassignedEmployees; i++)
             {
-                GenerateEmployee((EmployeeType)RNG.Next(0,3), false);
+               employees[i] = GenerateEmployee((EmployeeType)RNG.Next(0,3), false);
             }
-
+            _mDBContext.AttachRange(employees);
             await SaveDataAsync();
+            for (int i = 0; i < GeneratorConfig.UnassignedEmployees; i++)
+            {
+                await _mDBContext.Entry(employees[i]).GetDatabaseValuesAsync();
+            }
         }
-         
+
         public Employee[] createDefaultEmployees()
         {
             User adminUser = new User() {Username="admin", Password= "admin123" };
@@ -47,35 +52,31 @@ namespace HumanResourcesManager.DataGenerator.EntityGenerators
             User regularUser = new User() { Username = "user", Password = "user123" };
 
 
-            Employee admminEmployee = new Employee() { 
-                Seniority = seniorityLevels[2],
-                User = adminUser
-            };
-            admminEmployee = AdminEmployeeGen(admminEmployee);
+            var admminEmployee = GenerateEmployee(EmployeeType.Admin, true);
+            admminEmployee.Seniority = seniorityLevels[2];
+            admminEmployee.EmploymentDate = EmploymentDateBySeniority(seniorityLevels[2]);
+            admminEmployee.User = adminUser;
+            admminEmployee.User.Employee = admminEmployee;
 
-            Employee leaderEmployee = new Employee()
-            {
-                Seniority = seniorityLevels[2],
-                User = leaderUser
-            };
-            leaderEmployee = DevEmployeeGen(leaderEmployee);
-            leaderEmployee = LeaderEmployeeGen(leaderEmployee);
+            var leaderEmployee = GenerateEmployee(EmployeeType.Software, true);
+            leaderEmployee.Seniority = seniorityLevels[2];
+            leaderEmployee.EmploymentDate = EmploymentDateBySeniority(seniorityLevels[2]);
+            leaderEmployee.User = leaderUser;
+            leaderEmployee.User.Employee = leaderEmployee;
             leaderEmployee.Position = positions
                 .SingleOrDefault(p => p.Name.Equals(defaultData.DefaultPositions.ProjectManager));
 
-            Employee hrEmployee = new Employee()
-            {
-                Seniority = seniorityLevels[2],
-                User = hrUser
-            };
-            hrEmployee = HREmployeeGen(hrEmployee);
+            var hrEmployee = GenerateEmployee(EmployeeType.HumanResources, false);
+            hrEmployee.Seniority = seniorityLevels[2];
+            hrEmployee.EmploymentDate = EmploymentDateBySeniority(seniorityLevels[2]);
+            hrEmployee.User = hrUser;
+            hrEmployee.User.Employee = hrEmployee;
 
-            Employee regularEmployee = new Employee()
-            {
-                Seniority = seniorityLevels[1],
-                User = regularUser
-            };
-            regularEmployee = DevEmployeeGen(regularEmployee);
+            var regularEmployee = GenerateEmployee(EmployeeType.Software, false);
+            regularEmployee.Seniority = seniorityLevels[1];
+            regularEmployee.EmploymentDate = EmploymentDateBySeniority(seniorityLevels[1]);
+            regularEmployee.User = regularUser;
+            regularEmployee.User.Employee = regularEmployee;
 
             Employee[] defaultEmployees = new Employee[]{
                 admminEmployee,
@@ -88,8 +89,10 @@ namespace HumanResourcesManager.DataGenerator.EntityGenerators
             {
                 defaultEmployees[i].EmploymentDate = EmploymentDateBySeniority(defaultEmployees[i].Seniority);
                 defaultEmployees[i].Person = GeneratePerson();
+                defaultEmployees[i].Person.Employee = defaultEmployees[i];
                 defaultEmployees[i].RemoteWork = !defaultEmployees[i].Person.EmployeeAddress.Equals("London");
             }
+
 
             return defaultEmployees;
         }
@@ -101,6 +104,7 @@ namespace HumanResourcesManager.DataGenerator.EntityGenerators
             employee.Seniority = seniorityLevels[RNG.Next(seniorityLevels.Length)];
             employee.EmploymentDate = EmploymentDateBySeniority(employee.Seniority);
             employee.Person = GeneratePerson();
+            employee.Person.Employee = employee;
             employee.RemoteWork = !employee.Person.EmployeeAddress.Equals("London");
 
             switch (type)

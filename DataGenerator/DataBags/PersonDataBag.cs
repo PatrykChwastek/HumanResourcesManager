@@ -18,7 +18,7 @@ namespace HumanResourcesManager.DataGenerator.DataBags
         {
             Names = new string[]
             {
-                "Json", "Adam", "Alex", "Aaron", "Ben", "Carl", "Dan", "David", "Edward", "Fred", "Frank", "George", "Hal", "Hank", "Ike", "John", "Jack", "Joe", "Larry", "Monte", "Matthew", "Mark", "Nathan", "Otto", "Paul", "Peter", "Roger", "Roger", "Steve", "Thomas", "Tim", "Ty", "Victor", "Walter"
+                "Json", "Adam", "Alex", "Aaron", "Anna", "Amber", "Ben", "Carl", "Carol", "Dan", "David", "Edward", "Elliy", "Elizabeth", "Fred", "Frank", "George", "Hal", "Hank", "Ike", "John", "Jack", "Jiline", "Joe", "Larry", "Monte", "Monica" , "Matthew", "Mark", "Nathan", "Otto", "Paul", "Peter", "Roger", "Roger","Sarah", "Steve", "Thomas", "Tim", "Victor", "Walter"
             };
 
             Surnames = new string[]

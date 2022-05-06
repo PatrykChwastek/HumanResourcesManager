@@ -34,7 +34,7 @@ namespace HumanResourcesManager.Controllers
             EmployeeTaskGenerator employeeTaskGenerator = new EmployeeTaskGenerator(_context, _singletonProvider);
             employeeTaskGenerator.ClearData();
             await employeeTaskGenerator.Generate();
-            
+
             return Ok(employeeTaskGenerator.data.ToArray());
         }
 

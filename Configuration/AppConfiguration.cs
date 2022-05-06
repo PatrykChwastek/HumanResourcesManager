@@ -8,5 +8,6 @@ namespace HumanResourcesManager.Configuration
     public class AppConfiguration
     {
         public string JWTSecret { get; set; }
+        public DateTime LastTasksGen { get; set; }
     }
 }

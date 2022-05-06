@@ -77,7 +77,7 @@ namespace HumanResourcesManager.DataGenerator.EntityGenerators
             }
 
             Team devTeam = new Team();
-            adminTeam.Members = new List<TeamEmployees>();
+            devTeam.Members = new List<TeamEmployees>();
             devTeam.Name = "Main Devs";
             devTeam.TeamLeader = defaultEmployees[1];
             for (int i = 0; i < 3; i++)
@@ -96,10 +96,11 @@ namespace HumanResourcesManager.DataGenerator.EntityGenerators
 
             Team[] defaultTeams = new Team[] { adminTeam, devTeam };
 
-            _mDBContext.AddRange(defaultTeams);
-            _mDBContext.AddRange(defaultEmployees);
-
+            await _mDBContext.AddRangeAsync(defaultTeams);
             await SaveDataAsync();
+            await _mDBContext.Entry(defaultTeams[0]).GetDatabaseValuesAsync();
+            await _mDBContext.Entry(defaultTeams[1]).GetDatabaseValuesAsync();
+            
             return defaultTeams;
         }
 

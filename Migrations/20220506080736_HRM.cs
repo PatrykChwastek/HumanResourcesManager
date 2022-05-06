@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace HumanResourcesManager.Migrations
 {
-    public partial class init : Migration
+    public partial class HRM : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -86,6 +86,29 @@ namespace HumanResourcesManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "JobOffers",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PublishDate = table.Column<DateTime>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    PositionId = table.Column<long>(nullable: false),
+                    AvailableJobs = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JobOffers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobOffers_Position_PositionId",
+                        column: x => x.PositionId,
+                        principalTable: "Position",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Employee",
                 columns: table => new
                 {
@@ -95,7 +118,6 @@ namespace HumanResourcesManager.Migrations
                     PositionId = table.Column<long>(nullable: false),
                     DepartmentId = table.Column<long>(nullable: false),
                     EmploymentDate = table.Column<DateTime>(nullable: false),
-                    SeniorityId = table.Column<long>(nullable: false),
                     Seniority = table.Column<string>(nullable: true),
                     RemoteWork = table.Column<bool>(nullable: false)
                 },
@@ -132,11 +154,19 @@ namespace HumanResourcesManager.Migrations
                     Content = table.Column<string>(nullable: true),
                     PositionId = table.Column<long>(nullable: false),
                     ApplicationDate = table.Column<DateTime>(nullable: false),
-                    CVPath = table.Column<string>(nullable: true)
+                    ExpectedSalary = table.Column<int>(nullable: false),
+                    CVPath = table.Column<string>(nullable: true),
+                    JobOfferId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JobApplications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_JobApplications_JobOffers_JobOfferId",
+                        column: x => x.JobOfferId,
+                        principalTable: "JobOffers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_JobApplications_Person_PersonId",
                         column: x => x.PersonId,
@@ -183,6 +213,7 @@ namespace HumanResourcesManager.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
+                    Status = table.Column<string>(nullable: true),
                     StartTime = table.Column<DateTime>(nullable: false),
                     Deadline = table.Column<DateTime>(nullable: false),
                     ParentTaskId = table.Column<long>(nullable: true),
@@ -220,6 +251,27 @@ namespace HumanResourcesManager.Migrations
                     table.ForeignKey(
                         name: "FK_Teams_Employee_TeamLeaderId",
                         column: x => x.TeamLeaderId,
+                        principalTable: "Employee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Username = table.Column<string>(nullable: true),
+                    Password = table.Column<string>(nullable: true),
+                    EmployeeId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_User_Employee_EmployeeId",
+                        column: x => x.EmployeeId,
                         principalTable: "Employee",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -273,13 +325,17 @@ namespace HumanResourcesManager.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeTask_AssignedEmployeeId",
                 table: "EmployeeTask",
-                column: "AssignedEmployeeId",
-                unique: true);
+                column: "AssignedEmployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeTask_ParentTaskId",
                 table: "EmployeeTask",
                 column: "ParentTaskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobApplications_JobOfferId",
+                table: "JobApplications",
+                column: "JobOfferId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobApplications_PersonId",
@@ -289,6 +345,11 @@ namespace HumanResourcesManager.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_JobApplications_PositionId",
                 table: "JobApplications",
+                column: "PositionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobOffers_PositionId",
+                table: "JobOffers",
                 column: "PositionId");
 
             migrationBuilder.CreateIndex(
@@ -307,6 +368,12 @@ namespace HumanResourcesManager.Migrations
                 table: "Teams",
                 column: "TeamLeaderId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_User_EmployeeId",
+                table: "User",
+                column: "EmployeeId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -324,7 +391,13 @@ namespace HumanResourcesManager.Migrations
                 name: "TeamEmploees");
 
             migrationBuilder.DropTable(
+                name: "User");
+
+            migrationBuilder.DropTable(
                 name: "Permissions");
+
+            migrationBuilder.DropTable(
+                name: "JobOffers");
 
             migrationBuilder.DropTable(
                 name: "Teams");

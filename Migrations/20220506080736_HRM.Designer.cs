@@ -10,15 +10,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HumanResourcesManager.Migrations
 {
     [DbContext(typeof(MDBContext))]
-    [Migration("20210816092248_init")]
-    partial class init
+    [Migration("20220506080736_HRM")]
+    partial class HRM
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
-                .HasAnnotation("ProductVersion", "3.1.15")
+                .HasAnnotation("ProductVersion", "3.1.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("HumanResourcesManager.Models.Department", b =>
@@ -60,9 +60,6 @@ namespace HumanResourcesManager.Migrations
 
                     b.Property<string>("Seniority")
                         .HasColumnType("text");
-
-                    b.Property<long>("SeniorityId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -137,14 +134,45 @@ namespace HumanResourcesManager.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedEmployeeId")
-                        .IsUnique();
+                    b.HasIndex("AssignedEmployeeId");
 
                     b.HasIndex("ParentTaskId");
 
                     b.ToTable("EmployeeTask");
+                });
+
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.JobOffer", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("AvailableJobs")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<long>("PositionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("PublishDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PositionId");
+
+                    b.ToTable("JobOffers");
                 });
 
             modelBuilder.Entity("HumanResourcesManager.Models.Entity.Team", b =>
@@ -183,6 +211,30 @@ namespace HumanResourcesManager.Migrations
                     b.ToTable("TeamEmploees");
                 });
 
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.User", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<long>("EmployeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("User");
+                });
+
             modelBuilder.Entity("HumanResourcesManager.Models.JobApplication", b =>
                 {
                     b.Property<long>("Id")
@@ -199,6 +251,12 @@ namespace HumanResourcesManager.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
+                    b.Property<int>("ExpectedSalary")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("JobOfferId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("PersonId")
                         .HasColumnType("bigint");
 
@@ -206,6 +264,8 @@ namespace HumanResourcesManager.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("JobOfferId");
 
                     b.HasIndex("PersonId");
 
@@ -313,8 +373,8 @@ namespace HumanResourcesManager.Migrations
             modelBuilder.Entity("HumanResourcesManager.Models.Entity.EmployeeTask", b =>
                 {
                     b.HasOne("HumanResourcesManager.Models.Employee", "AssignedEmployee")
-                        .WithOne("Task")
-                        .HasForeignKey("HumanResourcesManager.Models.Entity.EmployeeTask", "AssignedEmployeeId")
+                        .WithMany("Task")
+                        .HasForeignKey("AssignedEmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -322,6 +382,15 @@ namespace HumanResourcesManager.Migrations
                         .WithMany("Subtasks")
                         .HasForeignKey("ParentTaskId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.JobOffer", b =>
+                {
+                    b.HasOne("HumanResourcesManager.Models.Position", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("HumanResourcesManager.Models.Entity.Team", b =>
@@ -348,8 +417,23 @@ namespace HumanResourcesManager.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("HumanResourcesManager.Models.Entity.User", b =>
+                {
+                    b.HasOne("HumanResourcesManager.Models.Employee", "Employee")
+                        .WithOne("User")
+                        .HasForeignKey("HumanResourcesManager.Models.Entity.User", "EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("HumanResourcesManager.Models.JobApplication", b =>
                 {
+                    b.HasOne("HumanResourcesManager.Models.Entity.JobOffer", "JobOffer")
+                        .WithMany("JobApplications")
+                        .HasForeignKey("JobOfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HumanResourcesManager.Models.Person", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
