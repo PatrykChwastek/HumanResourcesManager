@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace HumanResourcesManager.Controllers
 {
     [Route("api/[controller]/[action]")]
@@ -31,11 +29,21 @@ namespace HumanResourcesManager.Controllers
         [ActionName("generate-tasks")]
         public async Task<ActionResult> GenerateData()
         {
-            EmployeeTaskGenerator employeeTaskGenerator = new EmployeeTaskGenerator(_context, _singletonProvider);
-            employeeTaskGenerator.ClearData();
-            await employeeTaskGenerator.Generate();
+            if (_context.Generator.First().LastGen.Date != DateTime.Now.Date)
+            {
+                var newGen = _context.Generator.First();
+                newGen.LastGen = DateTime.Now;
+                newGen.TotalGen += 1;
+                _context.Entry(newGen).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                await _context.SaveChangesAsync();
 
-            return Ok(employeeTaskGenerator.data.ToArray());
+                EmployeeTaskGenerator employeeTaskGenerator = new EmployeeTaskGenerator(_context, _singletonProvider);
+                employeeTaskGenerator.ClearData();
+                await employeeTaskGenerator.Generate();
+
+                return Ok(employeeTaskGenerator.data.ToArray());
+            }
+            return Ok(_context.Generator.First());
         }
 
         [HttpGet]

@@ -19,6 +19,7 @@ namespace HumanResourcesManager.Context
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamEmployees> TeamEmploees { get; set; }
         public DbSet<EmployeeTask> EmployeeTask { get; set; }
+        public DbSet<Generator> Generator { get; set; }
 
         public MDBContext(DbContextOptions<MDBContext> options) : base (options){}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -110,7 +111,6 @@ namespace HumanResourcesManager.Context
                 .WithMany(jo => jo.JobApplications)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasForeignKey(ja => ja.JobOfferId);
-
         }
     }
 }

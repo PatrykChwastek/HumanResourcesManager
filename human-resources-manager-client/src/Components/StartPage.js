@@ -85,7 +85,7 @@ const StartPage = () => {
                     <Typography variant="body1" color="textSecondary" component="p">
                         A complex prototype application. To store employees data, and assign tasks to them.
                         Application content is depends of a employee permissions.
-                        The main roles of employees are: a regular employee, team leader,administrator, and HR manager.
+                        The main roles of employees are: a regular employee, team leader, administrator, and HR manager.
                         An ordinary employees can view their tasks and change their status.
                         Tasks for employees are assigned by the team leader in a dedicated view.
                         An employee who manages human resources can add new employees and change their data. It is also responsible for creating new teams.
@@ -159,7 +159,7 @@ const StartPage = () => {
                                 <Typography variant="body1" component="p">
                                     Login:
                                     <Typography variant="body1" component="span">
-                                        User
+                                        user
                                     </Typography>
                                 </Typography>
                                 <Typography variant="body1" component="p">

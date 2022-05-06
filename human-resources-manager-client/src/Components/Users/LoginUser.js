@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 import { DarkTextField } from '../GlobalComponents';
+import APIURL from '../../Services/Globals';
 import AuthService from '../../Services/AuthService'
 import Button from '@material-ui/core/Button';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
@@ -37,7 +40,16 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 550,
         display: 'block',
         width: "22rem",
-    }
+    }, backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+        backgroundColor: "rgb(0 0 0 / 60%)",
+        display: "flex",
+        flexDirection: "column",
+        "& h1": {
+            margin: "18px"
+        }
+    },
 }));
 
 const LoginUser = () => {
@@ -47,6 +59,7 @@ const LoginUser = () => {
         username: "",
         password: "",
     });
+    const [loading, setLoading] = useState({ open: false, text: "Login..." });
     const [allertProps, setAllertProps] = useState({
         text: '',
         open: false,
@@ -62,8 +75,9 @@ const LoginUser = () => {
 
     const hendleLogin = (event) => {
         event.preventDefault()
+        setLoading({ open: true, text: "Login..." });
         AuthService.login(loginData).then((data) => {
-            history.push("/main/tasks-columns");
+            GenerateTasks();
         }, e => {
             setAllertProps({
                 text: 'Login Error!',
@@ -73,6 +87,19 @@ const LoginUser = () => {
         });
     }
 
+    const GenerateTasks = () => {
+        setLoading({ open: true, text: "Generate Tasks..." });
+        const requestOptions = {
+            method: 'Get',
+            headers: new Headers({ 'Content-Type': 'application/json' })
+        };
+        fetch(APIURL + "home/generate-tasks", requestOptions)
+            .then(data => {
+                setLoading({ open: false, text: "" })
+                history.push("/main/tasks-columns");
+                console.log(data)
+            }, err => { console.log(err) });
+    }
 
     const handleAllertClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -88,6 +115,10 @@ const LoginUser = () => {
                     {allertProps.text}
                 </Alert>
             </Snackbar>
+            <Backdrop className={classes.backdrop} open={loading.open}>
+                <h1>{loading.text}</h1>
+                <CircularProgress style={{ width: "60px", height: "60px" }} color="inherit" />
+            </Backdrop>
             <div boxshadow={2} className={classes.title}>
                 <h2>User Credentials:</h2>
             </div>
