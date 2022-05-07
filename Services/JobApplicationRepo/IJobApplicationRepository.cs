@@ -10,7 +10,7 @@ namespace HumanResourcesManager.Services.JobApplicationRepo
     {
         Task<bool> Save();
         Task<int> JobApplicationsCount(IQueryable<JobApplication> jobApplications);
-        IQueryable<JobApplication> GetJobApplicationsAsync(long jobOfferId, long positionId);
+        IQueryable<JobApplication> GetJobApplications(long jobOfferId, long positionId);
         Task<JobApplication> GetJobApplication(long id);
         Task<JobApplication> CreateJobApplication(JobApplication jobApplicationEntity);
         Task<JobApplication> PutJobApplication(long id, JobApplication jobApplicationEntity);

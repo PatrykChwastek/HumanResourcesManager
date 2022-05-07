@@ -20,10 +20,5 @@ namespace HumanResourcesManager.Models
         public string CVPath { get; set; }
         public long JobOfferId { get; set; }
         public JobOffer JobOffer { get; set; }
-
-        [JsonIgnore]
-        [NotMapped]
-        public Microsoft.AspNetCore.Http.IFormFile CVFile { get; set; }
-
     }
 }

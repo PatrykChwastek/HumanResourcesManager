@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System;
+using HumanResourcesManager.Services.JobOfferRepo;
+using HumanResourcesManager.Services.JobApplicationRepo;
 
 namespace HumanResourcesManager
 {
@@ -66,6 +68,8 @@ namespace HumanResourcesManager
             services.AddScoped<ITeamRepository, TeamRepository>();
             services.AddScoped<IEmployeeTaskRepository, EmployeeTaskRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IJobOfferRepository, JobOfferRepository>();
+            services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
             services.AddSingleton<ISingletonProvider, SingletonProvider>();
             services.AddAutoMapper(typeof(Startup));
             services.AddCors(options =>

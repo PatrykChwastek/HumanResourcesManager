@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HumanResourcesManager.Models
@@ -15,5 +14,9 @@ namespace HumanResourcesManager.Models
         public int ExpectedSalary { get; set; }
         public string CVPath { get; set; }
         public long JobOfferId { get; set; }
+
+        [JsonIgnore]
+        [NotMapped]
+        public Microsoft.AspNetCore.Http.IFormFile CVFile { get; set; }
     }
 }

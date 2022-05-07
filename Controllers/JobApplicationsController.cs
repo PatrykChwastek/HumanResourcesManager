@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using HumanResourcesManager.Context;
 using HumanResourcesManager.Models;
 using System.IO;
+using HumanResourcesManager.Services.JobApplicationRepo;
+using AutoMapper;
 
 namespace HumanResourcesManager.Controllers
 {
@@ -15,101 +17,70 @@ namespace HumanResourcesManager.Controllers
     [ApiController]
     public class JobApplicationsController : ControllerBase
     {
-        private readonly MDBContext _context;
+        private readonly IJobApplicationRepository _jobApplicationRepository;
+        private readonly IMapper _mapper;
 
-        public JobApplicationsController(MDBContext context)
+        public JobApplicationsController(IJobApplicationRepository jobApplicationRepository, IMapper autoMapper)
         {
-            _context = context;
+            _jobApplicationRepository = jobApplicationRepository;
+            _mapper = autoMapper;
         }
 
         // GET: api/JobApplications
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JobApplication>>> GetJobApplications()
+        public async Task<ActionResult<IEnumerable<JobApplicationDTO>>> GetJobApplications(
+            int page, int size, long position, long jobOffer)
         {
-            return await _context.JobApplications.ToListAsync();
+            var jobApplicatios = _jobApplicationRepository.GetJobApplications(jobOffer,position);
+            var mappedJobApplicatios = _mapper.Map<List<JobApplicationDTO>>(jobApplicatios);
+            var totalJobApplications = _jobApplicationRepository.JobApplicationsCount(jobApplicatios);
+
+            var pageOfJobApplications = new Pagination(page, size, await totalJobApplications);
+            return Ok(await pageOfJobApplications.InitPagination(mappedJobApplicatios.AsQueryable()));
         }
 
         // GET: api/JobApplications/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<JobApplication>> GetJobApplication(long id)
+        public async Task<ActionResult<JobApplicationDTO>> GetJobApplication(long id)
         {
-            var jobApplication = await _context.JobApplications.FindAsync(id);
+            var jobApplication = await _jobApplicationRepository.GetJobApplication(id);
 
             if (jobApplication == null)
             {
                 return NotFound();
             }
-
-            return jobApplication;
+            var mapedJobApplication = _mapper.Map<JobApplicationDTO>(jobApplication);
+            return mapedJobApplication;
         }
 
-        // PUT: api/JobApplications/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutJobApplication(long id, JobApplication jobApplication)
-        {
-            if (id != jobApplication.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(jobApplication).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!JobApplicationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/JobApplications
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<JobApplication>> PostJobApplication([FromForm]JobApplication jobApplication)
+        public async Task<ActionResult<JobApplicationDTO>> PostJobApplication([FromForm]JobApplicationDTO jobApplication)
         {
             var extension = "." + jobApplication.CVFile.FileName.Split('.')[jobApplication.CVFile.FileName.Split('.').Length - 1];
             if (extension.Equals(".pdf"))
             {
                 jobApplication.CVPath = await WriteFile(jobApplication.CVFile);
-                _context.JobApplications.Add(jobApplication);
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                return BadRequest(new { message = "Invalid file extension. Required PDF format" });
+                var mapedJobApplication = _mapper.Map<JobApplication>(jobApplication);
+
+                var jobApplicationEntity = _jobApplicationRepository.CreateJobApplication(mapedJobApplication);
+                var jobApplicationDTO = _mapper.Map<JobApplicationDTO>(jobApplicationEntity);
+                return Created("get", jobApplicationDTO);
             }
 
-            return CreatedAtAction("GetJobApplication", new { id = jobApplication.Id }, jobApplication);
+            return BadRequest(new { message = "Invalid file extension. Required PDF format" });
         }
 
         // DELETE: api/JobApplications/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<JobApplication>> DeleteJobApplication(long id)
         {
-            var jobApplication = await _context.JobApplications.FindAsync(id);
-            if (jobApplication == null)
+            if (await _jobApplicationRepository.DeleteJobApplication(id))
             {
-                return NotFound();
+                await _jobApplicationRepository.Save();
+                return NoContent();
             }
 
-            _context.JobApplications.Remove(jobApplication);
-            await _context.SaveChangesAsync();
-
-            return jobApplication;
+            return StatusCode(500, "Server Error: JobApplication not exist");
         }
 
         private async Task<string> WriteFile(IFormFile file)
@@ -143,11 +114,6 @@ namespace HumanResourcesManager.Controllers
             }
 
                 return path;
-        }
-
-        private bool JobApplicationExists(long id)
-        {
-            return _context.JobApplications.Any(e => e.Id == id);
         }
     }
 }

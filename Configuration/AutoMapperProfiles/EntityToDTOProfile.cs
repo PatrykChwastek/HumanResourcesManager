@@ -39,7 +39,7 @@ namespace HumanResourcesManager.MapperConf.Profiles
             CreateMap<Permission, PermissionDTO>();
             CreateMap<User, UserDTO>().ForMember(dto => dto.EmployeeDTO,
                  opt => opt.MapFrom(x => x.Employee));
-            CreateMap<JobApplication, JobApplicationDTO>();
+            CreateMap<JobApplication, JobApplicationDTO>().ForMember(dest => dest.CVFile, act => act.Ignore());
             CreateMap<JobOffer, JobOfferDTO>();
         }
     }

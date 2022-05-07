@@ -57,7 +57,7 @@ namespace HumanResourcesManager.Services.JobApplicationRepo
                 .FirstOrDefaultAsync(ja => ja.Id == id);
         }
 
-        public IQueryable<JobApplication> GetJobApplicationsAsync(long jobOfferId, long positionId)
+        public IQueryable<JobApplication> GetJobApplications(long jobOfferId, long positionId)
         {
             StringBuilder whereQuery = new StringBuilder("ja => ja.Id != 0 ");
 
