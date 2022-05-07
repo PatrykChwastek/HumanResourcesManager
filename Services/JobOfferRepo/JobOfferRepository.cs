@@ -77,7 +77,7 @@ namespace HumanResourcesManager.Services.JobOfferRepo
             {
                 if (!JobOfferExists(id))
                 {
-                    _logger.LogError($"Department with ID: {id} not exists");
+                    _logger.LogError($"JobOffer with ID: {id} not exists");
                     return null;
                 }
                 else
@@ -85,8 +85,8 @@ namespace HumanResourcesManager.Services.JobOfferRepo
                     throw;
                 }
             }
-            _logger.LogInformation($"Department with ID: {id} edited");
-            return await GetDepartment(id);
+            _logger.LogInformation($"JobOffer with ID: {id} edited");
+            return await GetJobOffer(id);
         }
 
         public async Task<bool> Save()
@@ -97,7 +97,7 @@ namespace HumanResourcesManager.Services.JobOfferRepo
 
         private bool JobOfferExists(long id)
         {
-            return _mDBContext.Department.Any(e => e.Id == id);
+            return _mDBContext.JobOffers.Any(e => e.Id == id);
         }
     }
 }
