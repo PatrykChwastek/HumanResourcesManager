@@ -83,7 +83,8 @@ const LoginUser = () => {
                 text: 'Login Error!',
                 open: true,
                 type: 'error'
-            })
+            });
+            setLoading({ open: false, text: "" });
         });
     }
 

@@ -124,12 +124,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MainComponent = () => {
+
     const history = useHistory();
     const [userAccess] = useState(getUserAccess());
     const [navIsOpen, setNavIsOpen] = useState(false);
     const [currentLocation, setCurrentLocation] = useState(
         history.location.pathname.substr(history.location.pathname.lastIndexOf('/') + 1));
 
+    useEffect(() => {
+        redirectIfNotLogin();
+    }, [currentLocation]);
 
     const isNavItemmSelected = (name) => {
         if (name === currentLocation) {
@@ -137,6 +141,13 @@ const MainComponent = () => {
         }
         return false;
     }
+
+    const redirectIfNotLogin = () => {
+        if (getCurrentUser() == null) {
+            history.push("/login");
+        }
+    }
+
     const handleLogout = () => {
         logout();
         history.push("/login");
@@ -191,115 +202,118 @@ const MainComponent = () => {
                             classes.drawerClose
                     }}
                 >
-                    <div className={classes.drawerContainer}>
+                    {userAccess === null ? redirectIfNotLogin() :
+                        <div className={classes.drawerContainer}>
 
-                        <List component="nav" className={classes.navList}>
-                            {userAccess.humanResources === false ? null :
-                                <React.Fragment>
-                                    <Link className={classes.linkButtons} to="/main/dashboard">
-                                        <ListItem button
-                                            selected={isNavItemmSelected('dashboard')}
-                                            onClick={() => setCurrentLocation('dashboard')}
-                                        >
-                                            <ListItemIcon><PollIcon /></ListItemIcon>
-                                            <ListItemText primary={<Typography noWrap>Dashboard</Typography>} />
-                                        </ListItem>
-                                    </Link>
-                                    <Link className={classes.linkButtons} to="/main/hr-manager">
-                                        <ListItem button
-                                            selected={isNavItemmSelected('hr-manager')}
-                                            onClick={() => setCurrentLocation('hr-manager')}
-                                        >
-                                            <ListItemIcon><AssignmentIndIcon /></ListItemIcon>
-                                            <ListItemText primary={<Typography noWrap>HR-Manager</Typography>} />
-                                        </ListItem>
-                                    </Link>
-                                    <Link className={classes.linkButtons} to="/main/employees">
-                                        <ListItem button
-                                            selected={isNavItemmSelected('employees')}
-                                            onClick={() => setCurrentLocation('employees')}
-                                        >
-                                            <ListItemIcon><PeopleAltIcon /></ListItemIcon>
-                                            <ListItemText primary={<Typography noWrap>Employees</Typography>} />
-                                        </ListItem>
-                                    </Link>
-                                    <Link className={classes.linkButtons} to="/main/team-list">
-                                        <ListItem button
-                                            selected={isNavItemmSelected('team-list')}
-                                            onClick={() => setCurrentLocation('team-list')}
-                                        >
-                                            <ListItemIcon><GroupWorkIcon /></ListItemIcon>
-                                            <ListItemText primary={<Typography noWrap>Team List</Typography>} />
-                                        </ListItem>
-                                    </Link>
-                                    <Link className={classes.linkButtons} to="/main/applications">
-                                        <ListItem button
-                                            selected={isNavItemmSelected('applications')}
-                                            onClick={() => setCurrentLocation('applications')}
-                                        >
-                                            <ListItemIcon><AssignmentIcon /></ListItemIcon>
-                                            <ListItemText primary={<Typography noWrap>Job Applications</Typography>} />
-                                        </ListItem>
-                                    </Link>
-                                    <Divider />
-                                </React.Fragment>
-                            }
-                            <Link className={classes.linkButtons} to="/main/tasks-columns">
-                                <ListItem button
-                                    selected={isNavItemmSelected('tasks-columns')}
-                                    onClick={() => setCurrentLocation('tasks-columns')}
-                                >
-                                    <ListItemIcon><DateRangeIcon /></ListItemIcon>
-                                    <ListItemText primary={<Typography noWrap>Tasks</Typography>} />
-                                </ListItem>
-                            </Link>
-                            <Link className={classes.linkButtons} to="/main/tasks-list">
-                                <ListItem button
-                                    selected={isNavItemmSelected('tasks-list')}
-                                    onClick={() => setCurrentLocation('tasks-list')}
-                                >
-                                    <ListItemIcon><FormatListBulletedIcon /></ListItemIcon>
-                                    <ListItemText primary={<Typography noWrap>Task List</Typography>} />
-                                </ListItem>
-                            </Link>
-                            <Divider />
-                            {userAccess.teamManager === false ? null :
-                                <React.Fragment>
-                                    <Link className={classes.linkButtons} to="/main/team-manager">
-                                        <ListItem button
-                                            selected={isNavItemmSelected('team-manager')}
-                                            onClick={() => setCurrentLocation('team-manager')}
-                                        >
-                                            <ListItemIcon><DeveloperBoardIcon /></ListItemIcon>
-                                            <ListItemText primary={<Typography noWrap>Team Manager</Typography>} />
-                                        </ListItem>
-                                    </Link>
-                                    <Link className={classes.linkButtons} to="/main/team-tasks">
-                                        <ListItem button
-                                            selected={isNavItemmSelected('team-tasks')}
-                                            onClick={() => setCurrentLocation('team-tasks')}
-                                        >
-                                            <ListItemIcon><EventNoteIcon /></ListItemIcon>
-                                            <ListItemText primary={<Typography noWrap>Team Tasks</Typography>} />
-                                        </ListItem>
-                                    </Link>
-                                    <Divider />
-                                </React.Fragment>}
-                            {userAccess.admin === false ? null :
-                                <React.Fragment>
-                                    <Link className={classes.linkButtons} to="/main/users-list">
-                                        <ListItem button
-                                            selected={isNavItemmSelected('users-list')}
-                                            onClick={() => setCurrentLocation('users-list')}
-                                        >
-                                            <ListItemIcon><RecentActorsIcon /></ListItemIcon>
-                                            <ListItemText primary={<Typography noWrap>Users</Typography>} />
-                                        </ListItem>
-                                    </Link>
-                                    <Divider />
-                                </React.Fragment>}
-                        </List>
-                    </div>
+                            <List component="nav" className={classes.navList}>
+                                {userAccess.humanResources === false ? null :
+                                    <React.Fragment>
+                                        <Link className={classes.linkButtons} to="/main/dashboard">
+                                            <ListItem button
+                                                selected={isNavItemmSelected('dashboard')}
+                                                onClick={() => setCurrentLocation('dashboard')}
+                                            >
+                                                <ListItemIcon><PollIcon /></ListItemIcon>
+                                                <ListItemText primary={<Typography noWrap>Dashboard</Typography>} />
+                                            </ListItem>
+                                        </Link>
+                                        <Link className={classes.linkButtons} to="/main/hr-manager">
+                                            <ListItem button
+                                                selected={isNavItemmSelected('hr-manager')}
+                                                onClick={() => setCurrentLocation('hr-manager')}
+                                            >
+                                                <ListItemIcon><AssignmentIndIcon /></ListItemIcon>
+                                                <ListItemText primary={<Typography noWrap>HR-Manager</Typography>} />
+                                            </ListItem>
+                                        </Link>
+                                        <Link className={classes.linkButtons} to="/main/employees">
+                                            <ListItem button
+                                                selected={isNavItemmSelected('employees')}
+                                                onClick={() => setCurrentLocation('employees')}
+                                            >
+                                                <ListItemIcon><PeopleAltIcon /></ListItemIcon>
+                                                <ListItemText primary={<Typography noWrap>Employees</Typography>} />
+                                            </ListItem>
+                                        </Link>
+                                        <Link className={classes.linkButtons} to="/main/team-list">
+                                            <ListItem button
+                                                selected={isNavItemmSelected('team-list')}
+                                                onClick={() => setCurrentLocation('team-list')}
+                                            >
+                                                <ListItemIcon><GroupWorkIcon /></ListItemIcon>
+                                                <ListItemText primary={<Typography noWrap>Team List</Typography>} />
+                                            </ListItem>
+                                        </Link>
+                                        <Link className={classes.linkButtons} to="/main/applications">
+                                            <ListItem button
+                                                selected={isNavItemmSelected('applications')}
+                                                onClick={() => setCurrentLocation('applications')}
+                                            >
+                                                <ListItemIcon><AssignmentIcon /></ListItemIcon>
+                                                <ListItemText primary={<Typography noWrap>Job Applications</Typography>} />
+                                            </ListItem>
+                                        </Link>
+                                        <Divider />
+                                    </React.Fragment>
+                                }
+                                <Link className={classes.linkButtons} to="/main/tasks-columns">
+                                    <ListItem button
+                                        selected={isNavItemmSelected('tasks-columns')}
+                                        onClick={() => setCurrentLocation('tasks-columns')}
+                                    >
+                                        <ListItemIcon><DateRangeIcon /></ListItemIcon>
+                                        <ListItemText primary={<Typography noWrap>Tasks</Typography>} />
+                                    </ListItem>
+                                </Link>
+                                <Link className={classes.linkButtons} to="/main/tasks-list">
+                                    <ListItem button
+                                        selected={isNavItemmSelected('tasks-list')}
+                                        onClick={() => setCurrentLocation('tasks-list')}
+                                    >
+                                        <ListItemIcon><FormatListBulletedIcon /></ListItemIcon>
+                                        <ListItemText primary={<Typography noWrap>Task List</Typography>} />
+                                    </ListItem>
+                                </Link>
+                                <Divider />
+                                {userAccess.teamManager === false ? null :
+                                    <React.Fragment>
+                                        <Link className={classes.linkButtons} to="/main/team-manager">
+                                            <ListItem button
+                                                selected={isNavItemmSelected('team-manager')}
+                                                onClick={() => setCurrentLocation('team-manager')}
+                                            >
+                                                <ListItemIcon><DeveloperBoardIcon /></ListItemIcon>
+                                                <ListItemText primary={<Typography noWrap>Team Manager</Typography>} />
+                                            </ListItem>
+                                        </Link>
+                                        <Link className={classes.linkButtons} to="/main/team-tasks">
+                                            <ListItem button
+                                                selected={isNavItemmSelected('team-tasks')}
+                                                onClick={() => setCurrentLocation('team-tasks')}
+                                            >
+                                                <ListItemIcon><EventNoteIcon /></ListItemIcon>
+                                                <ListItemText primary={<Typography noWrap>Team Tasks</Typography>} />
+                                            </ListItem>
+                                        </Link>
+                                        <Divider />
+                                    </React.Fragment>}
+                                {userAccess.admin === false ? null :
+                                    <React.Fragment>
+                                        <Link className={classes.linkButtons} to="/main/users-list">
+                                            <ListItem button
+                                                selected={isNavItemmSelected('users-list')}
+                                                onClick={() => setCurrentLocation('users-list')}
+                                            >
+                                                <ListItemIcon><RecentActorsIcon /></ListItemIcon>
+                                                <ListItemText primary={<Typography noWrap>Users</Typography>} />
+                                            </ListItem>
+                                        </Link>
+                                        <Divider />
+                                    </React.Fragment>}
+                            </List>
+
+                        </div>
+                    }
                 </Drawer>
                 <main className={navIsOpen ? classes.contentShift : classes.content}>
                     <Switch>
@@ -313,7 +327,9 @@ const MainComponent = () => {
                             <TasksColumns />
                         </Route>
                         <Route path="/main/tasks-list">
-                            <TasksList userId={getCurrentUser().userDetails.employeeDTO.id} />
+                            <TasksList userId={getCurrentUser() === null ? null :
+                                getCurrentUser().userDetails.employeeDTO.id}
+                            />
                         </Route>
                         <Route path="/main/employee-form">
                             <EmployeeForm />

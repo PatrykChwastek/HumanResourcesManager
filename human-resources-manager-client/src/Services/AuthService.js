@@ -37,6 +37,10 @@ export const authHeader = () => {
 }
 
 export const getUserAccess = () => {
+    if (getCurrentUser() === null) {
+        return null;
+    }
+
     const permissions = getCurrentUser().userDetails.employeeDTO.permissions;
     if (permissions === undefined || permissions.length < 1) {
         return false;

@@ -114,7 +114,7 @@ const filter = {
 
 const TasksColumns = () => {
     const classes = useStyles();
-    const userID = getCurrentUser().userDetails.employeeDTO.id;
+    const userID = getCurrentUser() === null ? null : getCurrentUser().userDetails.employeeDTO.id;
     const [expandedTask, setExpandedTask] = useState('');
     const [expandedSubTask, setExpandedSubTask] = useState('');
     const [userTaskStats, setUserTaskStats] = useState({});
