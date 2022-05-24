@@ -6,6 +6,7 @@ import EmployeeList from './Employees/EmployeeList';
 import HR_Dashboard from './Employees/HR_Dashboard';
 import HR_Manager from './Employees/HR_Manager';
 import CreateJobApplication from './JobApplication/CreateJobApplication';
+import JobApplicationList from "./JobApplication/JobApplicationList";
 import EmployeeForm from './Employees/EmployeeForm';
 import { EmployeeDetails } from './Employees/EmployeeDetails';
 import Profile from './Users/Profile'
@@ -322,6 +323,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/employee-details/:id" >
                             <EmployeeDetails />
+                        </Route>
+                        <Route path="/main/applications">
+                            <JobApplicationList />
                         </Route>
                         <Route path="/main/team-list">
                             <TeamList />
