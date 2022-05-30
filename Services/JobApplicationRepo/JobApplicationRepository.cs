@@ -24,8 +24,7 @@ namespace HumanResourcesManager.Services.JobApplicationRepo
 
         public async Task<JobApplication> CreateJobApplication(JobApplication jobApplicationEntity)
         {
-            _logger.LogInformation($"Adding new JobAplication jor: {jobApplicationEntity.Position.Name} position");
-            jobApplicationEntity.JobOfferId = jobApplicationEntity.JobOffer.Id;
+            _logger.LogInformation($"Adding new JobAplication jor position: {jobApplicationEntity.PositionId} ");
             _mDBContext.Attach(jobApplicationEntity);
 
             await Save();

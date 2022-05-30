@@ -64,7 +64,7 @@ namespace HumanResourcesManager.Controllers
 
         // POST: api/JobOffers
         [HttpPost]
-        public async Task<ActionResult<JobOfferDTO>> PostJobOffer(JobOfferDTO _jobOffer)
+        public async Task<ActionResult<JobOfferDTO>> PostJobOffer([FromBody]JobOfferDTO _jobOffer)
         {
             var mappedJobOffer = _mapper.Map<JobOffer>(_jobOffer);
             var jobOfferEntity = await _jobOfferRepository.CreateJobOffer(mappedJobOffer);

@@ -62,7 +62,7 @@ namespace HumanResourcesManager.Controllers
                 jobApplication.CVPath = await WriteFile(jobApplication.CVFile);
                 var mapedJobApplication = _mapper.Map<JobApplication>(jobApplication);
 
-                var jobApplicationEntity = _jobApplicationRepository.CreateJobApplication(mapedJobApplication);
+                var jobApplicationEntity = await _jobApplicationRepository.CreateJobApplication(mapedJobApplication);
                 var jobApplicationDTO = _mapper.Map<JobApplicationDTO>(jobApplicationEntity);
                 return Created("get", jobApplicationDTO);
             }
