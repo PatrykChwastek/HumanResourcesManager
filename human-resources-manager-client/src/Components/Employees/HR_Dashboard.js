@@ -61,7 +61,6 @@ const StyledTableCell = withStyles((theme) => ({
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginTop: '1.5rem',
         width: '100%',
         background: theme.palette.grey[800],
         color: "white",
@@ -266,7 +265,7 @@ const HR_Dashboard = () => {
     return (
         <div>
             {stats === undefined ? generalStatsSkeleton() :
-                <Grid container style={{ marginBottom: '1.2rem' }}>
+                <Grid container style={{ marginBottom: '1rem' }}>
                     <Card className={classes.remoteWorkBox}>
                         <Grid container item spacing={4}>
                             <Grid item xs={7} >

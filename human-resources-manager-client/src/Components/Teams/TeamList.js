@@ -126,7 +126,6 @@ const TeamList = () => {
     const [teams, setTeams] = useState([]);
     const [searchParams, setSearchParams] = useState({ searchBy: searchMode[0].id, search: '' });
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [menuAnchorEl, setMenuAnchorEl] = useState({ team: null, member: null, id: 0, });
     const [pagination, setPagination] = useState({
         page: 1,
         size: 9,
@@ -205,17 +204,6 @@ const TeamList = () => {
         loadTeams(value, pagination.size);
     };
 
-    const handleOptinsClick = (event, menu, id) => {
-        if (menu === 'team') {
-            setMenuAnchorEl({ team: event.currentTarget, member: null, id: id });
-            return;
-        }
-        setMenuAnchorEl({ team: null, member: event.currentTarget, id: id });
-    };
-    const handleMenuClose = () => {
-        setMenuAnchorEl({ team: null, member: null, id: 0 });
-    };
-
     const handleEditTeam = () => {
         console.log(' to-o');
 
@@ -230,7 +218,6 @@ const TeamList = () => {
         fetch(APIURL + 'teams/' + teamId, requestOptions)
             .then((data) => {
                 console.log(data);
-                handleMenuClose();
                 loadTeams(
                     pagination.page,
                     pagination.size,
@@ -272,7 +259,6 @@ const TeamList = () => {
             requestOptions
         ).then(data => {
             console.log(data);
-            handleMenuClose();
             loadTeams(
                 pagination.page,
                 pagination.size,
