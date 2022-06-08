@@ -98,13 +98,6 @@ const useStyles = makeStyles((theme) => ({
         textDecoration: "none",
         color: "white",
     },
-
-    teamMembersCol: {
-        margin: "8px",
-        width: '100%',
-        display: "flex",
-        flexDirection: "column",
-    },
     menuItem: {
         textDecoration: "none",
         color: "white",

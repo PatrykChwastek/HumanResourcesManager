@@ -57,7 +57,7 @@ namespace HumanResourcesManager.Services.JobOfferRepo
             if (positionId != 0)
                 whereQuery.Append("&& jo.Position.Id == " + positionId + " ");
 
-            if (name != null || name.Equals(""))
+            if (name != null)
             {
                 whereQuery.Append("&& jo.Name.ToLower().Contains(" +
                         '"' + name + '"' + ") ");

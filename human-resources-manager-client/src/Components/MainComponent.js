@@ -6,7 +6,9 @@ import EmployeeList from './Employees/EmployeeList';
 import HR_Dashboard from './Employees/HR_Dashboard';
 import HR_Manager from './Employees/HR_Manager';
 import CreateJobApplication from './JobApplication/CreateJobApplication';
-import JobApplicationList from "./JobApplication/JobApplicationList";
+import JobOffersList from "./JobOffers/JobOffersList";
+import JobOfferForm from "./JobOffers/JobOfferForm";
+import JobOfferView from "./JobOffers/JobOfferView";
 import EmployeeForm from './Employees/EmployeeForm';
 import { EmployeeDetails } from './Employees/EmployeeDetails';
 import Profile from './Users/Profile'
@@ -38,7 +40,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import PollIcon from '@material-ui/icons/Poll';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
-import AssignmentIcon from '@material-ui/icons/Assignment';
+import WorkIcon from '@material-ui/icons/Work';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
@@ -244,13 +246,13 @@ const MainComponent = () => {
                                                 <ListItemText primary={<Typography noWrap>Team List</Typography>} />
                                             </ListItem>
                                         </Link>
-                                        <Link className={classes.linkButtons} to="/main/applications">
+                                        <Link className={classes.linkButtons} to="/main/offers">
                                             <ListItem button
-                                                selected={isNavItemmSelected('applications')}
-                                                onClick={() => setCurrentLocation('applications')}
+                                                selected={isNavItemmSelected('offers')}
+                                                onClick={() => setCurrentLocation('offers')}
                                             >
-                                                <ListItemIcon><AssignmentIcon /></ListItemIcon>
-                                                <ListItemText primary={<Typography noWrap>Job Applications</Typography>} />
+                                                <ListItemIcon><WorkIcon /></ListItemIcon>
+                                                <ListItemText primary={<Typography noWrap>Job Offers</Typography>} />
                                             </ListItem>
                                         </Link>
                                         <Divider />
@@ -340,8 +342,14 @@ const MainComponent = () => {
                         <Route path="/main/employee-details/:id" >
                             <EmployeeDetails />
                         </Route>
-                        <Route path="/main/applications">
-                            <JobApplicationList />
+                        <Route path="/main/offers">
+                            <JobOffersList />
+                        </Route>
+                        <Route path="/main/offer/:id" >
+                            <JobOfferView />
+                        </Route>
+                        <Route path="/main/offer-form">
+                            <JobOfferForm />
                         </Route>
                         <Route path="/main/team-list">
                             <TeamList />
