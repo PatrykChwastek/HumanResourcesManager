@@ -25,6 +25,7 @@ namespace HumanResourcesManager.Services.JobOfferRepo
         public async Task<JobOffer> CreateJobOffer(JobOffer jobOfferEntity)
         {
             _logger.LogInformation($"Creating new JobOffer: {jobOfferEntity.Name}");
+            jobOfferEntity.PublishDate = DateTime.Now;
             _mDBContext.Add(jobOfferEntity);
 
             await Save();
