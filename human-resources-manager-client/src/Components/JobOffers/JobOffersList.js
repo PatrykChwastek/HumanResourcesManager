@@ -210,7 +210,7 @@ const JobOffersList = () => {
         getJobApplications(
             pagination.page,
             pagination.size,
-            jobOffers[index]
+            jobOffers[index].id
         )
     };
 
@@ -382,7 +382,7 @@ const JobOffersList = () => {
                                                                             View Job Offer
                                                                         </MenuItem>
                                                                     </Link>
-                                                                    <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/offer-form` }}>
+                                                                    <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/offer-form`, jobOffer: { jobOffer } }}>
                                                                         <MenuItem className={classes.menuItem} onClick={handleEditJobOffer}>
                                                                             <ListItemIcon>
                                                                                 <EditIcon fontSize="small" />
