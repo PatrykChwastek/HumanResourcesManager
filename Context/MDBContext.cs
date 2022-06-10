@@ -24,12 +24,6 @@ namespace HumanResourcesManager.Context
         public MDBContext(DbContextOptions<MDBContext> options) : base (options){}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Position>()
-                .HasMany(p => p.JobApplications)
-                .WithOne(ja => ja.Position)
-                .HasForeignKey(ja => ja.PositionId)
-                .IsRequired();
-
             modelBuilder.Entity<Person>()
                 .HasOne<Employee>(ed => ed.Employee)
                 .WithOne(e => e.Person)
@@ -47,6 +41,18 @@ namespace HumanResourcesManager.Context
                 .WithOne(e => e.Position)
                 .HasForeignKey(e => e.PositionId)
                 .IsRequired();
+
+            modelBuilder.Entity<Position>()
+                .HasMany(p => p.JobOffers)
+                .WithOne(jo => jo.Position)
+                .HasForeignKey(jo => jo.PositionId);
+
+            modelBuilder.Entity<Position>()
+                .HasMany(p => p.JobApplications)
+                .WithOne(ja => ja.Position)
+                .HasForeignKey(ja => ja.PositionId)
+                .IsRequired();
+
 
             modelBuilder.Entity<Department>()
                 .HasMany(d => d.Employees)
