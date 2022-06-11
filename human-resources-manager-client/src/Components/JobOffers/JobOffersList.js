@@ -255,13 +255,38 @@ const JobOffersList = () => {
     const onDialogConfirm = () => {
         switch (delDialogProps.type) {
             case 'offerRemove':
-                console.log("todo");
+                DeleteJobOffer(delDialogProps.data)
                 break;
             case 'applicationRemove':
                 console.log("todo");
                 break;
         }
     }
+
+    const DeleteJobOffer = (Id) => {
+        const requestOptions = {
+            method: 'Delete',
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
+        };
+
+        fetch(APIURL + 'jobOffers/' + Id, requestOptions)
+            .then((data) => {
+                getJobOffers();
+                setAllertProps({
+                    text: "Job Offer Removed",
+                    open: true,
+                    type: "success"
+                });
+            }, (err) => {
+                console.log(err)
+                setAllertProps({
+                    text: "Job Offer Remove Error!",
+                    open: true,
+                    type: "error"
+                })
+            });
+
+    };
 
     const handleAllertClose = (event, reason) => {
         if (reason === 'clickaway') {
