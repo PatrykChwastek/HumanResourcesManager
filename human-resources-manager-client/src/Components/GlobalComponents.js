@@ -286,10 +286,39 @@ export const ConfirmDialog = (props) => {
     );
 };
 
+export const InfoDialog = (props) => {
+    const { title, children, open, setOpen, onConfirm } = props;
+    return (
+        <Dialog
+            open={open}
+            onClose={() => setOpen(false)}
+            aria-labelledby="info-dialog"
+        >
+            <DialogTitle style={{ padding: '16px 29px 0' }} id="info-dialog">
+                <h3 style={{ margin: 0 }}>{title}</h3>
+            </DialogTitle>
+            <DialogContent>{children}</DialogContent>
+            <DialogActions>
+                <Button
+                    variant="contained"
+                    onClick={() => {
+                        setOpen(false);
+                        onConfirm();
+                    }}
+                    color="default"
+                >
+                    OK
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
 export default {
     DarkChipList,
     DarkSelect,
     DarkTextField,
     StatBar,
-    ConfirmDialog
+    ConfirmDialog,
+    InfoDialog
 };

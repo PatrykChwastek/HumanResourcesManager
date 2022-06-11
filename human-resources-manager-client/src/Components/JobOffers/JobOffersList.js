@@ -3,7 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import APIURL from '../../Services/Globals';
 import { authHeader } from '../../Services/AuthService'
 import { Link, useHistory } from "react-router-dom";
-import { DarkTextField, DarkSelect, ConfirmDialog } from '../GlobalComponents';
+import { DarkTextField, DarkSelect, ConfirmDialog, InfoDialog } from '../GlobalComponents';
+import JobOfferView from "./JobOfferView";
 
 import Skeleton from '@material-ui/lab/Skeleton';
 import Typography from '@material-ui/core/Typography';
@@ -138,6 +139,12 @@ const JobOffersList = () => {
         title: '',
         text: ''
     });
+    const [offerViewDialog, setOfferViewDialog] = useState({
+        open: false,
+        title: '',
+        text: '',
+        jobOfferId: 0
+    });
 
     useEffect(() => {
         getJobOffers()
@@ -241,6 +248,10 @@ const JobOffersList = () => {
         setDelDialogProps({ ...delDialogProps, open: !delDialogProps.open })
     }
 
+    const offerViewDialogOpen = () => {
+        setOfferViewDialog({ ...offerViewDialog, open: !offerViewDialog.open })
+    }
+
     const onDialogConfirm = () => {
         switch (delDialogProps.type) {
             case 'offerRemove':
@@ -296,6 +307,15 @@ const JobOffersList = () => {
             >
                 {delDialogProps.text}
             </ConfirmDialog>
+            <InfoDialog
+                title={offerViewDialog.title}
+                open={offerViewDialog.open}
+                setOpen={offerViewDialogOpen}
+                onConfirm={() => { }}
+
+            >
+                <JobOfferView jobOfferId={offerViewDialog.jobOfferId} />
+            </InfoDialog>
             <Snackbar open={allertProps.open} autoHideDuration={4000} onClose={handleAllertClose}>
                 <Alert onClose={handleAllertClose} severity={allertProps.type}>
                     {allertProps.text}
@@ -374,14 +394,23 @@ const JobOffersList = () => {
                                                                     <MoreVertIcon />
                                                                 </IconButton>
                                                                 <Menu {...bindMenu(popupState)}>
-                                                                    <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/offer/${jobOffer.id}` }}>
-                                                                        <MenuItem className={classes.menuItem}>
-                                                                            <ListItemIcon>
-                                                                                <VisibilityIcon fontSize="small" />
-                                                                            </ListItemIcon>
-                                                                            View Job Offer
-                                                                        </MenuItem>
-                                                                    </Link>
+                                                                    {/* <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/offer/${jobOffer.id}` }}> */}
+                                                                    <MenuItem
+                                                                        className={classes.menuItem}
+                                                                        onClick={() =>
+                                                                            setOfferViewDialog({
+                                                                                open: true,
+                                                                                title: 'Job Offer: ' + jobOffer.name,
+                                                                                jobOfferId: jobOffer.id
+                                                                            })
+                                                                        }
+                                                                    >
+                                                                        <ListItemIcon>
+                                                                            <VisibilityIcon fontSize="small" />
+                                                                        </ListItemIcon>
+                                                                        View Job Offer
+                                                                    </MenuItem>
+                                                                    {/* </Link> */}
                                                                     <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/offer-form`, jobOffer: { jobOffer } }}>
                                                                         <MenuItem className={classes.menuItem} onClick={handleEditJobOffer}>
                                                                             <ListItemIcon>
