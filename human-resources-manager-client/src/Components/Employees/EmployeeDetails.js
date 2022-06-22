@@ -137,7 +137,6 @@ export const EmployeeDetails = () => {
                                 <p>{employee.remoteWork === true ? "Remote" : "Office"}</p>
                             </div>
                         </div>
-
                     </div>
                 }
                 {employee.permissions === undefined ||

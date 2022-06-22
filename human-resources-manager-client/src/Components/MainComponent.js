@@ -6,6 +6,7 @@ import EmployeeList from './Employees/EmployeeList';
 import HR_Dashboard from './Employees/HR_Dashboard';
 import HR_Manager from './Employees/HR_Manager';
 import CreateJobApplication from './JobApplication/CreateJobApplication';
+import JobApplicationView from "./JobApplication/JobApplicationView";
 import JobOffersList from "./JobOffers/JobOffersList";
 import JobOfferForm from "./JobOffers/JobOfferForm";
 import JobOfferView from "./JobOffers/JobOfferView";
@@ -350,6 +351,9 @@ const MainComponent = () => {
                         </Route>
                         <Route path="/main/offer-form">
                             <JobOfferForm />
+                        </Route>
+                        <Route path="/main/application/:id" >
+                            <JobApplicationView />
                         </Route>
                         <Route path="/main/team-list">
                             <TeamList />

@@ -236,10 +236,6 @@ const JobOffersList = () => {
         getJobApplications(value, pagination.size, jobOffers[selectedIndex]);
     };
 
-    const handleViewApplication = (event, value) => {
-
-    }
-
     const handleEditJobOffer = (event, value) => {
 
     }
@@ -419,7 +415,6 @@ const JobOffersList = () => {
                                                                     <MoreVertIcon />
                                                                 </IconButton>
                                                                 <Menu {...bindMenu(popupState)}>
-                                                                    {/* <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/offer/${jobOffer.id}` }}> */}
                                                                     <MenuItem
                                                                         className={classes.menuItem}
                                                                         onClick={() =>
@@ -435,7 +430,6 @@ const JobOffersList = () => {
                                                                         </ListItemIcon>
                                                                         View Job Offer
                                                                     </MenuItem>
-                                                                    {/* </Link> */}
                                                                     <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/offer-form`, jobOffer: { jobOffer } }}>
                                                                         <MenuItem className={classes.menuItem} onClick={handleEditJobOffer}>
                                                                             <ListItemIcon>
@@ -509,12 +503,14 @@ const JobOffersList = () => {
                                                                     <MoreVertIcon />
                                                                 </IconButton>
                                                                 <Menu {...bindMenu(popupState)}>
-                                                                    <MenuItem className={classes.menuItem} onClick={() => handleViewApplication(jobApplication.id)}>
-                                                                        <ListItemIcon>
-                                                                            <VisibilityIcon fontSize="small" />
-                                                                        </ListItemIcon>
-                                                                        Show Application
-                                                                    </MenuItem>
+                                                                    <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/application/${jobApplication.id}` }}>
+                                                                        <MenuItem className={classes.menuItem}>
+                                                                            <ListItemIcon>
+                                                                                <VisibilityIcon fontSize="small" />
+                                                                            </ListItemIcon>
+                                                                            Show Application
+                                                                        </MenuItem>
+                                                                    </Link>
                                                                     <MenuItem className={classes.menuItem} onClick={(e) =>
                                                                         setDelDialogProps({
                                                                             open: true,
