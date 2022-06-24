@@ -53,6 +53,20 @@ namespace HumanResourcesManager.Controllers
             return mapedJobApplication;
         }
 
+        // GET: api/JobApplications/cv/5
+        [HttpGet("cv/{id}")]
+        public async Task<ActionResult> GetJobApplicationCV(long id)
+        {
+            var jobApplication = await _jobApplicationRepository.GetJobApplication(id);
+
+            if (jobApplication == null)
+            {
+                return NotFound();
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(jobApplication.CVPath);
+            return File(bytes, "application/octet-stream", Path.GetFileName(jobApplication.CVPath));
+        }
+
         [HttpPost]
         public async Task<ActionResult<JobApplicationDTO>> PostJobApplication([FromForm]JobApplicationDTO jobApplication)
         {
