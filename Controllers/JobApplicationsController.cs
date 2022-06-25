@@ -64,7 +64,7 @@ namespace HumanResourcesManager.Controllers
                 return NotFound();
             }
             var bytes = await System.IO.File.ReadAllBytesAsync(jobApplication.CVPath);
-            return File(bytes, "application/octet-stream", Path.GetFileName(jobApplication.CVPath));
+            return File(bytes, "text/plain", Path.GetFileName(jobApplication.CVPath));
         }
 
         [HttpPost]

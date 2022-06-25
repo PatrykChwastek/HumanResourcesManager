@@ -3,8 +3,12 @@ import APIURL from '../../Services/Globals'
 import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from "react-router-dom";
 import { authHeader } from '../../Services/AuthService'
-import DescriptionIcon from '@material-ui/icons/Description';
 import Button from '@material-ui/core/Button';
+import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import { InfoDialog } from '../GlobalComponents';
+
+import GetAppIcon from '@material-ui/icons/GetApp';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 const useStyles = makeStyles((theme) => ({
     detailsConteiner: {
@@ -65,15 +69,18 @@ const useStyles = makeStyles((theme) => ({
     cvVievBtn: {
         width: '62px',
         marginLeft: '12px'
+    },
+    downloadBtn: {
+        width: ''
     }
 }));
 
 const JobApplicationView = () => {
     const classes = useStyles();
     const [application, setApplication] = useState({});
+    const [PDF, setPDF] = useState();
     const params = useParams();
-
-
+    const [pdfOpen, setSetPdfOpen] = useState(false);
 
     useEffect(() => {
         getApplication(params.id);
@@ -89,9 +96,31 @@ const JobApplicationView = () => {
         )
             .then(response => response.json())
             .then(data => setApplication(data));
+
+        await fetch(APIURL + `JobApplications/cv/` + ID,
+            requestOptions
+        )
+            .then(res => res.blob().then(data => setPDF(data)));
     }
+
+    const pdfDialogTogle = () => {
+        setSetPdfOpen(!pdfOpen);
+    }
+
     return (
         <div className={classes.conteiner}>
+            <InfoDialog
+                title=''
+                open={pdfOpen}
+                setOpen={pdfDialogTogle}
+                secondAction={<Button onClick={() => console.log("download")} variant="contained" color="primary"><GetAppIcon /></Button>}
+                onConfirm={() => { }}
+
+            >
+                <Document file={PDF}>
+                    <Page pageNumber={1} />
+                </Document>
+            </InfoDialog>
             <div className={classes.detailsConteiner}>
                 <div className={classes.title}>
                     <h2>Candidate Info</h2>
@@ -159,7 +188,7 @@ const JobApplicationView = () => {
                             </div>
                             <div className={classes.cvBtnContainer}>
                                 <h2 className={classes.header}>Show CV:</h2>
-                                <Button className={classes.cvVievBtn} variant="contained" color="primary">
+                                <Button onClick={() => setSetPdfOpen(true)} className={classes.cvVievBtn} variant="contained" color="primary">
                                     <DescriptionIcon style={{ fontSize: 52 }} />
                                 </Button>
                             </div>

@@ -146,6 +146,9 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: "column",
         backgroundColor: '#bdbdbd',
         color: 'black'
+    },
+    infoDialog: {
+        '& .MuiDialog-paperWidthSm': { maxWidth: '650px' }
     }
 }));
 
@@ -287,9 +290,11 @@ export const ConfirmDialog = (props) => {
 };
 
 export const InfoDialog = (props) => {
-    const { title, children, open, setOpen, onConfirm } = props;
+    const classes = useStyles();
+    const { title, children, open, setOpen, onConfirm, secondAction } = props;
     return (
         <Dialog
+            className={classes.infoDialog}
             open={open}
             onClose={() => setOpen(false)}
             aria-labelledby="info-dialog"
@@ -299,6 +304,7 @@ export const InfoDialog = (props) => {
             </DialogTitle>
             <DialogContent>{children}</DialogContent>
             <DialogActions>
+                {secondAction}
                 <Button
                     variant="contained"
                     onClick={() => {
