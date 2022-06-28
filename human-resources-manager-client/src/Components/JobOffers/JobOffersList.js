@@ -254,7 +254,7 @@ const JobOffersList = () => {
                 DeleteJobOffer(delDialogProps.data)
                 break;
             case 'applicationRemove':
-                console.log("todo");
+                DeleteApplication(delDialogProps.data);
                 break;
         }
     }
@@ -281,7 +281,30 @@ const JobOffersList = () => {
                     type: "error"
                 })
             });
+    };
 
+    const DeleteApplication = (Id) => {
+        const requestOptions = {
+            method: 'Delete',
+            headers: new Headers({ 'Content-Type': 'application/json', 'Authorization': authHeader() }),
+        };
+
+        fetch(APIURL + 'jobApplications/' + Id, requestOptions)
+            .then((data) => {
+                getJobOffers();
+                setAllertProps({
+                    text: "Job Application Removed",
+                    open: true,
+                    type: "success"
+                });
+            }, (err) => {
+                console.log(err)
+                setAllertProps({
+                    text: "Job Application Remove Error!",
+                    open: true,
+                    type: "error"
+                })
+            });
     };
 
     const handleAllertClose = (event, reason) => {

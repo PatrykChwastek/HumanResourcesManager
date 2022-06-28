@@ -88,13 +88,29 @@ namespace HumanResourcesManager.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<JobApplication>> DeleteJobApplication(long id)
         {
-            if (await _jobApplicationRepository.DeleteJobApplication(id))
+            var application = await _jobApplicationRepository.GetJobApplication(id);
+
+            if (application != null)
             {
+                if (System.IO.File.Exists(application.CVPath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(application.CVPath);
+                    }
+                    catch (Exception)
+                    {
+                        return StatusCode(500, "Server Error: delete CV file error");
+                    }
+                }
+
+                await _jobApplicationRepository.DeleteJobApplication(id);
                 await _jobApplicationRepository.Save();
                 return NoContent();
             }
 
-            return StatusCode(500, "Server Error: JobApplication not exist");
+
+            return StatusCode(500, "Server Error: Job Application not exist");
         }
 
         private async Task<string> WriteFile(IFormFile file)
@@ -104,7 +120,7 @@ namespace HumanResourcesManager.Controllers
             try
             {
                 var extension = "." + file.FileName.Split('.')[file.FileName.Split('.').Length - 1];
-                fileName = DateTime.Now.Ticks + extension; //Create a new Name for the file due to security reasons.
+                fileName = DateTime.Now.Ticks + extension;
 
                 var pathBuilt = Path.Combine(Directory.GetCurrentDirectory(), "Upload\\CVfiles");
 

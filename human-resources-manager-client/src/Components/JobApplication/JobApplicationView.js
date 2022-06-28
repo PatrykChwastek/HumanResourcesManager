@@ -109,24 +109,27 @@ const JobApplicationView = () => {
 
     return (
         <div className={classes.conteiner}>
-            <InfoDialog
-                title=''
-                open={pdfOpen}
-                setOpen={pdfDialogTogle}
-                secondAction={<Button onClick={() => console.log("download")} variant="contained" color="primary"><GetAppIcon /></Button>}
-                onConfirm={() => { }}
-
-            >
-                <Document file={PDF}>
-                    <Page pageNumber={1} />
-                </Document>
-            </InfoDialog>
             <div className={classes.detailsConteiner}>
                 <div className={classes.title}>
                     <h2>Candidate Info</h2>
                 </div>
                 {application.person === undefined ? null :
                     <div className={classes.gridConteiner}>
+                        <InfoDialog
+                            title=''
+                            open={pdfOpen}
+                            setOpen={pdfDialogTogle}
+                            secondAction={
+                                <a href={APIURL + `JobApplications/cv/` + application.id} download>
+                                    <Button variant="contained" color="primary"><GetAppIcon /></Button>
+                                </a>}
+                            onConfirm={() => { }}
+
+                        >
+                            <Document file={PDF}>
+                                <Page pageNumber={1} />
+                            </Document>
+                        </InfoDialog>
                         <div>
                             <h2 className={classes.header}>Personsal Info:</h2>
                             <div>
