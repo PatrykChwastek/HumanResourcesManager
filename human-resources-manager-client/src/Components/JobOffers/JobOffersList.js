@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import APIURL from '../../Services/Globals';
+import APIURL, { ClientURL } from '../../Services/Globals';
 import { authHeader } from '../../Services/AuthService'
 import { Link, useHistory } from "react-router-dom";
 import { DarkTextField, DarkSelect, ConfirmDialog, InfoDialog } from '../GlobalComponents';
@@ -149,6 +149,7 @@ const JobOffersList = () => {
     useEffect(() => {
         getJobOffers()
         getPositions()
+        console.log(ClientURL);
     }, []);
 
     const getJobOffers = async (selected) => {
@@ -235,10 +236,6 @@ const JobOffersList = () => {
     const handlePageChange = (event, value) => {
         getJobApplications(value, pagination.size, jobOffers[selectedIndex]);
     };
-
-    const handleEditJobOffer = (event, value) => {
-
-    }
 
     const delDialogOpen = () => {
         setDelDialogProps({ ...delDialogProps, open: !delDialogProps.open })
@@ -454,7 +451,7 @@ const JobOffersList = () => {
                                                                         View Job Offer
                                                                     </MenuItem>
                                                                     <Link style={{ textDecoration: 'none' }} to={{ pathname: `/main/offer-form`, jobOffer: { jobOffer } }}>
-                                                                        <MenuItem className={classes.menuItem} onClick={handleEditJobOffer}>
+                                                                        <MenuItem className={classes.menuItem}>
                                                                             <ListItemIcon>
                                                                                 <EditIcon fontSize="small" />
                                                                             </ListItemIcon>
