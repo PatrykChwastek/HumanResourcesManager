@@ -96,7 +96,7 @@ const JobOfferView = (jobOfferId) => {
                         <h3 style={{ margin: '5px' }}>Submit to this offer : </h3>
                         <div style={{ display: 'flex' }}>
                             <div className={classes.JobApplicationLink}>
-                                <a href={ClientURL + 'submit-application/' + jobOffer.id}>
+                                <a href={ClientURL + 'submit-application/' + jobOffer.id} target="_blank">
                                     {ClientURL + 'submit-application/' + jobOffer.id}
                                 </a>
                             </div>

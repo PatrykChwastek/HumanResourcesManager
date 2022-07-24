@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import APIURL, { ClientURL } from '../../Services/Globals';
+import APIURL from '../../Services/Globals';
 import { authHeader } from '../../Services/AuthService'
 import { Link, useHistory } from "react-router-dom";
 import { DarkTextField, DarkSelect, ConfirmDialog, InfoDialog } from '../GlobalComponents';
@@ -149,7 +149,6 @@ const JobOffersList = () => {
     useEffect(() => {
         getJobOffers()
         getPositions()
-        console.log(ClientURL);
     }, []);
 
     const getJobOffers = async (selected) => {

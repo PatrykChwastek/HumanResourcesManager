@@ -7,6 +7,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import LoginUser from './Components/Users/LoginUser';
 import MainComponent from './Components/MainComponent';
 import StartPage from './Components/StartPage';
+import CreateJobApplication from './Components/JobApplication/CreateJobApplication';
 
 const theme = createTheme({
   palette: {
@@ -30,6 +31,9 @@ const App = () => {
           </Route>
           <Route path="/login">
             <LoginUser />
+          </Route>
+          <Route path="/submit-application/:id" >
+            <CreateJobApplication />
           </Route>
           <Route path="/main" >
             <MainComponent />
